@@ -86,7 +86,7 @@ const fontFamilies: Record<ThemeFont, string> = {
   mono: "'JetBrains Mono', monospace",
 };
 
-// In-Sidebar Image Uploader
+// In-Sidebar Image Uploader using Client-Side Base64 (Serverless Safe)
 function ImageFieldUploader({
   value,
   onChange,
@@ -98,31 +98,29 @@ function ImageFieldUploader({
 }) {
   const [uploading, setUploading] = useState(false);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (res.ok && data.url) {
-        onChange(data.url);
-      } else {
-        alert(data.error || "Upload failed");
-      }
-    } catch {
-      alert("Error uploading image to server.");
-    } finally {
-      setUploading(false);
+    if (file.size > 3 * 1024 * 1024) {
+      alert("Please select an image under 3MB.");
+      return;
     }
+
+    setUploading(true);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        onChange(reader.result);
+      }
+      setUploading(false);
+    };
+    reader.onerror = () => {
+      alert("Failed to read image file.");
+      setUploading(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -164,7 +162,7 @@ function ImageFieldUploader({
           transition: "all 0.2s ease",
         }}
       >
-        {uploading ? "Uploading Image..." : "Upload from Computer 📁"}
+        {uploading ? "Processing Image..." : "Upload from Computer 📁"}
         <input type="file" accept="image/*" onChange={handleUpload} disabled={uploading} style={{ display: "none" }} />
       </label>
 
@@ -782,11 +780,15 @@ export const config: Config<ComponentProps, RootProps> = {
                       }
 
                       try {
+                        const searchParams = new URLSearchParams(window.location.search);
+                        const paramSiteId = searchParams.get("siteId");
                         const pathSegments = window.location.pathname.split("/").filter(Boolean);
                         let siteIdentifier = "";
 
                         if (pathSegments[0] === "live" && pathSegments[1]) {
-                          siteIdentifier = pathSegments[1];
+                          siteIdentifier = decodeURIComponent(pathSegments[1]);
+                        } else if (paramSiteId) {
+                          siteIdentifier = paramSiteId;
                         } else {
                           siteIdentifier = window.location.hostname;
                         }

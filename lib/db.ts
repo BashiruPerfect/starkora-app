@@ -232,6 +232,24 @@ export const db = {
     return (rows[0] as SiteRecord) || null;
   },
 
+  async findLatestSite(): Promise<SiteRecord | null> {
+    await ensureTables();
+    const sql = getSql();
+    const rows = await sql`
+      SELECT 
+        id, user_id as "userId", name, subdomain, custom_domain as "customDomain",
+        domain_verified as "domainVerified", meta_pixel_id as "metaPixelId",
+        google_analytics_id as "googleAnalyticsId", favicon_url as "faviconUrl",
+        layout_data as "layoutData", is_published as "isPublished",
+        subscription_plan as "subscriptionPlan", subscription_status as "subscriptionStatus",
+        created_at as "createdAt", updated_at as "updatedAt"
+      FROM sites
+      ORDER BY updated_at DESC
+      LIMIT 1;
+    `;
+    return (rows[0] as SiteRecord) || null;
+  },
+
   async setCustomDomain(
     siteId: string,
     userId: string,
