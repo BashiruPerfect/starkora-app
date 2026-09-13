@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function BillingPage() {
+function BillingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const siteId = searchParams.get("siteId");
@@ -38,7 +38,6 @@ export default function BillingPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Checkout failed");
 
-      // Redirect user directly to Paystack or test verification
       if (data.authorizationUrl) {
         window.location.href = data.authorizationUrl;
       }
@@ -88,7 +87,6 @@ export default function BillingPage() {
 
         {/* Pricing Comparison Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-          {/* Monthly Option */}
           <div
             onClick={() => setInterval("monthly")}
             className={`cursor-pointer rounded-2xl p-6 border transition space-y-6 ${
@@ -114,7 +112,6 @@ export default function BillingPage() {
             </ul>
           </div>
 
-          {/* Annual Option */}
           <div
             onClick={() => setInterval("annual")}
             className={`cursor-pointer rounded-2xl p-6 border transition space-y-6 relative ${
@@ -145,7 +142,6 @@ export default function BillingPage() {
           </div>
         </div>
 
-        {/* Action Button */}
         <div className="pt-4 flex flex-col items-center space-y-3">
           <button
             onClick={handleCheckout}
@@ -155,10 +151,24 @@ export default function BillingPage() {
             {loading ? "Connecting to Payment Gateway..." : `Proceed with ${interval === "annual" ? "$110 Annual" : "$10 Monthly"} Plan →`}
           </button>
           <p className="text-xs text-slate-500">
-            Secured via Paystack. Supports Nigerian Cards (Verve/Mastercard/Visa), Bank Transfers, and International Cards [cite: 1, 2].
+            Secured via Paystack. Supports Nigerian Cards (Verve/Mastercard/Visa), Bank Transfers, and International Cards.
           </p>
         </div>
       </div>
     </main>
+  );
+}
+
+export default function BillingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400 font-sans">
+          Loading checkout...
+        </div>
+      }
+    >
+      <BillingContent />
+    </Suspense>
   );
 }
