@@ -23,10 +23,10 @@ export default async function middleware(req: NextRequest) {
     host === "localhost" ||
     host === "127.0.0.1" ||
     host === "starkora.com" ||
-    host === "app.starkora.com";
+    host === "app.starkora.com" ||
+    host.endsWith(".vercel.app");
 
   if (isInternalHost) {
-    // If accessing the root on localhost/starkora.com, continue as normal
     return NextResponse.next();
   }
 
@@ -37,6 +37,5 @@ export default async function middleware(req: NextRequest) {
   }
 
   // 3. Custom Domains (e.g., mybrand.ng or clientbrand.com)
-  // Rewrite directly to the live tenant resolver
   return NextResponse.rewrite(new URL(`/live/${host}${url.pathname}`, req.url));
 }
