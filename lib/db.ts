@@ -56,7 +56,7 @@ function getSql() {
   return neon(connectionString);
 }
 
-// Automatically provisions the cloud tables if they don't exist yet
+// Automatically provisions the cloud tables if they do not exist yet
 let tablesInitialized = false;
 async function ensureTables() {
   if (tablesInitialized) return;
@@ -260,7 +260,29 @@ export const db = {
     const clean = customDomain.toLowerCase().trim();
     const rows = await sql`
       UPDATE sites
-      SET custom_domain = ${clean}, domain_verified = TRUE, updated_at = NOW()
+      SET custom_domain = ${clean}, domain_verified = FALSE, updated_at = NOW()
+      WHERE id = ${siteId} AND user_id = ${userId}
+      RETURNING 
+        id, user_id as "userId", name, subdomain, custom_domain as "customDomain",
+        domain_verified as "domainVerified", meta_pixel_id as "metaPixelId",
+        google_analytics_id as "googleAnalyticsId", favicon_url as "faviconUrl",
+        layout_data as "layoutData", is_published as "isPublished",
+        subscription_plan as "subscriptionPlan", subscription_status as "subscriptionStatus",
+        created_at as "createdAt", updated_at as "updatedAt";
+    `;
+    return (rows[0] as SiteRecord) || null;
+  },
+
+  async updateDomainVerification(
+    siteId: string,
+    userId: string,
+    verified: boolean
+  ): Promise<SiteRecord | null> {
+    await ensureTables();
+    const sql = getSql();
+    const rows = await sql`
+      UPDATE sites
+      SET domain_verified = ${verified}, updated_at = NOW()
       WHERE id = ${siteId} AND user_id = ${userId}
       RETURNING 
         id, user_id as "userId", name, subdomain, custom_domain as "customDomain",

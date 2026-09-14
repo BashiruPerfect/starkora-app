@@ -53,12 +53,12 @@ export default function DashboardPage() {
   const [savingDomain, setSavingDomain] = useState(false);
   const [domainSuccess, setDomainSuccess] = useState(false);
 
-  // Domain Availability Search State
+  // Live Domain Availability Search State
   const [searchQuery, setSearchQuery] = useState("");
   const [searchingDomain, setSearchingDomain] = useState(false);
   const [searchResults, setSearchResults] = useState<DomainSearchResult[]>([]);
 
-  // Site Settings Modal State
+  // Site Settings & Marketing Pixels Modal State
   const [settingsSite, setSettingsSite] = useState<Site | null>(null);
   const [settingsForm, setSettingsForm] = useState({
     name: "",
@@ -67,6 +67,9 @@ export default function DashboardPage() {
     faviconUrl: "",
   });
   const [savingSettings, setSavingSettings] = useState(false);
+
+  // DNS Verification State Tracker
+  const [verifyingDnsId, setVerifyingDnsId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadDashboard() {
@@ -99,6 +102,31 @@ export default function DashboardPage() {
 
     loadDashboard();
   }, [router]);
+
+  // Real-time DNS Propagation Checker
+  const handleCheckDns = async (siteId: string, domain: string) => {
+    setVerifyingDnsId(siteId);
+    try {
+      const res = await fetch("/api/domains/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ siteId, domain }),
+      });
+
+      const data = await res.json();
+      alert(data.message);
+
+      if (data.verified) {
+        setSites((prev) =>
+          prev.map((s) => (s.id === siteId ? { ...s, domainVerified: true } : s))
+        );
+      }
+    } catch {
+      alert("Failed to query DNS servers. Please try again.");
+    } finally {
+      setVerifyingDnsId(null);
+    }
+  };
 
   const handleDomainSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -147,7 +175,7 @@ export default function DashboardPage() {
       setSites((prev) =>
         prev.map((s) =>
           s.id === selectedSite.id
-            ? { ...s, customDomain: data.site.customDomain, domainVerified: true }
+            ? { ...s, customDomain: data.site.customDomain, domainVerified: false }
             : s
         )
       );
@@ -220,7 +248,7 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <main className="max-w-6xl mx-auto px-6 py-10 space-y-8">
         {/* Navigation Tabs */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
@@ -310,6 +338,7 @@ export default function DashboardPage() {
 
                       <h2 className="text-xl font-bold tracking-tight line-clamp-1">{site.name}</h2>
 
+                      {/* Hostname & Live DNS Verification Status */}
                       <div className="space-y-1">
                         <p className="text-xs font-mono text-slate-400">
                           <Link
@@ -320,11 +349,30 @@ export default function DashboardPage() {
                             {site.customDomain ? `🌐 ${site.customDomain}` : `${site.subdomain}.starkora.com`} ↗
                           </Link>
                         </p>
+
                         {site.customDomain && (
-                          <p className="text-[11px] font-mono text-slate-500">
-                            Fallback: {site.subdomain}.starkora.com
-                          </p>
+                          <div className="flex items-center gap-2 pt-1">
+                            {site.domainVerified ? (
+                              <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono flex items-center gap-1">
+                                ● SSL & DNS Live
+                              </span>
+                            ) : (
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-mono">
+                                  ○ DNS Pending
+                                </span>
+                                <button
+                                  onClick={() => handleCheckDns(site.id, site.customDomain!)}
+                                  disabled={verifyingDnsId === site.id}
+                                  className="text-[10px] text-indigo-400 hover:text-indigo-300 underline disabled:opacity-50"
+                                >
+                                  {verifyingDnsId === site.id ? "Checking..." : "Check DNS 🔄"}
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         )}
+
                         {(site.metaPixelId || site.googleAnalyticsId) && (
                           <div className="flex items-center gap-2 pt-1">
                             {site.metaPixelId && (
@@ -527,7 +575,7 @@ export default function DashboardPage() {
                 </label>
                 <input
                   type="text"
-                  placeholder="/uploads/favicon.png or https://..."
+                  placeholder="Paste image link or data URL..."
                   value={settingsForm.faviconUrl}
                   onChange={(e) =>
                     setSettingsForm({ ...settingsForm, faviconUrl: e.target.value })
