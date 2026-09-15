@@ -1,36 +1,48 @@
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
-import TenantRenderer from "./TenantRenderer";
+import TenantRenderer from "../TenantRenderer";
 import type { Data } from "@puckeditor/core";
-import type { ComponentProps } from "@/puck.config";
+import type { ComponentProps, RootProps } from "@/puck.config";
 import type { Metadata } from "next";
+
+type PageSlug = "home" | "about" | "services" | "contact";
+
+function extractPageLayout(site: any, rawSlug?: string[]): Data<ComponentProps, RootProps> | null {
+  try {
+    const parsed = JSON.parse(site.layoutData);
+
+    // Resolve target slug: default to 'home'
+    const targetSlug = (!rawSlug || rawSlug.length === 0 ? "home" : rawSlug[0].toLowerCase()) as PageSlug;
+
+    if (parsed.pages && typeof parsed.pages === "object") {
+      return parsed.pages[targetSlug] || parsed.pages["home"] || null;
+    }
+
+    // Backward compatibility for single-page legacy sites
+    if (parsed.content) {
+      return parsed as Data<ComponentProps, RootProps>;
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ subdomain: string }>;
+  params: Promise<{ subdomain: string; slug?: string[] }>;
 }): Promise<Metadata> {
-  const { subdomain } = await params;
+  const { subdomain, slug } = await params;
   const site = await db.findSiteByIdentifier(subdomain);
 
-  if (!site) {
-    return {
-      title: "Site Not Found | STARKORA",
-    };
-  }
+  if (!site) return { title: "Site Not Found | STARKORA" };
 
-  let layoutData: Data<ComponentProps> | null = null;
-  try {
-    layoutData = JSON.parse(site.layoutData);
-  } catch {
-    layoutData = null;
-  }
-
+  const layoutData = extractPageLayout(site, slug);
   const heroBlock = layoutData?.content?.find((b) => b.type === "HeroBlock");
   const siteTitle = layoutData?.root?.props?.title || site.name || "STARKORA Generated Site";
-  const siteDescription =
-    heroBlock?.props?.subheading ||
-    "Official website powered by STARKORA autonomous web platform.";
+  const siteDescription = heroBlock?.props?.subheading || "Official website powered by STARKORA.";
   const heroImage = heroBlock?.props?.imageUrl;
 
   return {
@@ -52,26 +64,19 @@ export async function generateMetadata({
   };
 }
 
-export default async function LiveTenantPage({
+export default async function LiveTenantMultiPage({
   params,
 }: {
-  params: Promise<{ subdomain: string }>;
+  params: Promise<{ subdomain: string; slug?: string[] }>;
 }) {
-  const { subdomain } = await params;
+  const { subdomain, slug } = await params;
   const site = await db.findSiteByIdentifier(subdomain);
 
   if (!site || !site.isPublished) {
     notFound();
   }
 
-  let layoutData: Data<ComponentProps> | null = null;
-  try {
-    layoutData = JSON.parse(site.layoutData);
-  } catch (e) {
-    console.error("Failed to parse site data for tenant", e);
-    notFound();
-  }
-
+  const layoutData = extractPageLayout(site, slug);
   if (!layoutData) {
     notFound();
   }
@@ -94,13 +99,11 @@ export default async function LiveTenantPage({
 
   return (
     <>
-      {/* Schema.org Microdata */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Meta Pixel Dynamic Injection */}
       {site.metaPixelId && (
         <script
           dangerouslySetInnerHTML={{
@@ -120,7 +123,6 @@ export default async function LiveTenantPage({
         />
       )}
 
-      {/* Google Analytics (GA4) Dynamic Injection */}
       {site.googleAnalyticsId && (
         <>
           <script

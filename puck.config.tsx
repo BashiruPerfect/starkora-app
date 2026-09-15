@@ -86,7 +86,6 @@ const fontFamilies: Record<ThemeFont, string> = {
   mono: "'JetBrains Mono', monospace",
 };
 
-// In-Sidebar Image Uploader using Client-Side Base64 (Serverless Safe)
 function ImageFieldUploader({
   value,
   onChange,
@@ -328,24 +327,34 @@ export const config: Config<ComponentProps, RootProps> = {
         brandName: "STARKORA",
         logoUrl: "",
         ctaLabel: "Contact Us",
-        ctaLink: "#contact",
+        ctaLink: "/contact",
       },
       render: ({ brandName, logoUrl, ctaLabel, ctaLink }) => (
         <header className="w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-4 px-6">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {logoUrl ? (
-                <img src={logoUrl} alt={brandName} className="h-9 max-w-[160px] object-contain" />
-              ) : (
-                <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                  <span
-                    style={{ backgroundColor: "var(--starkora-primary)" }}
-                    className="w-2.5 h-2.5 rounded-full inline-block"
-                  />
-                  {brandName}
-                </span>
-              )}
+            <div className="flex items-center gap-8">
+              <a href="/" className="flex items-center gap-3">
+                {logoUrl ? (
+                  <img src={logoUrl} alt={brandName} className="h-9 max-w-[160px] object-contain" />
+                ) : (
+                  <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    <span
+                      style={{ backgroundColor: "var(--starkora-primary)" }}
+                      className="w-2.5 h-2.5 rounded-full inline-block"
+                    />
+                    {brandName}
+                  </span>
+                )}
+              </a>
+
+              <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+                <a href="/" className="hover:text-white transition">Home</a>
+                <a href="/about" className="hover:text-white transition">About</a>
+                <a href="/services" className="hover:text-white transition">Services</a>
+                <a href="/contact" className="hover:text-white transition">Contact</a>
+              </nav>
             </div>
+
             <a
               href={ctaLink}
               style={{

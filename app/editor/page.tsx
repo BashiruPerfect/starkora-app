@@ -3,78 +3,207 @@
 import { Suspense, useState, useEffect } from "react";
 import { Puck, type Data } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
-import { config, type ComponentProps } from "../../puck.config";
+import { config, type ComponentProps, type RootProps } from "../../puck.config";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-const defaultFallbackData: Data<ComponentProps> = {
-  content: [
-    {
-      type: "NavbarBlock",
-      props: {
-        id: "navbar-1",
-        brandName: "STARKORA",
-        ctaLabel: "Contact",
-        ctaLink: "#contact",
-      },
-    },
-    {
-      type: "HeroBlock",
-      props: {
-        id: "hero-1",
-        heading: "Experience Autonomous Design",
-        subheading: "Your site was created by STARKORA. Customize it freely.",
-        ctaText: "Explore Now",
-        ctaLink: "#contact",
-        imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
-        theme: "gradient",
-      },
-    },
-    {
-      type: "FeatureGridBlock",
-      props: {
-        id: "features-1",
-        sectionTitle: "Why STARKORA Stands Out",
-        features: [
-          {
-            title: "Zero Markup Failures",
-            description: "Everything is verified against strict JSON interfaces.",
+type PageSlug = "home" | "about" | "services" | "contact";
+
+interface MultiPageSiteData {
+  pages: Record<PageSlug, Data<ComponentProps, RootProps>>;
+}
+
+const defaultMultiPageData: MultiPageSiteData = {
+  pages: {
+    home: {
+      content: [
+        {
+          type: "NavbarBlock",
+          props: { id: "nav-1", brandName: "STARKORA", ctaLabel: "Contact", ctaLink: "/contact" },
+        },
+        {
+          type: "HeroBlock",
+          props: {
+            id: "hero-1",
+            badgeText: "OFFICIAL WEBSITE",
+            heading: "Autonomous Multi-Page Platform",
+            subheading: "Manage your Home, About, Services, and Contact pages seamlessly.",
+            ctaText: "Explore Services",
+            ctaLink: "/services",
+            imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
+            theme: "gradient",
           },
-          {
-            title: "Global Edge Routing",
-            description: "Instantaneous delivery with automatic SSL management.",
+        },
+        {
+          type: "FeatureGridBlock",
+          props: {
+            id: "feat-1",
+            sectionBadge: "CAPABILITIES",
+            sectionTitle: "Engineered For Conversion",
+            features: [
+              { title: "Multi-Page Ready", description: "Dynamic edge routing across all navigation slugs." },
+              { title: "Integrated Leads", description: "WhatsApp and direct inquiry capture out of the box." },
+              { title: "One-Click Theming", description: "Instant color palettes and Google typography switching." },
+            ],
           },
-        ],
-      },
+        },
+        {
+          type: "ContactWhatsAppBlock",
+          props: {
+            id: "contact-1",
+            title: "Contact Us",
+            subtitle: "Reach out via WhatsApp or email.",
+            phoneNumber: "+2348012345678",
+            whatsappMessage: "Hello!",
+            email: "support@starkora.com",
+            location: "Lagos, Nigeria",
+          },
+        },
+        {
+          type: "FooterBlock",
+          props: { id: "footer-1", copyrightText: "© 2026 STARKORA. All rights reserved." },
+        },
+      ],
+      root: { props: { title: "STARKORA | Home", palette: "indigo", font: "inter" } },
     },
-    {
-      type: "ContactWhatsAppBlock",
-      props: {
-        id: "contact-1",
-        title: "Contact Us",
-        subtitle: "Reach out via WhatsApp or email.",
-        phoneNumber: "+2348012345678",
-        whatsappMessage: "Hello!",
-        email: "support@starkora.com",
-        location: "Lagos, Nigeria",
-      },
+    about: {
+      content: [
+        {
+          type: "NavbarBlock",
+          props: { id: "nav-about", brandName: "STARKORA", ctaLabel: "Contact", ctaLink: "/contact" },
+        },
+        {
+          type: "HeroBlock",
+          props: {
+            id: "hero-about",
+            badgeText: "OUR STORY",
+            heading: "About Our Organization",
+            subheading: "Committed to delivering high-impact solutions for our clients.",
+            ctaText: "Our Services",
+            ctaLink: "/services",
+            imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80",
+            theme: "dark",
+          },
+        },
+        {
+          type: "FooterBlock",
+          props: { id: "footer-about", copyrightText: "© 2026 STARKORA. All rights reserved." },
+        },
+      ],
+      root: { props: { title: "About Us | STARKORA", palette: "indigo", font: "inter" } },
     },
-    {
-      type: "FooterBlock",
-      props: {
-        id: "footer-1",
-        copyrightText: "© 2026 STARKORA. All rights reserved.",
-      },
+    services: {
+      content: [
+        {
+          type: "NavbarBlock",
+          props: { id: "nav-services", brandName: "STARKORA", ctaLabel: "Inquire", ctaLink: "/contact" },
+        },
+        {
+          type: "HeroBlock",
+          props: {
+            id: "hero-services",
+            badgeText: "OUR SOLUTIONS",
+            heading: "Tailored Services & Packages",
+            subheading: "Transparent packages designed for scale and dependability.",
+            ctaText: "Get in Touch",
+            ctaLink: "/contact",
+            imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=80",
+            theme: "gradient",
+          },
+        },
+        {
+          type: "PricingBlock",
+          props: {
+            id: "pricing-services",
+            sectionTitle: "Transparent Pricing Tiers",
+            sectionSubtitle: "Simple, flexible plans designed for your growth.",
+            plans: [
+              {
+                name: "Standard Package",
+                price: "₦35,000",
+                features: "Complete Setup\nWhatsApp Direct Support\nStandard SLA",
+                isPopular: false,
+                ctaText: "Select Standard",
+              },
+              {
+                name: "Enterprise Executive",
+                price: "₦95,000",
+                features: "Dedicated Manager\nPriority Turnaround\n24/7 Support\nCustom Domain Included",
+                isPopular: true,
+                ctaText: "Select Executive",
+              },
+            ],
+          },
+        },
+        {
+          type: "FooterBlock",
+          props: { id: "footer-services", copyrightText: "© 2026 STARKORA. All rights reserved." },
+        },
+      ],
+      root: { props: { title: "Services | STARKORA", palette: "indigo", font: "inter" } },
     },
-  ],
-  root: { props: { title: "STARKORA Generated Site" } },
+    contact: {
+      content: [
+        {
+          type: "NavbarBlock",
+          props: { id: "nav-contact", brandName: "STARKORA", ctaLabel: "Home", ctaLink: "/" },
+        },
+        {
+          type: "HeroBlock",
+          props: {
+            id: "hero-contact",
+            badgeText: "REACH OUT",
+            heading: "Contact Our Team",
+            subheading: "Submit an inquiry or connect with us directly on WhatsApp.",
+            ctaText: "Chat on WhatsApp",
+            ctaLink: "#contact",
+            imageUrl: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=800&auto=format&fit=crop&q=80",
+            theme: "dark",
+          },
+        },
+        {
+          type: "ContactWhatsAppBlock",
+          props: {
+            id: "contact-main",
+            title: "Leave an Inquiry",
+            subtitle: "We respond promptly to all incoming communications.",
+            phoneNumber: "+2348012345678",
+            whatsappMessage: "Hello!",
+            email: "support@starkora.com",
+            location: "Lagos, Nigeria",
+          },
+        },
+        {
+          type: "FooterBlock",
+          props: { id: "footer-contact", copyrightText: "© 2026 STARKORA. All rights reserved." },
+        },
+      ],
+      root: { props: { title: "Contact Us | STARKORA", palette: "indigo", font: "inter" } },
+    },
+  },
 };
+
+function normalizeToMultiPage(raw: any): MultiPageSiteData {
+  if (raw?.pages && typeof raw.pages === "object") {
+    return raw as MultiPageSiteData;
+  }
+  // Backward compatibility: If stored as a single-page Puck object
+  return {
+    pages: {
+      home: raw?.content ? raw : defaultMultiPageData.pages.home,
+      about: defaultMultiPageData.pages.about,
+      services: defaultMultiPageData.pages.services,
+      contact: defaultMultiPageData.pages.contact,
+    },
+  };
+}
 
 function EditorContent() {
   const searchParams = useSearchParams();
   const siteId = searchParams.get("siteId");
 
-  const [data, setData] = useState<Data<ComponentProps>>(defaultFallbackData);
+  const [multiPage, setMultiPage] = useState<MultiPageSiteData>(defaultMultiPageData);
+  const [activePage, setActivePage] = useState<PageSlug>("home");
   const [editorKey, setEditorKey] = useState(0);
   const [currentSiteId, setCurrentSiteId] = useState<string | null>(siteId);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -97,7 +226,9 @@ function EditorContent() {
           if (siteRes.ok) {
             const siteJson = await siteRes.json();
             if (siteJson.site?.layoutData) {
-              setData(JSON.parse(siteJson.site.layoutData));
+              const parsed = JSON.parse(siteJson.site.layoutData);
+              const normalized = normalizeToMultiPage(parsed);
+              setMultiPage(normalized);
               setCurrentSiteId(siteJson.site.id);
               setEditorKey((k) => k + 1);
               setIsLoaded(true);
@@ -112,7 +243,9 @@ function EditorContent() {
       const saved = localStorage.getItem("starkora_active_site");
       if (saved) {
         try {
-          setData(JSON.parse(saved));
+          const parsed = JSON.parse(saved);
+          const normalized = normalizeToMultiPage(parsed);
+          setMultiPage(normalized);
           setEditorKey((k) => k + 1);
         } catch (e) {
           console.error("Failed to parse saved local site", e);
@@ -124,9 +257,22 @@ function EditorContent() {
     init();
   }, [siteId]);
 
-  const handleSave = async (savedData: Data<ComponentProps>) => {
-    setData(savedData);
-    localStorage.setItem("starkora_active_site", JSON.stringify(savedData));
+  const handlePageChange = (newPage: PageSlug) => {
+    setActivePage(newPage);
+    setEditorKey((k) => k + 1);
+  };
+
+  const handleSave = async (savedData: Data<ComponentProps, RootProps>) => {
+    // Update active page inside multi-page state
+    const updatedMultiPage: MultiPageSiteData = {
+      pages: {
+        ...multiPage.pages,
+        [activePage]: savedData,
+      },
+    };
+
+    setMultiPage(updatedMultiPage);
+    localStorage.setItem("starkora_active_site", JSON.stringify(updatedMultiPage));
 
     try {
       const res = await fetch("/api/sites/save", {
@@ -134,15 +280,15 @@ function EditorContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           siteId: currentSiteId,
-          name: savedData.root?.props?.title || "My Site",
-          layoutData: savedData,
+          name: updatedMultiPage.pages.home.root?.props?.title?.replace(" | Home", "") || "My Multi-Page Site",
+          layoutData: updatedMultiPage,
         }),
       });
 
       if (res.ok) {
         const payload = await res.json();
         if (payload.site?.id) setCurrentSiteId(payload.site.id);
-        alert("Site successfully saved to your STARKORA database!");
+        alert(`Site saved successfully! (Active: ${activePage.toUpperCase()})`);
       } else if (res.status === 401) {
         alert("Saved locally! Log in to permanently link this site to your account.");
       } else {
@@ -163,15 +309,21 @@ function EditorContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          currentLayout: data,
+          currentLayout: multiPage.pages[activePage],
           instruction: aiPrompt,
         }),
       });
 
       const resJson = await res.json();
       if (res.ok && resJson.layoutData) {
-        setData(resJson.layoutData);
-        localStorage.setItem("starkora_active_site", JSON.stringify(resJson.layoutData));
+        const updated: MultiPageSiteData = {
+          pages: {
+            ...multiPage.pages,
+            [activePage]: resJson.layoutData,
+          },
+        };
+        setMultiPage(updated);
+        localStorage.setItem("starkora_active_site", JSON.stringify(updated));
         setEditorKey((prev) => prev + 1);
         setAiPrompt("");
       } else {
@@ -192,8 +344,11 @@ function EditorContent() {
     );
   }
 
+  const currentCanvasData = multiPage.pages[activePage] || defaultMultiPageData.pages.home;
+
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden relative">
+      {/* Top Header with Multi-Page Navigation Switcher */}
       <div className="bg-slate-900 border-b border-slate-800 px-6 py-2.5 flex items-center justify-between z-50 text-sm">
         <div className="flex items-center gap-4">
           <Link
@@ -203,9 +358,21 @@ function EditorContent() {
             STARKORA
           </Link>
           <span className="text-slate-600">|</span>
-          <span className="text-slate-300 font-medium text-xs sm:text-sm">
-            {data.root?.props?.title || "Draft Site"}
-          </span>
+
+          {/* PAGE SELECTOR DROPDOWN */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase font-bold text-slate-400">Editing:</span>
+            <select
+              value={activePage}
+              onChange={(e) => handlePageChange(e.target.value as PageSlug)}
+              className="bg-slate-950 border border-slate-700 text-white rounded-lg px-3 py-1 text-xs font-semibold focus:outline-none focus:border-indigo-500 cursor-pointer"
+            >
+              <option value="home">Home Page (/)</option>
+              <option value="about">About Us (/about)</option>
+              <option value="services">Services & Pricing (/services)</option>
+              <option value="contact">Contact (/contact)</option>
+            </select>
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -232,10 +399,12 @@ function EditorContent() {
         </div>
       </div>
 
+      {/* Puck Visual Canvas */}
       <div className="flex-1 relative">
-        <Puck key={editorKey} config={config} data={data} onPublish={handleSave} />
+        <Puck key={editorKey} config={config} data={currentCanvasData} onPublish={handleSave} />
       </div>
 
+      {/* Floating AI Copilot Bar */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl px-4 pointer-events-auto">
         <form
           onSubmit={handleAiRefine}
@@ -246,7 +415,7 @@ function EditorContent() {
           </div>
           <input
             type="text"
-            placeholder="e.g. 'Make header professional', 'Add testimonials', 'Add pricing'..."
+            placeholder={`Ask AI to refine this ${activePage.toUpperCase()} page...`}
             value={aiPrompt}
             onChange={(e) => setAiPrompt(e.target.value)}
             disabled={isRefining}
@@ -257,7 +426,7 @@ function EditorContent() {
             disabled={isRefining || !aiPrompt.trim()}
             className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition disabled:opacity-40 whitespace-nowrap"
           >
-            {isRefining ? "Refining..." : "Update Canvas ➔"}
+            {isRefining ? "Refining..." : `Update ${activePage.toUpperCase()} ➔`}
           </button>
         </form>
       </div>
