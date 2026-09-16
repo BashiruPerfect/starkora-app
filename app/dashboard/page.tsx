@@ -103,6 +103,11 @@ export default function DashboardPage() {
     loadDashboard();
   }, [router]);
 
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+  };
+
   // Real-time DNS Propagation Checker
   const handleCheckDns = async (siteId: string, domain: string) => {
     setVerifyingDnsId(siteId);
@@ -122,7 +127,7 @@ export default function DashboardPage() {
         );
       }
     } catch {
-      alert("Failed to query DNS servers. Please try again.");
+      alert("Failed to query DNS servers. Please verify the domain is registered and pointed.");
     } finally {
       setVerifyingDnsId(null);
     }
@@ -227,24 +232,32 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans">
-      {/* Top Navbar */}
-      <nav className="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-8 py-4 flex items-center justify-between">
+      {/* Top Navbar with Authentication & Logout */}
+      <nav className="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-6 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <span className="text-xl font-black text-indigo-400 tracking-wider">STARKORA</span>
+          <Link href="/" className="text-xl font-black text-indigo-400 tracking-wider">
+            STARKORA
+          </Link>
           <span className="text-xs bg-indigo-500/20 text-indigo-300 font-semibold px-2 py-0.5 rounded">
             Dashboard
           </span>
         </div>
-        <div className="flex items-center gap-4 text-sm">
-          <span className="text-slate-400 hidden sm:inline">
+        <div className="flex items-center gap-3 sm:gap-4 text-sm">
+          <span className="text-slate-400 hidden md:inline text-xs">
             Logged in as <strong className="text-white">{user?.email}</strong>
           </span>
           <Link
             href="/"
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 font-semibold text-xs rounded-lg transition"
+            className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 font-semibold text-xs rounded-lg transition"
           >
-            + Generate New Site
+            + New Site
           </Link>
+          <button
+            onClick={handleLogout}
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition"
+          >
+            Log Out
+          </button>
         </div>
       </nav>
 
@@ -252,7 +265,7 @@ export default function DashboardPage() {
       <main className="max-w-6xl mx-auto px-6 py-10 space-y-8">
         {/* Navigation Tabs */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 sm:gap-6">
             <button
               onClick={() => setActiveTab("sites")}
               className={`text-sm font-bold pb-2 border-b-2 transition ${
@@ -293,7 +306,7 @@ export default function DashboardPage() {
               <div className="border border-dashed border-slate-800 rounded-2xl p-12 text-center space-y-4">
                 <h3 className="text-lg font-semibold text-slate-300">No websites in your account yet</h3>
                 <p className="text-slate-500 text-sm max-w-sm mx-auto">
-                  Use the autonomous generator to synthesize your first layout in seconds.
+                  Use the autonomous multi-page generator to synthesize your first platform in seconds.
                 </p>
                 <Link
                   href="/"
@@ -455,7 +468,7 @@ export default function DashboardPage() {
                 <div className="text-3xl">📥</div>
                 <h3 className="text-base font-semibold text-slate-300">No customer inquiries yet</h3>
                 <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  When prospects submit the contact form on your published websites, their inquiries appear here.
+                  When prospects submit the contact form on your published websites, their inquiries appear here in real-time.
                 </p>
               </div>
             ) : (

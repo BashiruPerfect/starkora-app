@@ -86,6 +86,7 @@ const fontFamilies: Record<ThemeFont, string> = {
   mono: "'JetBrains Mono', monospace",
 };
 
+// In-Sidebar Image Uploader using Client-Side Base64 (Serverless Safe)
 function ImageFieldUploader({
   value,
   onChange,
@@ -329,45 +330,59 @@ export const config: Config<ComponentProps, RootProps> = {
         ctaLabel: "Contact Us",
         ctaLink: "/contact",
       },
-      render: ({ brandName, logoUrl, ctaLabel, ctaLink }) => (
-        <header className="w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-4 px-6">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              <a href="/" className="flex items-center gap-3">
-                {logoUrl ? (
-                  <img src={logoUrl} alt={brandName} className="h-9 max-w-[160px] object-contain" />
-                ) : (
-                  <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                    <span
-                      style={{ backgroundColor: "var(--starkora-primary)" }}
-                      className="w-2.5 h-2.5 rounded-full inline-block"
-                    />
-                    {brandName}
-                  </span>
-                )}
+      render: ({ brandName, logoUrl, ctaLabel, ctaLink }) => {
+        // Smart link resolver: keeps routing consistent whether on custom domain or /live/[subdomain]
+        const resolveNavHref = (targetSlug: string) => {
+          if (typeof window !== "undefined") {
+            const parts = window.location.pathname.split("/").filter(Boolean);
+            if (parts[0] === "live" && parts[1]) {
+              return targetSlug === "/" ? `/live/${parts[1]}` : `/live/${parts[1]}/${targetSlug.replace(/^\//, "")}`;
+            }
+          }
+          return targetSlug;
+        };
+
+        return (
+          <header className="w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-4 px-6">
+            <div className="max-w-6xl mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-8">
+                <a href={resolveNavHref("/")} className="flex items-center gap-3">
+                  {logoUrl ? (
+                    <img src={logoUrl} alt={brandName} className="h-9 max-w-[160px] object-contain" />
+                  ) : (
+                    <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                      <span
+                        style={{ backgroundColor: "var(--starkora-primary)" }}
+                        className="w-2.5 h-2.5 rounded-full inline-block"
+                      />
+                      {brandName}
+                    </span>
+                  )}
+                </a>
+
+                {/* Multi-Page Navigation Menu */}
+                <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+                  <a href={resolveNavHref("/")} className="hover:text-white transition">Home</a>
+                  <a href={resolveNavHref("/about")} className="hover:text-white transition">About</a>
+                  <a href={resolveNavHref("/services")} className="hover:text-white transition">Services</a>
+                  <a href={resolveNavHref("/contact")} className="hover:text-white transition">Contact</a>
+                </nav>
+              </div>
+
+              <a
+                href={resolveNavHref(ctaLink)}
+                style={{
+                  backgroundColor: "var(--starkora-primary)",
+                  color: "var(--starkora-primary-text)",
+                }}
+                className="px-5 py-2.5 text-sm font-semibold rounded-xl transition hover:brightness-110 shadow-lg"
+              >
+                {ctaLabel}
               </a>
-
-              <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
-                <a href="/" className="hover:text-white transition">Home</a>
-                <a href="/about" className="hover:text-white transition">About</a>
-                <a href="/services" className="hover:text-white transition">Services</a>
-                <a href="/contact" className="hover:text-white transition">Contact</a>
-              </nav>
             </div>
-
-            <a
-              href={ctaLink}
-              style={{
-                backgroundColor: "var(--starkora-primary)",
-                color: "var(--starkora-primary-text)",
-              }}
-              className="px-5 py-2.5 text-sm font-semibold rounded-xl transition hover:brightness-110 shadow-lg"
-            >
-              {ctaLabel}
-            </a>
-          </div>
-        </header>
-      ),
+          </header>
+        );
+      },
     },
 
     HeroBlock: {
@@ -397,12 +412,22 @@ export const config: Config<ComponentProps, RootProps> = {
         heading: "Next-Generation Architecture & Brand Scale",
         subheading: "Built automatically with STARKORA AI engine. Engineered for conversion and edge delivery.",
         ctaText: "Get Started Now",
-        ctaLink: "#contact",
+        ctaLink: "/contact",
         imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
         theme: "gradient",
       },
       render: ({ badgeText, heading, subheading, ctaText, ctaLink, imageUrl, theme }) => {
         const isGradient = theme === "gradient";
+
+        const resolveHeroHref = (target: string) => {
+          if (typeof window !== "undefined") {
+            const parts = window.location.pathname.split("/").filter(Boolean);
+            if (parts[0] === "live" && parts[1] && target.startsWith("/")) {
+              return `/live/${parts[1]}/${target.replace(/^\//, "")}`;
+            }
+          }
+          return target;
+        };
 
         return (
           <section
@@ -447,7 +472,7 @@ export const config: Config<ComponentProps, RootProps> = {
                 </p>
                 <div>
                   <a
-                    href={ctaLink}
+                    href={resolveHeroHref(ctaLink)}
                     style={{
                       backgroundColor: "var(--starkora-primary)",
                       color: "var(--starkora-primary-text)",

@@ -1,25 +1,24 @@
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
-import TenantRenderer from "../TenantRenderer";
+import TenantRenderer from "./TenantRenderer";
 import type { Data } from "@puckeditor/core";
 import type { ComponentProps, RootProps } from "@/puck.config";
 import type { Metadata } from "next";
 
 type PageSlug = "home" | "about" | "services" | "contact";
 
-function extractPageLayout(site: any, rawSlug?: string[]): Data<ComponentProps, RootProps> | null {
+function resolveLayoutData(rawLayoutData: string, slug: string = "home"): Data<ComponentProps, RootProps> | null {
   try {
-    const parsed = JSON.parse(site.layoutData);
+    const parsed = JSON.parse(rawLayoutData);
 
-    // Resolve target slug: default to 'home'
-    const targetSlug = (!rawSlug || rawSlug.length === 0 ? "home" : rawSlug[0].toLowerCase()) as PageSlug;
-
+    // 1. Multi-page structure: Extract specific slug or fallback to home
     if (parsed.pages && typeof parsed.pages === "object") {
+      const targetSlug = slug.toLowerCase() as PageSlug;
       return parsed.pages[targetSlug] || parsed.pages["home"] || null;
     }
 
-    // Backward compatibility for single-page legacy sites
-    if (parsed.content) {
+    // 2. Legacy single-page format fallback
+    if (parsed.content && Array.isArray(parsed.content)) {
       return parsed as Data<ComponentProps, RootProps>;
     }
 
@@ -31,15 +30,18 @@ function extractPageLayout(site: any, rawSlug?: string[]): Data<ComponentProps, 
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
-  params: Promise<{ subdomain: string; slug?: string[] }>;
+  params: Promise<{ subdomain: string }>;
+  searchParams: Promise<{ page?: string }>;
 }): Promise<Metadata> {
-  const { subdomain, slug } = await params;
+  const { subdomain } = await params;
+  const { page } = await searchParams;
   const site = await db.findSiteByIdentifier(subdomain);
 
   if (!site) return { title: "Site Not Found | STARKORA" };
 
-  const layoutData = extractPageLayout(site, slug);
+  const layoutData = resolveLayoutData(site.layoutData, page || "home");
   const heroBlock = layoutData?.content?.find((b) => b.type === "HeroBlock");
   const siteTitle = layoutData?.root?.props?.title || site.name || "STARKORA Generated Site";
   const siteDescription = heroBlock?.props?.subheading || "Official website powered by STARKORA.";
@@ -64,21 +66,31 @@ export async function generateMetadata({
   };
 }
 
-export default async function LiveTenantMultiPage({
+export default async function LiveTenantPage({
   params,
+  searchParams,
 }: {
-  params: Promise<{ subdomain: string; slug?: string[] }>;
+  params: Promise<{ subdomain: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
-  const { subdomain, slug } = await params;
+  const { subdomain } = await params;
+  const { page } = await searchParams;
   const site = await db.findSiteByIdentifier(subdomain);
 
   if (!site || !site.isPublished) {
     notFound();
   }
 
-  const layoutData = extractPageLayout(site, slug);
-  if (!layoutData) {
-    notFound();
+  const layoutData = resolveLayoutData(site.layoutData, page || "home");
+  if (!layoutData || !layoutData.content) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 font-sans p-6 text-center">
+        <h2 className="text-xl font-bold text-white mb-2">No Published Content Found</h2>
+        <p className="text-sm text-slate-500">
+          Open the editor and click &quot;Publish&quot; to push your pages to the live edge.
+        </p>
+      </div>
+    );
   }
 
   const contactBlock = layoutData.content.find((b) => b.type === "ContactWhatsAppBlock");
