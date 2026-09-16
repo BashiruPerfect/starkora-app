@@ -7,14 +7,15 @@ import type { Metadata } from "next";
 
 type PageSlug = "home" | "about" | "services" | "contact";
 
-function resolveLayoutData(rawLayoutData: string, slug: string): Data<ComponentProps, RootProps> | null {
+function resolveSubPageLayout(rawLayoutData: string, slug: string): Data<ComponentProps, RootProps> | null {
   try {
     const parsed = JSON.parse(rawLayoutData);
+    const target = slug.toLowerCase() as PageSlug;
+
     if (parsed.pages && typeof parsed.pages === "object") {
-      const target = slug.toLowerCase() as PageSlug;
-      return parsed.pages[target] || parsed.pages["home"] || null;
+      return parsed.pages[target] || null;
     }
-    if (parsed.content) return parsed as Data<ComponentProps, RootProps>;
+
     return null;
   } catch {
     return null;
@@ -28,11 +29,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { subdomain, slug } = await params;
   const site = await db.findSiteByIdentifier(subdomain);
+
   if (!site) return { title: "Site Not Found | STARKORA" };
 
-  const layoutData = resolveLayoutData(site.layoutData, slug);
-  const siteTitle = layoutData?.root?.props?.title || `${slug.toUpperCase()} | ${site.name}`;
-  return { title: siteTitle };
+  const layoutData = resolveSubPageLayout(site.layoutData, slug);
+  const siteTitle = layoutData?.root?.props?.title || `${slug.toUpperCase()} \vert{}${site.name}`;
+
+  return {
+    title: siteTitle,
+    icons: site.faviconUrl ? [{ rel: "icon", url: site.faviconUrl }] : undefined,
+  };
 }
 
 export default async function LiveTenantSubPage({
@@ -43,10 +49,14 @@ export default async function LiveTenantSubPage({
   const { subdomain, slug } = await params;
   const site = await db.findSiteByIdentifier(subdomain);
 
-  if (!site || !site.isPublished) notFound();
+  if (!site || !site.isPublished) {
+    notFound();
+  }
 
-  const layoutData = resolveLayoutData(site.layoutData, slug);
-  if (!layoutData || !layoutData.content) notFound();
+  const layoutData = resolveSubPageLayout(site.layoutData, slug);
+  if (!layoutData || !layoutData.content) {
+    notFound();
+  }
 
   return <TenantRenderer data={layoutData} />;
 }
