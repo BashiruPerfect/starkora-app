@@ -86,7 +86,32 @@ const fontFamilies: Record<ThemeFont, string> = {
   mono: "'JetBrains Mono', monospace",
 };
 
-// In-Sidebar Image Uploader using Client-Side Base64 (Serverless Safe)
+// Universal Smart Link Handler
+function navigateToTarget(e: React.MouseEvent<HTMLAnchorElement>, targetSlug: string) {
+  if (typeof window === "undefined") return;
+
+  const pathname = window.location.pathname;
+
+  // 1. Inside Editor Preview Mode: switch preview page via query param
+  if (pathname.includes("/preview")) {
+    e.preventDefault();
+    const cleanSlug = targetSlug === "/" ? "home" : targetSlug.replace(/^\//, "");
+    window.location.href = `/preview?page=${cleanSlug}`;
+    return;
+  }
+
+  // 2. Inside /live/[subdomain] testing path: append sub-slug
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts[0] === "live" && parts[1]) {
+    e.preventDefault();
+    const cleanSlug = targetSlug === "/" ? "" : `/${targetSlug.replace(/^\//, "")}`;
+    window.location.href = `/live/${parts[1]}${cleanSlug}`;
+    return;
+  }
+
+  // 3. On Custom Domain (e.g. mybrand.ng): allow standard browser navigation to /about, /services, etc.
+}
+
 function ImageFieldUploader({
   value,
   onChange,
@@ -330,59 +355,75 @@ export const config: Config<ComponentProps, RootProps> = {
         ctaLabel: "Contact Us",
         ctaLink: "/contact",
       },
-      render: ({ brandName, logoUrl, ctaLabel, ctaLink }) => {
-        // Smart link resolver: keeps routing consistent whether on custom domain or /live/[subdomain]
-        const resolveNavHref = (targetSlug: string) => {
-          if (typeof window !== "undefined") {
-            const parts = window.location.pathname.split("/").filter(Boolean);
-            if (parts[0] === "live" && parts[1]) {
-              return targetSlug === "/" ? `/live/${parts[1]}` : `/live/${parts[1]}/${targetSlug.replace(/^\//, "")}`;
-            }
-          }
-          return targetSlug;
-        };
-
-        return (
-          <header className="w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-4 px-6">
-            <div className="max-w-6xl mx-auto flex items-center justify-between">
-              <div className="flex items-center gap-8">
-                <a href={resolveNavHref("/")} className="flex items-center gap-3">
-                  {logoUrl ? (
-                    <img src={logoUrl} alt={brandName} className="h-9 max-w-[160px] object-contain" />
-                  ) : (
-                    <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                      <span
-                        style={{ backgroundColor: "var(--starkora-primary)" }}
-                        className="w-2.5 h-2.5 rounded-full inline-block"
-                      />
-                      {brandName}
-                    </span>
-                  )}
-                </a>
-
-                {/* Multi-Page Navigation Menu */}
-                <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
-                  <a href={resolveNavHref("/")} className="hover:text-white transition">Home</a>
-                  <a href={resolveNavHref("/about")} className="hover:text-white transition">About</a>
-                  <a href={resolveNavHref("/services")} className="hover:text-white transition">Services</a>
-                  <a href={resolveNavHref("/contact")} className="hover:text-white transition">Contact</a>
-                </nav>
-              </div>
-
+      render: ({ brandName, logoUrl, ctaLabel, ctaLink }) => (
+        <header className="w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-4 px-6">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-8">
               <a
-                href={resolveNavHref(ctaLink)}
-                style={{
-                  backgroundColor: "var(--starkora-primary)",
-                  color: "var(--starkora-primary-text)",
-                }}
-                className="px-5 py-2.5 text-sm font-semibold rounded-xl transition hover:brightness-110 shadow-lg"
+                href="/"
+                onClick={(e) => navigateToTarget(e, "/")}
+                className="flex items-center gap-3"
               >
-                {ctaLabel}
+                {logoUrl ? (
+                  <img src={logoUrl} alt={brandName} className="h-9 max-w-[160px] object-contain" />
+                ) : (
+                  <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    <span
+                      style={{ backgroundColor: "var(--starkora-primary)" }}
+                      className="w-2.5 h-2.5 rounded-full inline-block"
+                    />
+                    {brandName}
+                  </span>
+                )}
               </a>
+
+              {/* Multi-Page Navigation Menu with Smart Interceptors */}
+              <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+                <a
+                  href="/"
+                  onClick={(e) => navigateToTarget(e, "/")}
+                  className="hover:text-white transition cursor-pointer"
+                >
+                  Home
+                </a>
+                <a
+                  href="/about"
+                  onClick={(e) => navigateToTarget(e, "/about")}
+                  className="hover:text-white transition cursor-pointer"
+                >
+                  About
+                </a>
+                <a
+                  href="/services"
+                  onClick={(e) => navigateToTarget(e, "/services")}
+                  className="hover:text-white transition cursor-pointer"
+                >
+                  Services
+                </a>
+                <a
+                  href="/contact"
+                  onClick={(e) => navigateToTarget(e, "/contact")}
+                  className="hover:text-white transition cursor-pointer"
+                >
+                  Contact
+                </a>
+              </nav>
             </div>
-          </header>
-        );
-      },
+
+            <a
+              href={ctaLink}
+              onClick={(e) => navigateToTarget(e, ctaLink)}
+              style={{
+                backgroundColor: "var(--starkora-primary)",
+                color: "var(--starkora-primary-text)",
+              }}
+              className="px-5 py-2.5 text-sm font-semibold rounded-xl transition hover:brightness-110 shadow-lg cursor-pointer"
+            >
+              {ctaLabel}
+            </a>
+          </div>
+        </header>
+      ),
     },
 
     HeroBlock: {
@@ -418,16 +459,6 @@ export const config: Config<ComponentProps, RootProps> = {
       },
       render: ({ badgeText, heading, subheading, ctaText, ctaLink, imageUrl, theme }) => {
         const isGradient = theme === "gradient";
-
-        const resolveHeroHref = (target: string) => {
-          if (typeof window !== "undefined") {
-            const parts = window.location.pathname.split("/").filter(Boolean);
-            if (parts[0] === "live" && parts[1] && target.startsWith("/")) {
-              return `/live/${parts[1]}/${target.replace(/^\//, "")}`;
-            }
-          }
-          return target;
-        };
 
         return (
           <section
@@ -472,13 +503,14 @@ export const config: Config<ComponentProps, RootProps> = {
                 </p>
                 <div>
                   <a
-                    href={resolveHeroHref(ctaLink)}
+                    href={ctaLink}
+                    onClick={(e) => navigateToTarget(e, ctaLink)}
                     style={{
                       backgroundColor: "var(--starkora-primary)",
                       color: "var(--starkora-primary-text)",
                       boxShadow: "0 10px 25px -5px var(--starkora-glow)",
                     }}
-                    className="inline-block px-8 py-4 rounded-xl font-bold shadow-xl transition hover:brightness-110 text-sm"
+                    className="inline-block px-8 py-4 rounded-xl font-bold shadow-xl transition hover:brightness-110 text-sm cursor-pointer"
                   >
                     {ctaText}
                   </a>

@@ -4,16 +4,24 @@ import { Suspense, useEffect, useState } from "react";
 import { Render, type Data } from "@puckeditor/core";
 import { config, type ComponentProps, type RootProps } from "../../puck.config";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 type PageSlug = "home" | "about" | "services" | "contact";
 
 function PreviewContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const pageParam = (searchParams.get("page") as PageSlug) || "home";
 
   const [activePage, setActivePage] = useState<PageSlug>(pageParam);
   const [siteMap, setSiteMap] = useState<Record<string, Data<ComponentProps, RootProps>> | null>(null);
+
+  // Sync state whenever the ?page= query parameter changes
+  useEffect(() => {
+    if (pageParam) {
+      setActivePage(pageParam);
+    }
+  }, [pageParam]);
 
   useEffect(() => {
     const raw = localStorage.getItem("starkora_active_site");
@@ -21,7 +29,7 @@ function PreviewContent() {
       try {
         const parsed = JSON.parse(raw);
 
-        // Multi-page format
+        // Multi-page layout
         if (parsed.pages && typeof parsed.pages === "object") {
           setSiteMap(parsed.pages);
         } else if (parsed.content) {
@@ -33,6 +41,11 @@ function PreviewContent() {
       }
     }
   }, []);
+
+  const switchPage = (slug: PageSlug) => {
+    setActivePage(slug);
+    router.replace(`/preview?page=${slug}`);
+  };
 
   if (!siteMap) {
     return (
@@ -55,7 +68,7 @@ function PreviewContent() {
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center font-sans text-slate-400 space-y-4">
         <p className="text-lg">This page has no content yet.</p>
         <button
-          onClick={() => setActivePage("home")}
+          onClick={() => switchPage("home")}
           className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-semibold"
         >
           Return to Home Preview
@@ -66,7 +79,7 @@ function PreviewContent() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Floating Preview Controller Bar */}
+      {/* Top Floating Preview Controller Bar */}
       <div className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur border-b border-slate-800 px-6 py-2.5 flex items-center justify-between text-xs font-sans">
         <div className="flex items-center gap-3">
           <span className="font-extrabold text-indigo-400 tracking-wider">PREVIEW MODE</span>
@@ -75,7 +88,7 @@ function PreviewContent() {
             {(["home", "about", "services", "contact"] as PageSlug[]).map((slug) => (
               <button
                 key={slug}
-                onClick={() => setActivePage(slug)}
+                onClick={() => switchPage(slug)}
                 className={`px-3 py-1 rounded-md font-semibold capitalize transition ${
                   activePage === slug
                     ? "bg-indigo-600 text-white shadow"
