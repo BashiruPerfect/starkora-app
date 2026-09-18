@@ -5,7 +5,7 @@ import { Puck, type Data } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { config, type ComponentProps, type RootProps } from "../../puck.config";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 type PageSlug = "home" | "about" | "services" | "contact";
 
@@ -198,6 +198,7 @@ function normalizeToMultiPage(raw: any): MultiPageSiteData {
 }
 
 function EditorContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const siteId = searchParams.get("siteId");
 
@@ -258,11 +259,55 @@ function EditorContent() {
     init();
   }, [siteId]);
 
+  // Seamless Upgrade Handler: routes directly to /billing with verified siteId
+  const handleUpgradeToPro = async () => {
+    if (currentSiteId) {
+      router.push(`/billing?siteId=${currentSiteId}`);
+      return;
+    }
+
+    // If site has not been published/saved to DB yet
+    if (!user) {
+      alert("Please log in or create an account first so your website can be linked to your subscription.");
+      router.push("/login");
+      return;
+    }
+
+    try {
+      const updatedMultiPage = multiPage;
+      const res = await fetch("/api/sites/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          siteId: currentSiteId,
+          name: updatedMultiPage.pages.home.root?.props?.title?.replace(" | Home", "") || "My Website",
+          layoutData: updatedMultiPage,
+        }),
+      });
+
+      if (res.ok) {
+        const payload = await res.json();
+        if (payload.site?.id) {
+          setCurrentSiteId(payload.site.id);
+          router.push(`/billing?siteId=${payload.site.id}`);
+          return;
+        }
+      }
+    } catch {
+      // fallback
+    }
+
+    router.push("/dashboard");
+  };
+
   const handlePageChange = (newPage: PageSlug) => {
     if (!isProUser && newPage !== "home") {
-      alert(
-        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts can only edit the main landing page. Upgrade to the Pro Plan ($10/mo) to unlock and edit dedicated About, Services, and Contact pages."
+      const proceed = confirm(
+        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts are restricted to editing the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock dedicated About, Services, and Contact pages?"
       );
+      if (proceed) {
+        handleUpgradeToPro();
+      }
       return;
     }
 
@@ -399,12 +444,12 @@ function EditorContent() {
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700">
                   Free Plan (10 Leads/mo)
                 </span>
-                <Link
-                  href="/dashboard"
-                  className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 underline"
+                <button
+                  onClick={handleUpgradeToPro}
+                  className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 underline cursor-pointer"
                 >
                   Upgrade to Pro ↗
-                </Link>
+                </button>
               </>
             )}
           </div>
