@@ -187,7 +187,6 @@ function normalizeToMultiPage(raw: any): MultiPageSiteData {
   if (raw?.pages && typeof raw.pages === "object") {
     return raw as MultiPageSiteData;
   }
-  // Backward compatibility: If stored as a single-page Puck object
   return {
     pages: {
       home: raw?.content ? raw : defaultMultiPageData.pages.home,
@@ -260,6 +259,13 @@ function EditorContent() {
   }, [siteId]);
 
   const handlePageChange = (newPage: PageSlug) => {
+    if (!isProUser && newPage !== "home") {
+      alert(
+        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts can only edit the main landing page. Upgrade to the Pro Plan ($10/mo) to unlock and edit dedicated About, Services, and Contact pages."
+      );
+      return;
+    }
+
     setActivePage(newPage);
     setEditorKey((k) => k + 1);
   };
@@ -360,7 +366,7 @@ function EditorContent() {
           </Link>
           <span className="text-slate-600">|</span>
 
-          {/* PAGE SELECTOR DROPDOWN */}
+          {/* PAGE SELECTOR DROPDOWN WITH PRO LOCKS */}
           <div className="flex items-center gap-2">
             <span className="text-xs uppercase font-bold text-slate-400">Editing:</span>
             <select
@@ -369,9 +375,15 @@ function EditorContent() {
               className="bg-slate-950 border border-slate-700 text-white rounded-lg px-3 py-1 text-xs font-semibold focus:outline-none focus:border-indigo-500 cursor-pointer"
             >
               <option value="home">Home Page (/)</option>
-              <option value="about">About Us (/about)</option>
-              <option value="services">Services & Pricing (/services)</option>
-              <option value="contact">Contact (/contact)</option>
+              <option value="about" disabled={!isProUser}>
+                {isProUser ? "About Us (/about)" : "About Us (/about) 🔒 Pro Only"}
+              </option>
+              <option value="services" disabled={!isProUser}>
+                {isProUser ? "Services & Pricing (/services)" : "Services & Pricing (/services) 🔒 Pro Only"}
+              </option>
+              <option value="contact" disabled={!isProUser}>
+                {isProUser ? "Contact (/contact)" : "Contact (/contact) 🔒 Pro Only"}
+              </option>
             </select>
           </div>
 
