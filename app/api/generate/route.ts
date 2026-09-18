@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openai = process.env.OPENAI_API_KEY
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
+const rawKey = (process.env.OPENAI_API_KEY || "").replace(/["']/g, "").trim();
+const openai = rawKey ? new OpenAI({ apiKey: rawKey }) : null;
 
-function buildPageData(businessName: string, businessType: string, location: string, description: string) {
+function buildFallbackPageData(businessName: string, businessType: string, location: string, description: string) {
   const brandClean = businessName.toLowerCase().replace(/[^a-z0-9]/g, "");
 
   return {
@@ -69,9 +68,8 @@ function buildPageData(businessName: string, businessType: string, location: str
             props: { id: "footer-home", copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.` }
           }
         ],
-        root: { props: { title: `${businessName} | Official Website`, palette: "indigo", font: "inter" } }
+        root: { props: { title: `${businessName} | Home`, palette: "indigo", font: "inter" } }
       },
-
       about: {
         content: [
           {
@@ -82,7 +80,7 @@ function buildPageData(businessName: string, businessType: string, location: str
             type: "HeroBlock",
             props: {
               id: "hero-about",
-              badgeText: "OUR STORY & VALUES",
+              badgeText: "OUR STORY",
               heading: `About ${businessName}`,
               subheading: `Dedicated to delivering exceptional ${businessType} solutions with integrity, precision, and customer-first focus.`,
               ctaText: "View Our Services",
@@ -111,7 +109,6 @@ function buildPageData(businessName: string, businessType: string, location: str
         ],
         root: { props: { title: `About Us | ${businessName}`, palette: "indigo", font: "inter" } }
       },
-
       services: {
         content: [
           {
@@ -122,7 +119,7 @@ function buildPageData(businessName: string, businessType: string, location: str
             type: "HeroBlock",
             props: {
               id: "hero-services",
-              badgeText: "PACKAGES & SOLUTIONS",
+              badgeText: "PACKAGES",
               heading: "Our Service Offerings",
               subheading: `Comprehensive ${businessType} packages engineered to deliver immediate value and long-term durability.`,
               ctaText: "Book Service",
@@ -160,9 +157,8 @@ function buildPageData(businessName: string, businessType: string, location: str
             props: { id: "footer-services", copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.` }
           }
         ],
-        root: { props: { title: `Services & Pricing | ${businessName}`, palette: "indigo", font: "inter" } }
+        root: { props: { title: `Services | ${businessName}`, palette: "indigo", font: "inter" } }
       },
-
       contact: {
         content: [
           {
@@ -213,8 +209,66 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Business name and type are required." }, { status: 400 });
     }
 
-    const multiPageData = buildPageData(businessName, businessType, location, description);
-    return NextResponse.json({ siteData: multiPageData });
+    // 1. Live OpenAI Generation if Key Is Configured
+    if (openai) {
+      try {
+        const prompt = `
+You are an elite web architect and conversion copywriter for STARKORA.
+Create a complete 4-page website layout for this business:
+- Business Name: "${businessName}"
+- Industry / Type: "${businessType}"
+- Location: "${location || "Nigeria"}"
+- Context / Description: "${description || "High-growth commercial business"}"
+
+Allowed Block Types:
+- NavbarBlock (props: id, brandName, ctaLabel, ctaLink)
+- HeroBlock (props: id, badgeText, heading, subheading, ctaText, ctaLink, imageUrl, theme ["light"|"dark"|"gradient"])
+- FeatureGridBlock (props: id, sectionBadge, sectionTitle, features [{ title, description }])
+- PricingBlock (props: id, sectionTitle, sectionSubtitle, plans [{ name, price, features (newline separated), isPopular, ctaText }])
+- TestimonialBlock (props: id, quote, author, role, company)
+- ContactWhatsAppBlock (props: id, title, subtitle, phoneNumber, whatsappMessage, email, location)
+- FooterBlock (props: id, copyrightText)
+
+Root props for each page:
+- title: string
+- palette: "indigo" | "emerald" | "gold" | "crimson" | "minimal"
+- font: "inter" | "jakarta" | "playfair" | "cinzel" | "space" | "mono"
+
+Required Output Structure:
+{
+  "pages": {
+    "home": { "content": [...], "root": { "props": { ... } } },
+    "about": { "content": [...], "root": { "props": { ... } } },
+    "services": { "content": [...], "root": { "props": { ... } } },
+    "contact": { "content": [...], "root": { "props": { ... } } }
+  }
+}
+
+Output strictly valid JSON matching this schema with high-converting, tailored Nigerian/regional business copy.
+`;
+
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: "You output strictly valid JSON conforming to the layout schema." },
+            { role: "user", content: prompt },
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.7,
+        });
+
+        const generatedData = JSON.parse(completion.choices[0].message.content || "{}");
+        if (generatedData.pages && generatedData.pages.home) {
+          return NextResponse.json({ siteData: generatedData });
+        }
+      } catch (aiError) {
+        console.warn("OpenAI generation failed, falling back to deterministic template:", aiError);
+      }
+    }
+
+    // 2. Fallback Template
+    const fallbackData = buildFallbackPageData(businessName, businessType, location, description);
+    return NextResponse.json({ siteData: fallbackData });
   } catch (error: any) {
     return NextResponse.json({ error: error?.message || "Generation failed" }, { status: 500 });
   }
