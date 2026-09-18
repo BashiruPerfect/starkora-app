@@ -412,4 +412,16 @@ export const db = {
     `;
     return rows as LeadRecord[];
   },
+
+  async countMonthlyLeadsBySiteId(siteId: string): Promise<number> {
+    await ensureTables();
+    const sql = getSql();
+    const rows = await sql`
+      SELECT COUNT(*)::int as count
+      FROM leads
+      WHERE site_id = ${siteId}
+        AND created_at >= date_trunc('month', NOW());
+    `;
+    return rows[0]?.count || 0;
+  },
 };

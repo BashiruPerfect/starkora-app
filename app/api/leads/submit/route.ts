@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     let site = null;
 
-    // 1. Direct identifier lookup (if not the platform root host)
+    // 1. Direct identifier lookup (if not the root platform hostname)
     if (
       siteIdentifier &&
       siteIdentifier !== "starkora-app.vercel.app" &&
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       site = await db.findSiteByIdentifier(siteIdentifier);
     }
 
-    // 2. Fallback: If submitted from editor/preview on starkora-app.vercel.app, resolve via user session
+    // 2. Fallback: If submitted from editor/preview on starkora-app.vercel.app, resolve via session
     if (!site) {
       const session = await getAuthenticatedUser();
       if (session) {
@@ -46,6 +46,20 @@ export async function POST(req: Request) {
         { error: "Could not associate lead with an active website." },
         { status: 404 }
       );
+    }
+
+    // TIER ENFORCEMENT: Free tier is capped at 10 leads per calendar month
+    if (site.subscriptionStatus !== "active") {
+      const currentMonthlyLeads = await db.countMonthlyLeadsBySiteId(site.id);
+      if (currentMonthlyLeads >= 10) {
+        return NextResponse.json(
+          {
+            error:
+              "This business has reached its monthly inquiry limit on the Free Plan. Please reach out to them directly via WhatsApp or phone.",
+          },
+          { status: 429 }
+        );
+      }
     }
 
     const lead = await db.createLead({

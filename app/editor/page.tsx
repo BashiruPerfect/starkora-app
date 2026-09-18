@@ -208,6 +208,7 @@ function EditorContent() {
   const [currentSiteId, setCurrentSiteId] = useState<string | null>(siteId);
   const [isLoaded, setIsLoaded] = useState(false);
   const [user, setUser] = useState<{ email: string; name: string } | null>(null);
+  const [isProUser, setIsProUser] = useState(false);
 
   const [aiPrompt, setAiPrompt] = useState("");
   const [isRefining, setIsRefining] = useState(false);
@@ -230,6 +231,7 @@ function EditorContent() {
               const normalized = normalizeToMultiPage(parsed);
               setMultiPage(normalized);
               setCurrentSiteId(siteJson.site.id);
+              setIsProUser(siteJson.site.subscriptionStatus === "active");
               setEditorKey((k) => k + 1);
               setIsLoaded(true);
               return;
@@ -263,7 +265,6 @@ function EditorContent() {
   };
 
   const handleSave = async (savedData: Data<ComponentProps, RootProps>) => {
-    // Update active page inside multi-page state
     const updatedMultiPage: MultiPageSiteData = {
       pages: {
         ...multiPage.pages,
@@ -348,7 +349,7 @@ function EditorContent() {
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden relative">
-      {/* Top Header with Multi-Page Navigation Switcher */}
+      {/* Top Header with Multi-Page Switcher & Plan Status */}
       <div className="bg-slate-900 border-b border-slate-800 px-6 py-2.5 flex items-center justify-between z-50 text-sm">
         <div className="flex items-center gap-4">
           <Link
@@ -372,6 +373,28 @@ function EditorContent() {
               <option value="services">Services & Pricing (/services)</option>
               <option value="contact">Contact (/contact)</option>
             </select>
+          </div>
+
+          {/* SUBSCRIPTION TIER STATUS BADGE */}
+          <span className="text-slate-600 hidden sm:inline">|</span>
+          <div className="hidden sm:flex items-center gap-1.5">
+            {isProUser ? (
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                Pro Plan (Active)
+              </span>
+            ) : (
+              <>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700">
+                  Free Plan (10 Leads/mo)
+                </span>
+                <Link
+                  href="/dashboard"
+                  className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 underline"
+                >
+                  Upgrade to Pro ↗
+                </Link>
+              </>
+            )}
           </div>
         </div>
 
