@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
-// Grant up to 60 seconds execution time for image generation
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
@@ -28,19 +27,26 @@ export async function POST(req: Request) {
 
     const optimizedPrompt = `Professional commercial web photography for ${businessName || "a modern business"}, a ${businessType || "company"}. Context: ${prompt}. Photorealistic, elegant lighting, clean modern aesthetic, 8k resolution, no text, no watermarks.`;
 
+    // Uses OpenAI's gpt-image-1-mini model
     const response = await openai.images.generate({
-      model: "dall-e-3",
+      model: "gpt-image-1-mini",
       prompt: optimizedPrompt,
       n: 1,
       size: "1024x1024",
-      quality: "standard",
+      quality: "medium",
     });
 
-    const generatedUrl = response.data?.[0]?.url;
+    const item = response.data?.[0];
+
+    // Handles both Base64 payloads and direct URL responses
+    let generatedUrl = item?.url;
+    if (item?.b64_json) {
+      generatedUrl = `data:image/png;base64,${item.b64_json}`;
+    }
 
     if (!generatedUrl) {
       return NextResponse.json(
-        { error: "OpenAI did not return an image URL." },
+        { error: "OpenAI did not return image data." },
         { status: 500 }
       );
     }
