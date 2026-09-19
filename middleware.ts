@@ -18,24 +18,32 @@ export default async function middleware(req: NextRequest) {
   const hostname = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
   const host = hostname.split(":")[0].toLowerCase();
 
-  // 1. Root and internal platform routes: Let them pass directly
+  // 1. Root platform hosts: serve main app directly
   const isInternalHost =
     host === "localhost" ||
     host === "127.0.0.1" ||
+    host === "starkora.website" ||
+    host === "www.starkora.website" ||
     host === "starkora.com" ||
-    host === "app.starkora.com" ||
+    host === "www.starkora.com" ||
     host.endsWith(".vercel.app");
 
   if (isInternalHost) {
     return NextResponse.next();
   }
 
-  // 2. Subdomain extraction for starkora.com (e.g., clientbrand.starkora.com)
+  // 2. Tenant Subdomains under your primary domain (e.g., brand.starkora.website)
+  if (host.endsWith(".starkora.website")) {
+    const subdomain = host.replace(".starkora.website", "");
+    return NextResponse.rewrite(new URL(`/live/${subdomain}${url.pathname}`, req.url));
+  }
+
+  // Fallback for legacy .com if ever pointed
   if (host.endsWith(".starkora.com")) {
     const subdomain = host.replace(".starkora.com", "");
     return NextResponse.rewrite(new URL(`/live/${subdomain}${url.pathname}`, req.url));
   }
 
-  // 3. Custom Domains (e.g., mybrand.ng or clientbrand.com)
+  // 3. Pro Tier Custom Domains (e.g., clientbrand.ng or clientbrand.com)
   return NextResponse.rewrite(new URL(`/live/${host}${url.pathname}`, req.url));
 }
