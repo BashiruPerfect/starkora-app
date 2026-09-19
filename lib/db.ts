@@ -56,7 +56,6 @@ function getSql() {
   return neon(connectionString);
 }
 
-// Automatically provisions the cloud tables if they do not exist yet
 let tablesInitialized = false;
 async function ensureTables() {
   if (tablesInitialized) return;
@@ -348,11 +347,20 @@ export const db = {
     }
 
     const id = "site_" + Math.random().toString(36).substring(2, 11);
-    const cleanSubdomain = `${name.toLowerCase().replace(/[^a-z0-9]/g, "")}-${Date.now().toString().slice(-4)}`;
+
+    // Clean subdomain: strips "welcome to", "the", and unwanted punctuation
+    const cleanSubdomain = name
+      .toLowerCase()
+      .replace(/^welcome\s+to\s+/i, "")
+      .replace(/^the\s+/i, "")
+      .replace(/[^a-z0-9]/g, "")
+      .slice(0, 20);
+
+    const finalSubdomain = `${cleanSubdomain || "site"}-${Date.now().toString().slice(-4)}`;
 
     const rows = await sql`
       INSERT INTO sites (id, user_id, name, subdomain, layout_data, is_published)
-      VALUES (${id}, ${userId}, ${name}, ${cleanSubdomain}, ${layoutData}, TRUE)
+      VALUES (${id}, ${userId}, ${name}, ${finalSubdomain}, ${layoutData}, TRUE)
       RETURNING 
         id, user_id as "userId", name, subdomain, custom_domain as "customDomain",
         domain_verified as "domainVerified", meta_pixel_id as "metaPixelId",

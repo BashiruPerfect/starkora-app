@@ -86,7 +86,6 @@ const fontFamilies: Record<ThemeFont, string> = {
   mono: "'JetBrains Mono', monospace",
 };
 
-// Navigation interceptor for preview mode, /live/[subdomain], and custom apex domains
 function navigateToTarget(e: React.MouseEvent<HTMLAnchorElement>, targetSlug: string) {
   if (typeof window === "undefined") return;
 
@@ -108,7 +107,6 @@ function navigateToTarget(e: React.MouseEvent<HTMLAnchorElement>, targetSlug: st
   }
 }
 
-// In-Sidebar Image Manager with File Upload and On-Demand AI Generation
 function ImageFieldManager({
   value,
   onChange,
@@ -342,10 +340,12 @@ export interface BusinessContext {
   location?: string;
 }
 
-// Dynamic Config Factory: Injects contextual defaults for newly dragged blocks
 export function createConfig(context?: BusinessContext): Config<ComponentProps, RootProps> {
-  const name = context?.businessName || "STARKORA";
-  const type = context?.businessType || "Enterprise Solutions";
+  const rawName = context?.businessName || "STARKORA";
+  const name = rawName.replace(/^welcome\s+to\s+/i, "").replace(/^the\s+/i, "").trim() || "STARKORA";
+
+  const rawType = context?.businessType || "Culinary & Dining Services";
+  const type = rawType.replace(/^welcome\s+to\s+/i, "").trim();
   const loc = context?.location || "Lagos, Nigeria";
 
   return {
@@ -502,9 +502,9 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
         },
         defaultProps: {
           badgeText: "PREMIER SERVICE",
-          heading: `${name}: Professional ${type}`,
-          subheading: `Delivering industry-leading ${type} solutions across ${loc} with proven expertise, rapid delivery, and complete dependability.`,
-          ctaText: "Explore Packages",
+          heading: `${name}`,
+          subheading: `Exceptional ${type} crafted with passion, quality, and dedication to our clients across ${loc}.`,
+          ctaText: "Explore Offerings",
           ctaLink: "/services",
           imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
           theme: "gradient",
@@ -699,8 +699,8 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           },
         },
         defaultProps: {
-          sectionTitle: `${type} Packages`,
-          sectionSubtitle: "Transparent, value-driven packages designed for your requirements.",
+          sectionTitle: "Curated Packages",
+          sectionSubtitle: "Simple, transparent pricing tailored to your needs.",
           plans: [
             {
               name: "Standard Package",
@@ -844,7 +844,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           title: `Connect With ${name}`,
           subtitle: `Reach out via WhatsApp or submit your inquiry below for prompt response.`,
           phoneNumber: "+2348012345678",
-          whatsappMessage: `Hello ${name}, I would like to inquire about your ${type}.`,
+          whatsappMessage: `Hello ${name}, I would like to inquire about your services.`,
           email: `contact@${name.toLowerCase().replace(/[^a-z0-9]/g, "") || "business"}.com`,
           location: loc,
         },
@@ -1022,5 +1022,4 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
   };
 }
 
-// Fallback export for server components
 export const config = createConfig();

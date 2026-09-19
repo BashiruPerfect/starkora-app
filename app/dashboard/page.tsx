@@ -44,21 +44,17 @@ export default function DashboardPage() {
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Active View Tab: 'sites' or 'leads'
   const [activeTab, setActiveTab] = useState<"sites" | "leads">("sites");
 
-  // Custom Domain Modal State
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [domainInput, setDomainInput] = useState("");
   const [savingDomain, setSavingDomain] = useState(false);
   const [domainSuccess, setDomainSuccess] = useState(false);
 
-  // Live Domain Availability Search State
   const [searchQuery, setSearchQuery] = useState("");
   const [searchingDomain, setSearchingDomain] = useState(false);
   const [searchResults, setSearchResults] = useState<DomainSearchResult[]>([]);
 
-  // Site Settings & Marketing Pixels Modal State
   const [settingsSite, setSettingsSite] = useState<Site | null>(null);
   const [settingsForm, setSettingsForm] = useState({
     name: "",
@@ -68,7 +64,6 @@ export default function DashboardPage() {
   });
   const [savingSettings, setSavingSettings] = useState(false);
 
-  // DNS Verification State Tracker
   const [verifyingDnsId, setVerifyingDnsId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -108,7 +103,6 @@ export default function DashboardPage() {
     router.push("/login");
   };
 
-  // Real-time DNS Propagation Checker
   const handleCheckDns = async (siteId: string, domain: string) => {
     setVerifyingDnsId(siteId);
     try {
@@ -127,7 +121,7 @@ export default function DashboardPage() {
         );
       }
     } catch {
-      alert("Failed to query DNS servers. Please verify the domain is registered and pointed.");
+      alert("Failed to query DNS servers. Please verify domain registration and propagation.");
     } finally {
       setVerifyingDnsId(null);
     }
@@ -232,7 +226,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans">
-      {/* Top Navbar with Authentication & Logout */}
       <nav className="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-6 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <Link href="/" className="text-xl font-black text-indigo-400 tracking-wider">
@@ -261,9 +254,7 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      {/* Main Content Area */}
       <main className="max-w-6xl mx-auto px-6 py-10 space-y-8">
-        {/* Navigation Tabs */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div className="flex items-center gap-4 sm:gap-6">
             <button
@@ -299,7 +290,6 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* TAB 1: WEBSITES VIEW */}
         {activeTab === "sites" && (
           <div>
             {sites.length === 0 ? (
@@ -351,16 +341,24 @@ export default function DashboardPage() {
 
                       <h2 className="text-xl font-bold tracking-tight line-clamp-1">{site.name}</h2>
 
-                      {/* Hostname & Live DNS Verification Status */}
+                      {/* Live Subdomain / Custom Domain Links */}
                       <div className="space-y-1">
                         <p className="text-xs font-mono text-slate-400">
-                          <Link
-                            href={`/live/${site.customDomain || site.subdomain}`}
+                          <a
+                            href={
+                              site.customDomain
+                                ? `https://${site.customDomain}`
+                                : `https://${site.subdomain}.starkora.website`
+                            }
                             target="_blank"
+                            rel="noopener noreferrer"
                             className="hover:text-indigo-300 underline"
                           >
-                            {site.customDomain ? `🌐 ${site.customDomain}` : `${site.subdomain}.starkora.com`} ↗
-                          </Link>
+                            {site.customDomain
+                              ? `🌐 ${site.customDomain}`
+                              : `${site.subdomain}.starkora.website`}{" "}
+                            ↗
+                          </a>
                         </p>
 
                         {site.customDomain && (
@@ -411,13 +409,18 @@ export default function DashboardPage() {
                         >
                           Edit Canvas ✏️
                         </Link>
-                        <Link
-                          href={`/live/${site.customDomain || site.subdomain}`}
+                        <a
+                          href={
+                            site.customDomain
+                              ? `https://${site.customDomain}`
+                              : `https://${site.subdomain}.starkora.website`
+                          }
                           target="_blank"
+                          rel="noopener noreferrer"
                           className="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-center font-semibold text-xs text-slate-300 rounded-lg border border-slate-700 transition"
                         >
                           View Live ↗
-                        </Link>
+                        </a>
                       </div>
 
                       <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
@@ -460,7 +463,6 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* TAB 2: INBOX / LEADS VIEW */}
         {activeTab === "leads" && (
           <div className="space-y-4">
             {leads.length === 0 ? (
@@ -519,7 +521,6 @@ export default function DashboardPage() {
         )}
       </main>
 
-      {/* Site Settings & Marketing Pixels Modal */}
       {settingsSite && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl relative">
@@ -609,7 +610,6 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Custom Domain Manager & Availability Search Modal */}
       {selectedSite && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
@@ -722,7 +722,7 @@ export default function DashboardPage() {
                   <div className="bg-slate-950 p-2.5 rounded font-mono text-[11px] text-slate-400 space-y-0.5">
                     <div>Type: <strong>CNAME</strong></div>
                     <div>Host: <strong>@</strong> or <strong>www</strong></div>
-                    <div>Value: <strong>fallback.starkora.com</strong></div>
+                    <div>Value: <strong>fallback.starkora.website</strong></div>
                   </div>
                 </div>
               </div>

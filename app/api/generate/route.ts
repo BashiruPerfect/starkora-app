@@ -13,20 +13,23 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
         content: [
           {
             type: "NavbarBlock",
-            props: { id: "nav-home", brandName: businessName, ctaLabel: "Contact Us", ctaLink: "/contact" }
+            props: { id: "nav-home", brandName: businessName, ctaLabel: "Contact Us", ctaLink: "/contact" },
           },
           {
             type: "HeroBlock",
             props: {
               id: "hero-home",
               badgeText: "PREMIER SERVICE",
-              heading: `${businessName}: Modern ${businessType}`,
-              subheading: description || `Leading the standard in ${businessType} across ${location || "Nigeria"} with fast turnaround and verified excellence.`,
+              heading: `${businessName}: Professional ${businessType}`,
+              subheading:
+                description ||
+                `Leading the standard in ${businessType} across ${location || "Nigeria"} with fast turnaround and verified excellence.`,
               ctaText: "Explore Services",
               ctaLink: "/services",
-              imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
-              theme: "gradient"
-            }
+              imageUrl:
+                "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
+              theme: "gradient",
+            },
           },
           {
             type: "FeatureGridBlock",
@@ -35,11 +38,20 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
               sectionBadge: "WHY CHOOSE US",
               sectionTitle: "Built For Measurable Results",
               features: [
-                { title: "Rapid Execution", description: `Prompt turnaround tailored to client needs across ${location || "our region"}.` },
-                { title: "Verified Reliability", description: "Standard operating quality guaranteed across every customer engagement." },
-                { title: "Direct Contact", description: "Seamless WhatsApp and phone availability for transparent communication." }
-              ]
-            }
+                {
+                  title: "Rapid Execution",
+                  description: `Prompt turnaround tailored to client needs across ${location || "our region"}.`,
+                },
+                {
+                  title: "Verified Reliability",
+                  description: "Standard operating quality guaranteed across every customer engagement.",
+                },
+                {
+                  title: "Direct Contact",
+                  description: "Seamless WhatsApp and phone availability for transparent communication.",
+                },
+              ],
+            },
           },
           {
             type: "TestimonialBlock",
@@ -48,8 +60,8 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
               quote: `Working with ${businessName} completely transformed our operational speed. Outstanding responsiveness and attention to detail.`,
               author: "Alhaji Ibrahim Danjuma",
               role: "Managing Director",
-              company: "Danjuma Holdings"
-            }
+              company: "Danjuma Holdings",
+            },
           },
           {
             type: "ContactWhatsAppBlock",
@@ -60,21 +72,24 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
               phoneNumber: "+2348012345678",
               whatsappMessage: `Hello ${businessName}, I would like to inquire about your services.`,
               email: `info@${brandClean || "business"}.com`,
-              location: location || "Lagos, Nigeria"
-            }
+              location: location || "Lagos, Nigeria",
+            },
           },
           {
             type: "FooterBlock",
-            props: { id: "footer-home", copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.` }
-          }
+            props: {
+              id: "footer-home",
+              copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.`,
+            },
+          },
         ],
-        root: { props: { title: `${businessName} | Home`, palette: "indigo", font: "inter" } }
+        root: { props: { title: `${businessName} | Home`, palette: "indigo", font: "inter" } },
       },
       about: {
         content: [
           {
             type: "NavbarBlock",
-            props: { id: "nav-about", brandName: businessName, ctaLabel: "Work With Us", ctaLink: "/contact" }
+            props: { id: "nav-about", brandName: businessName, ctaLabel: "Work With Us", ctaLink: "/contact" },
           },
           {
             type: "HeroBlock",
@@ -85,9 +100,10 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
               subheading: `Dedicated to delivering exceptional ${businessType} solutions with integrity, precision, and customer-first focus.`,
               ctaText: "View Our Services",
               ctaLink: "/services",
-              imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80",
-              theme: "dark"
-            }
+              imageUrl:
+                "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80",
+              theme: "dark",
+            },
           },
           {
             type: "FeatureGridBlock",
@@ -96,24 +112,36 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
               sectionBadge: "OUR MISSION",
               sectionTitle: "Principles That Guide Every Project",
               features: [
-                { title: "Integrity First", description: "Transparent communication, honest pricing, and accountability at every stage." },
-                { title: "Customer Success", description: "Our metrics are defined exclusively by the satisfaction and growth of our clientele." },
-                { title: "Continuous Innovation", description: "Adopting modern industry workflows to keep you ahead of market demands." }
-              ]
-            }
+                {
+                  title: "Integrity First",
+                  description: "Transparent communication, honest pricing, and accountability at every stage.",
+                },
+                {
+                  title: "Customer Success",
+                  description: "Our metrics are defined exclusively by the satisfaction and growth of our clientele.",
+                },
+                {
+                  title: "Continuous Innovation",
+                  description: "Adopting modern industry workflows to keep you ahead of market demands.",
+                },
+              ],
+            },
           },
           {
             type: "FooterBlock",
-            props: { id: "footer-about", copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.` }
-          }
+            props: {
+              id: "footer-about",
+              copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.`,
+            },
+          },
         ],
-        root: { props: { title: `About Us | ${businessName}`, palette: "indigo", font: "inter" } }
+        root: { props: { title: `About Us | ${businessName}`, palette: "indigo", font: "inter" } },
       },
       services: {
         content: [
           {
             type: "NavbarBlock",
-            props: { id: "nav-services", brandName: businessName, ctaLabel: "Inquire Now", ctaLink: "/contact" }
+            props: { id: "nav-services", brandName: businessName, ctaLabel: "Inquire Now", ctaLink: "/contact" },
           },
           {
             type: "HeroBlock",
@@ -124,9 +152,10 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
               subheading: `Comprehensive ${businessType} packages engineered to deliver immediate value and long-term durability.`,
               ctaText: "Book Service",
               ctaLink: "/contact",
-              imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=80",
-              theme: "gradient"
-            }
+              imageUrl:
+                "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=80",
+              theme: "gradient",
+            },
           },
           {
             type: "PricingBlock",
@@ -140,30 +169,33 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
                   price: "₦35,000",
                   features: "Essential Setup\nWhatsApp Direct Support\nStandard SLA Warranty",
                   isPopular: false,
-                  ctaText: "Select Standard"
+                  ctaText: "Select Standard",
                 },
                 {
                   name: "Executive Tier",
                   price: "₦95,000",
                   features: "Priority Execution\nDedicated Support Line\nExtended Warranty\nCustom Requirements",
                   isPopular: true,
-                  ctaText: "Select Executive"
-                }
-              ]
-            }
+                  ctaText: "Select Executive",
+                },
+              ],
+            },
           },
           {
             type: "FooterBlock",
-            props: { id: "footer-services", copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.` }
-          }
+            props: {
+              id: "footer-services",
+              copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.`,
+            },
+          },
         ],
-        root: { props: { title: `Services | ${businessName}`, palette: "indigo", font: "inter" } }
+        root: { props: { title: `Services | ${businessName}`, palette: "indigo", font: "inter" } },
       },
       contact: {
         content: [
           {
             type: "NavbarBlock",
-            props: { id: "nav-contact", brandName: businessName, ctaLabel: "Home", ctaLink: "/" }
+            props: { id: "nav-contact", brandName: businessName, ctaLabel: "Home", ctaLink: "/" },
           },
           {
             type: "HeroBlock",
@@ -174,9 +206,10 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
               subheading: "Have questions or need a customized quote? Send us an inquiry or message us on WhatsApp.",
               ctaText: "Chat on WhatsApp",
               ctaLink: "#contact",
-              imageUrl: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=800&auto=format&fit=crop&q=80",
-              theme: "dark"
-            }
+              imageUrl:
+                "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=800&auto=format&fit=crop&q=80",
+              theme: "dark",
+            },
           },
           {
             type: "ContactWhatsAppBlock",
@@ -187,17 +220,20 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
               phoneNumber: "+2348012345678",
               whatsappMessage: `Hello ${businessName}, I would like to make an inquiry.`,
               email: `contact@${brandClean || "business"}.com`,
-              location: location || "Lagos, Nigeria"
-            }
+              location: location || "Lagos, Nigeria",
+            },
           },
           {
             type: "FooterBlock",
-            props: { id: "footer-contact", copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.` }
-          }
+            props: {
+              id: "footer-contact",
+              copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.`,
+            },
+          },
         ],
-        root: { props: { title: `Contact Us | ${businessName}`, palette: "indigo", font: "inter" } }
-      }
-    }
+        root: { props: { title: `Contact Us | ${businessName}`, palette: "indigo", font: "inter" } },
+      },
+    },
   };
 }
 
@@ -209,16 +245,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Business name and type are required." }, { status: 400 });
     }
 
-    // 1. Live OpenAI Generation if Key Is Configured
     if (openai) {
       try {
         const prompt = `
-You are an elite web architect and conversion copywriter for STARKORA.
+You are an elite conversion copywriter and web architect for STARKORA.
 Create a complete 4-page website layout for this business:
 - Business Name: "${businessName}"
 - Industry / Type: "${businessType}"
 - Location: "${location || "Nigeria"}"
 - Context / Description: "${description || "High-growth commercial business"}"
+
+Copywriting Rules:
+- Write natural, engaging, human marketing copy.
+- Do NOT repeat raw user input phrases or words like "welcome to" in headings or subheadings.
+- Curate realistic prices in Nigerian Naira (NGN, symbol: ₦) matching the service type.
+- Generate authentic testimonials and distinct value propositions across all 4 pages.
 
 Allowed Block Types:
 - NavbarBlock (props: id, brandName, ctaLabel, ctaLink)
@@ -244,13 +285,17 @@ Required Output Structure:
   }
 }
 
-Output strictly valid JSON matching this schema with high-converting, tailored Nigerian/regional business copy.
+Output strictly valid JSON matching this schema.
 `;
 
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
+          model: "gpt-4o",
           messages: [
-            { role: "system", content: "You output strictly valid JSON conforming to the layout schema." },
+            {
+              role: "system",
+              content:
+                "You are an elite conversion copywriter and web architect for STARKORA. You output strictly valid JSON conforming to the layout schema. Write compelling, natural, and highly contextual copy. Never repeat raw prompt phrases verbatim.",
+            },
             { role: "user", content: prompt },
           ],
           response_format: { type: "json_object" },
@@ -266,7 +311,6 @@ Output strictly valid JSON matching this schema with high-converting, tailored N
       }
     }
 
-    // 2. Fallback Template
     const fallbackData = buildFallbackPageData(businessName, businessType, location, description);
     return NextResponse.json({ siteData: fallbackData });
   } catch (error: any) {
