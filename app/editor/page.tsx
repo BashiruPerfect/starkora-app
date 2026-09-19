@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
 import { Puck, type Data } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { createConfig, type ComponentProps, type RootProps } from "../../puck.config";
@@ -184,17 +184,42 @@ const defaultMultiPageData: MultiPageSiteData = {
 };
 
 function normalizeToMultiPage(raw: any): MultiPageSiteData {
-  if (raw?.pages && typeof raw.pages === "object") {
-    return raw as MultiPageSiteData;
-  }
-  return {
+  const result: MultiPageSiteData = {
     pages: {
-      home: raw?.content ? raw : defaultMultiPageData.pages.home,
+      home: defaultMultiPageData.pages.home,
       about: defaultMultiPageData.pages.about,
       services: defaultMultiPageData.pages.services,
       contact: defaultMultiPageData.pages.contact,
     },
   };
+
+  if (!raw || typeof raw !== "object") {
+    return result;
+  }
+
+  // Handle multi-page object
+  if (raw.pages && typeof raw.pages === "object") {
+    const slugs: PageSlug[] = ["home", "about", "services", "contact"];
+    for (const slug of slugs) {
+      if (raw.pages[slug] && Array.isArray(raw.pages[slug].content)) {
+        result.pages[slug] = {
+          content: raw.pages[slug].content,
+          root: raw.pages[slug].root || defaultMultiPageData.pages[slug].root,
+        };
+      }
+    }
+    return result;
+  }
+
+  // Handle single-page legacy object
+  if (Array.isArray(raw.content)) {
+    result.pages.home = {
+      content: raw.content,
+      root: raw.root || defaultMultiPageData.pages.home.root,
+    };
+  }
+
+  return result;
 }
 
 function EditorContent() {
@@ -259,7 +284,6 @@ function EditorContent() {
     init();
   }, [siteId]);
 
-  // Seamless Upgrade Handler: routes directly to /billing with verified siteId
   const handleUpgradeToPro = async () => {
     if (currentSiteId) {
       router.push(`/billing?siteId=${currentSiteId}`);
@@ -302,7 +326,7 @@ function EditorContent() {
   const handlePageChange = (newPage: PageSlug) => {
     if (!isProUser && newPage !== "home") {
       const proceed = confirm(
-        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts are restricted to editing the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock and customize dedicated About, Services, and Contact pages?"
+        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts can only customize the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock and edit dedicated About, Services, and Contact pages?"
       );
       if (proceed) {
         handleUpgradeToPro();
@@ -387,6 +411,23 @@ function EditorContent() {
     }
   };
 
+  // Extract contextual business attributes safely with optional chaining
+  const homePage = multiPage?.pages?.home;
+  const heroBlock = homePage?.content?.find((b) => b?.type === "HeroBlock");
+  const contactBlock = homePage?.content?.find((b) => b?.type === "ContactWhatsAppBlock");
+  const inferredBusinessName = homePage?.root?.props?.title?.split("|")?.[0]?.trim() || "STARKORA";
+  const inferredBusinessType = heroBlock?.props?.badgeText || "Enterprise";
+  const inferredLocation = contactBlock?.props?.location || "Lagos, Nigeria";
+
+  // Stabilize the Puck configuration object with useMemo to prevent re-render loops
+  const stableConfig = useMemo(() => {
+    return createConfig({
+      businessName: inferredBusinessName,
+      businessType: inferredBusinessType,
+      location: inferredLocation,
+    });
+  }, [inferredBusinessName, inferredBusinessType, inferredLocation]);
+
   if (!isLoaded) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-slate-950 text-slate-400 font-sans">
@@ -395,18 +436,10 @@ function EditorContent() {
     );
   }
 
-  const currentCanvasData = multiPage.pages[activePage] || defaultMultiPageData.pages.home;
-
-  // Extract contextual business attributes for dynamic block instantiation
-  const heroBlock = multiPage.pages.home.content?.find((b) => b.type === "HeroBlock");
-  const contactBlock = multiPage.pages.home.content?.find((b) => b.type === "ContactWhatsAppBlock");
-  const inferredBusinessName = multiPage.pages.home.root?.props?.title?.split("|")[0]?.trim() || "STARKORA";
-  const inferredBusinessType = heroBlock?.props?.badgeText || "Business";
-  const inferredLocation = contactBlock?.props?.location || "Lagos, Nigeria";
+  const currentCanvasData = multiPage?.pages?.[activePage] || defaultMultiPageData.pages.home;
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden relative">
-      {/* Top Header with Multi-Page Switcher & Plan Status */}
       <div className="bg-slate-900 border-b border-slate-800 px-6 py-2.5 flex items-center justify-between z-50 text-sm">
         <div className="flex items-center gap-4">
           <Link
@@ -417,7 +450,6 @@ function EditorContent() {
           </Link>
           <span className="text-slate-600">|</span>
 
-          {/* PAGE SELECTOR DROPDOWN WITH PRO LOCKS */}
           <div className="flex items-center gap-2">
             <span className="text-xs uppercase font-bold text-slate-400">Editing:</span>
             <select
@@ -438,7 +470,6 @@ function EditorContent() {
             </select>
           </div>
 
-          {/* SUBSCRIPTION TIER STATUS BADGE */}
           <span className="text-slate-600 hidden sm:inline">|</span>
           <div className="hidden sm:flex items-center gap-1.5">
             {isProUser ? (
@@ -485,21 +516,15 @@ function EditorContent() {
         </div>
       </div>
 
-      {/* Puck Visual Canvas with Dynamic Business Context */}
       <div className="flex-1 relative">
         <Puck
           key={editorKey}
-          config={createConfig({
-            businessName: inferredBusinessName,
-            businessType: inferredBusinessType,
-            location: inferredLocation,
-          })}
+          config={stableConfig}
           data={currentCanvasData}
           onPublish={handleSave}
         />
       </div>
 
-      {/* Floating AI Copilot Bar */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl px-4 pointer-events-auto">
         <form
           onSubmit={handleAiRefine}

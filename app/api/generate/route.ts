@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
+// Allow up to 60 seconds execution time on Vercel
+export const maxDuration = 60;
+
 const rawKey = (process.env.OPENAI_API_KEY || "").replace(/["']/g, "").trim();
 const openai = rawKey ? new OpenAI({ apiKey: rawKey }) : null;
 
@@ -20,7 +23,7 @@ function buildFallbackPageData(businessName: string, businessType: string, locat
             props: {
               id: "hero-home",
               badgeText: "PREMIER SERVICE",
-              heading: `${businessName}: Professional ${businessType}`,
+              heading: `${businessName}: Modern ${businessType}`,
               subheading:
                 description ||
                 `Leading the standard in ${businessType} across ${location || "Nigeria"} with fast turnaround and verified excellence.`,
@@ -253,61 +256,41 @@ Create a complete 4-page website layout for this business:
 - Business Name: "${businessName}"
 - Industry / Type: "${businessType}"
 - Location: "${location || "Nigeria"}"
-- Context / Description: "${description || "High-growth commercial business"}"
+- Description: "${description || "Quality services"}"
 
-Copywriting Rules:
-- Write natural, engaging, human marketing copy.
-- Do NOT repeat raw user input phrases or words like "welcome to" in headings or subheadings.
-- Curate realistic prices in Nigerian Naira (NGN, symbol: ₦) matching the service type.
-- Generate authentic testimonials and distinct value propositions across all 4 pages.
+Rules:
+- Write natural, high-converting Nigerian/regional commercial copy.
+- Never include "welcome to" in headings.
+- Realistic prices in NGN (₦).
+- Return strictly JSON.
 
-Allowed Block Types:
-- NavbarBlock (props: id, brandName, ctaLabel, ctaLink)
-- HeroBlock (props: id, badgeText, heading, subheading, ctaText, ctaLink, imageUrl, theme ["light"|"dark"|"gradient"])
-- FeatureGridBlock (props: id, sectionBadge, sectionTitle, features [{ title, description }])
-- PricingBlock (props: id, sectionTitle, sectionSubtitle, plans [{ name, price, features (newline separated), isPopular, ctaText }])
-- TestimonialBlock (props: id, quote, author, role, company)
-- ContactWhatsAppBlock (props: id, title, subtitle, phoneNumber, whatsappMessage, email, location)
-- FooterBlock (props: id, copyrightText)
-
-Root props for each page:
-- title: string
-- palette: "indigo" | "emerald" | "gold" | "crimson" | "minimal"
-- font: "inter" | "jakarta" | "playfair" | "cinzel" | "space" | "mono"
-
-Required Output Structure:
+Schema:
 {
   "pages": {
-    "home": { "content": [...], "root": { "props": { ... } } },
-    "about": { "content": [...], "root": { "props": { ... } } },
-    "services": { "content": [...], "root": { "props": { ... } } },
-    "contact": { "content": [...], "root": { "props": { ... } } }
+    "home": { "content": [...], "root": { "props": { "title": "${businessName} | Home", "palette": "indigo", "font": "inter" } } },
+    "about": { "content": [...], "root": { "props": { "title": "About Us | ${businessName}", "palette": "indigo", "font": "inter" } } },
+    "services": { "content": [...], "root": { "props": { "title": "Services | ${businessName}", "palette": "indigo", "font": "inter" } } },
+    "contact": { "content": [...], "root": { "props": { "title": "Contact Us | ${businessName}", "palette": "indigo", "font": "inter" } } }
   }
 }
-
-Output strictly valid JSON matching this schema.
 `;
 
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o",
+          model: "gpt-4o-mini",
           messages: [
-            {
-              role: "system",
-              content:
-                "You are an elite conversion copywriter and web architect for STARKORA. You output strictly valid JSON conforming to the layout schema. Write compelling, natural, and highly contextual copy. Never repeat raw prompt phrases verbatim.",
-            },
+            { role: "system", content: "You output strictly valid JSON conforming to the layout schema." },
             { role: "user", content: prompt },
           ],
           response_format: { type: "json_object" },
           temperature: 0.7,
         });
 
-        const generatedData = JSON.parse(completion.choices[0].message.content || "{}");
-        if (generatedData.pages && generatedData.pages.home) {
-          return NextResponse.json({ siteData: generatedData });
+        const rawJson = JSON.parse(completion.choices[0].message.content || "{}");
+        if (rawJson?.pages?.home?.content && Array.isArray(rawJson.pages.home.content)) {
+          return NextResponse.json({ siteData: rawJson });
         }
       } catch (aiError) {
-        console.warn("OpenAI generation failed, falling back to deterministic template:", aiError);
+        console.warn("OpenAI generation fallback triggered:", aiError);
       }
     }
 
