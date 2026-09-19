@@ -19,12 +19,12 @@ const defaultMultiPageData: MultiPageSiteData = {
       content: [
         {
           type: "NavbarBlock",
-          props: { id: "nav-1", brandName: "STARKORA", ctaLabel: "Contact", ctaLink: "/contact" },
+          props: { id: "nav-home", brandName: "STARKORA", ctaLabel: "Contact", ctaLink: "/contact" },
         },
         {
           type: "HeroBlock",
           props: {
-            id: "hero-1",
+            id: "hero-home",
             badgeText: "OFFICIAL WEBSITE",
             heading: "Autonomous Multi-Page Platform",
             subheading: "Manage your Home, About, Services, and Contact pages seamlessly.",
@@ -37,7 +37,7 @@ const defaultMultiPageData: MultiPageSiteData = {
         {
           type: "FeatureGridBlock",
           props: {
-            id: "feat-1",
+            id: "feat-home",
             sectionBadge: "CAPABILITIES",
             sectionTitle: "Engineered For Conversion",
             features: [
@@ -50,7 +50,7 @@ const defaultMultiPageData: MultiPageSiteData = {
         {
           type: "ContactWhatsAppBlock",
           props: {
-            id: "contact-1",
+            id: "contact-home",
             title: "Contact Us",
             subtitle: "Reach out via WhatsApp or email.",
             phoneNumber: "+2348012345678",
@@ -61,7 +61,7 @@ const defaultMultiPageData: MultiPageSiteData = {
         },
         {
           type: "FooterBlock",
-          props: { id: "footer-1", copyrightText: "© 2026 STARKORA. All rights reserved." },
+          props: { id: "footer-home", copyrightText: "© 2026 STARKORA. All rights reserved." },
         },
       ],
       root: { props: { title: "STARKORA | Home", palette: "indigo", font: "inter" } },
@@ -183,6 +183,82 @@ const defaultMultiPageData: MultiPageSiteData = {
   },
 };
 
+const VALID_COMPONENT_TYPES = new Set([
+  "NavbarBlock",
+  "HeroBlock",
+  "FeatureGridBlock",
+  "PricingBlock",
+  "TestimonialBlock",
+  "ContactWhatsAppBlock",
+  "FooterBlock",
+]);
+
+function sanitizePagePayload(
+  rawPage: any,
+  fallbackPage: Data<ComponentProps, RootProps>
+): Data<ComponentProps, RootProps> {
+  if (!rawPage || typeof rawPage !== "object") {
+    return fallbackPage;
+  }
+
+  const root = {
+    props: {
+      title: rawPage.root?.props?.title || fallbackPage.root?.props?.title || "STARKORA Site",
+      palette: rawPage.root?.props?.palette || "indigo",
+      font: rawPage.root?.props?.font || "inter",
+    },
+  };
+
+  const rawContent = Array.isArray(rawPage.content) ? rawPage.content : [];
+  const safeContent: any[] = [];
+
+  for (let i = 0; i < rawContent.length; i++) {
+    const item = rawContent[i];
+    if (!item || typeof item !== "object") continue;
+
+    let type = item.type;
+    // Map common AI hallucinations to valid components
+    if (type === "HeaderBlock" || type === "Header" || type === "Navbar") type = "NavbarBlock";
+    if (type === "Hero" || type === "BannerBlock" || type === "Banner") type = "HeroBlock";
+    if (type === "FeaturesBlock" || type === "Features" || type === "GridBlock") type = "FeatureGridBlock";
+    if (type === "Pricing" || type === "PricesBlock" || type === "PlansBlock") type = "PricingBlock";
+    if (type === "TestimonialsBlock" || type === "Testimonials" || type === "ReviewsBlock") type = "TestimonialBlock";
+    if (type === "ContactBlock" || type === "Contact" || type === "FormBlock") type = "ContactWhatsAppBlock";
+    if (type === "Footer") type = "FooterBlock";
+
+    if (!VALID_COMPONENT_TYPES.has(type)) continue;
+
+    const props = item.props && typeof item.props === "object" ? { ...item.props } : {};
+
+    // Guarantee that every block has a valid, unique id
+    if (!props.id || typeof props.id !== "string") {
+      props.id = `${type}-${Math.random().toString(36).substring(2, 9)}`;
+    }
+
+    // Guarantee required arrays exist
+    if (type === "FeatureGridBlock" && !Array.isArray(props.features)) {
+      props.features = [
+        { title: "Quality Guaranteed", description: "Committed to delivering outstanding performance." },
+        { title: "Rapid Turnaround", description: "Fast delivery aligned with your schedule." },
+      ];
+    }
+
+    if (type === "PricingBlock" && !Array.isArray(props.plans)) {
+      props.plans = [
+        { name: "Standard Package", price: "₦35,000", features: "Full Delivery\nDirect Support", isPopular: false, ctaText: "Select Plan" },
+      ];
+    }
+
+    safeContent.push({ type, props });
+  }
+
+  if (safeContent.length === 0) {
+    return fallbackPage;
+  }
+
+  return { content: safeContent, root };
+}
+
 function normalizeToMultiPage(raw: any): MultiPageSiteData {
   const result: MultiPageSiteData = {
     pages: {
@@ -197,26 +273,16 @@ function normalizeToMultiPage(raw: any): MultiPageSiteData {
     return result;
   }
 
-  // Handle multi-page object
   if (raw.pages && typeof raw.pages === "object") {
     const slugs: PageSlug[] = ["home", "about", "services", "contact"];
     for (const slug of slugs) {
-      if (raw.pages[slug] && Array.isArray(raw.pages[slug].content)) {
-        result.pages[slug] = {
-          content: raw.pages[slug].content,
-          root: raw.pages[slug].root || defaultMultiPageData.pages[slug].root,
-        };
-      }
+      result.pages[slug] = sanitizePagePayload(raw.pages[slug], defaultMultiPageData.pages[slug]);
     }
     return result;
   }
 
-  // Handle single-page legacy object
   if (Array.isArray(raw.content)) {
-    result.pages.home = {
-      content: raw.content,
-      root: raw.root || defaultMultiPageData.pages.home.root,
-    };
+    result.pages.home = sanitizePagePayload(raw, defaultMultiPageData.pages.home);
   }
 
   return result;
@@ -326,7 +392,7 @@ function EditorContent() {
   const handlePageChange = (newPage: PageSlug) => {
     if (!isProUser && newPage !== "home") {
       const proceed = confirm(
-        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts can only customize the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock and edit dedicated About, Services, and Contact pages?"
+        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts can only edit the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock dedicated About, Services, and Contact pages?"
       );
       if (proceed) {
         handleUpgradeToPro();
@@ -391,10 +457,11 @@ function EditorContent() {
 
       const resJson = await res.json();
       if (res.ok && resJson.layoutData) {
+        const sanitized = sanitizePagePayload(resJson.layoutData, defaultMultiPageData.pages[activePage]);
         const updated: MultiPageSiteData = {
           pages: {
             ...multiPage.pages,
-            [activePage]: resJson.layoutData,
+            [activePage]: sanitized,
           },
         };
         setMultiPage(updated);
@@ -411,7 +478,6 @@ function EditorContent() {
     }
   };
 
-  // Extract contextual business attributes safely with optional chaining
   const homePage = multiPage?.pages?.home;
   const heroBlock = homePage?.content?.find((b) => b?.type === "HeroBlock");
   const contactBlock = homePage?.content?.find((b) => b?.type === "ContactWhatsAppBlock");
@@ -419,7 +485,6 @@ function EditorContent() {
   const inferredBusinessType = heroBlock?.props?.badgeText || "Enterprise";
   const inferredLocation = contactBlock?.props?.location || "Lagos, Nigeria";
 
-  // Stabilize the Puck configuration object with useMemo to prevent re-render loops
   const stableConfig = useMemo(() => {
     return createConfig({
       businessName: inferredBusinessName,
