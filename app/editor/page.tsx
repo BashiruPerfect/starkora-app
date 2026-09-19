@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { Puck, type Data } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
-import { config, type ComponentProps, type RootProps } from "../../puck.config";
+import { createConfig, type ComponentProps, type RootProps } from "../../puck.config";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -266,9 +266,8 @@ function EditorContent() {
       return;
     }
 
-    // If site has not been published/saved to DB yet
     if (!user) {
-      alert("Please log in or create an account first so your website can be linked to your subscription.");
+      alert("Please log in or register first so your website can be linked to your subscription.");
       router.push("/login");
       return;
     }
@@ -303,7 +302,7 @@ function EditorContent() {
   const handlePageChange = (newPage: PageSlug) => {
     if (!isProUser && newPage !== "home") {
       const proceed = confirm(
-        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts are restricted to editing the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock dedicated About, Services, and Contact pages?"
+        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts are restricted to editing the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock and customize dedicated About, Services, and Contact pages?"
       );
       if (proceed) {
         handleUpgradeToPro();
@@ -398,6 +397,13 @@ function EditorContent() {
 
   const currentCanvasData = multiPage.pages[activePage] || defaultMultiPageData.pages.home;
 
+  // Extract contextual business attributes for dynamic block instantiation
+  const heroBlock = multiPage.pages.home.content?.find((b) => b.type === "HeroBlock");
+  const contactBlock = multiPage.pages.home.content?.find((b) => b.type === "ContactWhatsAppBlock");
+  const inferredBusinessName = multiPage.pages.home.root?.props?.title?.split("|")[0]?.trim() || "STARKORA";
+  const inferredBusinessType = heroBlock?.props?.badgeText || "Business";
+  const inferredLocation = contactBlock?.props?.location || "Lagos, Nigeria";
+
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden relative">
       {/* Top Header with Multi-Page Switcher & Plan Status */}
@@ -479,9 +485,18 @@ function EditorContent() {
         </div>
       </div>
 
-      {/* Puck Visual Canvas */}
+      {/* Puck Visual Canvas with Dynamic Business Context */}
       <div className="flex-1 relative">
-        <Puck key={editorKey} config={config} data={currentCanvasData} onPublish={handleSave} />
+        <Puck
+          key={editorKey}
+          config={createConfig({
+            businessName: inferredBusinessName,
+            businessType: inferredBusinessType,
+            location: inferredLocation,
+          })}
+          data={currentCanvasData}
+          onPublish={handleSave}
+        />
       </div>
 
       {/* Floating AI Copilot Bar */}
