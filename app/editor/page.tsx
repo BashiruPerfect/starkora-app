@@ -13,175 +13,187 @@ interface MultiPageSiteData {
   pages: Record<PageSlug, Data<ComponentProps, RootProps>>;
 }
 
-const defaultMultiPageData: MultiPageSiteData = {
-  pages: {
-    home: {
-      content: [
-        {
-          type: "NavbarBlock",
-          props: { id: "nav-home", brandName: "STARKORA", ctaLabel: "Contact", ctaLink: "/contact" },
-        },
-        {
-          type: "HeroBlock",
-          props: {
-            id: "hero-home",
-            badgeText: "OFFICIAL WEBSITE",
-            heading: "Autonomous Multi-Page Platform",
-            subheading: "Manage your Home, About, Services, and Contact pages seamlessly.",
-            ctaText: "Explore Services",
-            ctaLink: "/services",
-            imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
-            theme: "gradient",
+function createDefaultMultiPage(bizName: string = "Your Business", bizType: string = "Services"): MultiPageSiteData {
+  return {
+    pages: {
+      home: {
+        content: [
+          {
+            type: "NavbarBlock",
+            props: { id: "nav-home", brandName: bizName, ctaLabel: "Contact Us", ctaLink: "/contact" },
           },
-        },
-        {
-          type: "FeatureGridBlock",
-          props: {
-            id: "feat-home",
-            sectionBadge: "CAPABILITIES",
-            sectionTitle: "Engineered For Conversion",
-            features: [
-              { title: "Multi-Page Ready", description: "Dynamic edge routing across all navigation slugs." },
-              { title: "Integrated Leads", description: "WhatsApp and direct inquiry capture out of the box." },
-              { title: "One-Click Theming", description: "Instant color palettes and Google typography switching." },
-            ],
+          {
+            type: "HeroBlock",
+            props: {
+              id: "hero-home",
+              badgeText: "PREMIER SERVICE",
+              heading: `${bizName}`,
+              subheading: `Professional ${bizType} delivered with precision, reliability, and excellence across Nigeria.`,
+              ctaText: "Explore Services",
+              ctaLink: "/services",
+              imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
+              theme: "gradient",
+            },
           },
-        },
-        {
-          type: "ContactWhatsAppBlock",
-          props: {
-            id: "contact-home",
-            title: "Contact Us",
-            subtitle: "Reach out via WhatsApp or email.",
-            phoneNumber: "+2348012345678",
-            whatsappMessage: "Hello!",
-            email: "support@starkora.com",
-            location: "Lagos, Nigeria",
+          {
+            type: "FeatureGridBlock",
+            props: {
+              id: "feat-home",
+              sectionBadge: "WHY CHOOSE US",
+              sectionTitle: `Why Clients Choose ${bizName}`,
+              features: [
+                { title: "Verified Reliability", description: "Committed to delivering outstanding performance on every project." },
+                { title: "Rapid Execution", description: "Fast delivery aligned with your schedule." },
+                { title: "Direct Contact", description: "Seamless WhatsApp availability for immediate support." },
+              ],
+            },
           },
-        },
-        {
-          type: "FooterBlock",
-          props: { id: "footer-home", copyrightText: "© 2026 STARKORA. All rights reserved." },
-        },
-      ],
-      root: { props: { title: "STARKORA | Home", palette: "indigo", font: "inter" } },
+          {
+            type: "TestimonialBlock",
+            props: {
+              id: "test-home",
+              quote: `Working with ${bizName} transformed our business operations. Highly recommended!`,
+              author: "Alhaji Ibrahim Danjuma",
+              role: "Managing Director",
+              company: "Danjuma Holdings",
+            },
+          },
+          {
+            type: "ContactWhatsAppBlock",
+            props: {
+              id: "contact-home",
+              title: `Connect With ${bizName}`,
+              subtitle: "Reach out via WhatsApp or submit an inquiry below.",
+              phoneNumber: "+2348012345678",
+              whatsappMessage: "Hello!",
+              email: "contact@business.com",
+              location: "Lagos, Nigeria",
+            },
+          },
+          {
+            type: "FooterBlock",
+            props: { id: "footer-home", copyrightText: `© 2026 ${bizName}. Powered by STARKORA.` },
+          },
+        ],
+        root: { props: { title: `${bizName} | Home`, palette: "indigo", font: "inter" } },
+      },
+      about: {
+        content: [
+          {
+            type: "NavbarBlock",
+            props: { id: "nav-about", brandName: bizName, ctaLabel: "Contact", ctaLink: "/contact" },
+          },
+          {
+            type: "HeroBlock",
+            props: {
+              id: "hero-about",
+              badgeText: "OUR STORY",
+              heading: `About ${bizName}`,
+              subheading: `Dedicated to delivering exceptional ${bizType} solutions with integrity, precision, and customer-first focus.`,
+              ctaText: "Our Services",
+              ctaLink: "/services",
+              imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80",
+              theme: "dark",
+            },
+          },
+          {
+            type: "FooterBlock",
+            props: { id: "footer-about", copyrightText: `© 2026 ${bizName}. Powered by STARKORA.` },
+          },
+        ],
+        root: { props: { title: `About Us | ${bizName}`, palette: "indigo", font: "inter" } },
+      },
+      services: {
+        content: [
+          {
+            type: "NavbarBlock",
+            props: { id: "nav-services", brandName: bizName, ctaLabel: "Inquire", ctaLink: "/contact" },
+          },
+          {
+            type: "HeroBlock",
+            props: {
+              id: "hero-services",
+              badgeText: "PACKAGES",
+              heading: "Our Service Offerings",
+              subheading: `Comprehensive ${bizType} packages designed for scale and dependability.`,
+              ctaText: "Book Service",
+              ctaLink: "/contact",
+              imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=80",
+              theme: "gradient",
+            },
+          },
+          {
+            type: "PricingBlock",
+            props: {
+              id: "pricing-services",
+              sectionTitle: "Transparent Pricing Tiers",
+              sectionSubtitle: "Simple, flexible plans designed for your growth.",
+              plans: [
+                {
+                  name: "Standard Package",
+                  price: "₦35,000",
+                  features: `Complete ${bizType} Setup\nDirect WhatsApp Support`,
+                  isPopular: false,
+                  ctaText: "Select Standard",
+                },
+                {
+                  name: "Executive Tier",
+                  price: "₦95,000",
+                  features: `Priority Execution\nDedicated Support Line\nCustom Specifications`,
+                  isPopular: true,
+                  ctaText: "Select Executive",
+                },
+              ],
+            },
+          },
+          {
+            type: "FooterBlock",
+            props: { id: "footer-services", copyrightText: `© 2026 ${bizName}. Powered by STARKORA.` },
+          },
+        ],
+        root: { props: { title: `Services | ${bizName}`, palette: "indigo", font: "inter" } },
+      },
+      contact: {
+        content: [
+          {
+            type: "NavbarBlock",
+            props: { id: "nav-contact", brandName: bizName, ctaLabel: "Home", ctaLink: "/" },
+          },
+          {
+            type: "HeroBlock",
+            props: {
+              id: "hero-contact",
+              badgeText: "GET IN TOUCH",
+              heading: `Contact ${bizName}`,
+              subheading: "Have questions or need a customized quote? Connect with us on WhatsApp.",
+              ctaText: "Chat on WhatsApp",
+              ctaLink: "#contact",
+              imageUrl: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=800&auto=format&fit=crop&q=80",
+              theme: "dark",
+            },
+          },
+          {
+            type: "ContactWhatsAppBlock",
+            props: {
+              id: "contact-main",
+              title: "Direct Communication",
+              subtitle: "We respond promptly to all incoming communications.",
+              phoneNumber: "+2348012345678",
+              whatsappMessage: "Hello!",
+              email: "contact@business.com",
+              location: "Lagos, Nigeria",
+            },
+          },
+          {
+            type: "FooterBlock",
+            props: { id: "footer-contact", copyrightText: `© 2026 ${bizName}. Powered by STARKORA.` },
+          },
+        ],
+        root: { props: { title: `Contact Us | ${bizName}`, palette: "indigo", font: "inter" } },
+      },
     },
-    about: {
-      content: [
-        {
-          type: "NavbarBlock",
-          props: { id: "nav-about", brandName: "STARKORA", ctaLabel: "Contact", ctaLink: "/contact" },
-        },
-        {
-          type: "HeroBlock",
-          props: {
-            id: "hero-about",
-            badgeText: "OUR STORY",
-            heading: "About Our Organization",
-            subheading: "Committed to delivering high-impact solutions for our clients.",
-            ctaText: "Our Services",
-            ctaLink: "/services",
-            imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80",
-            theme: "dark",
-          },
-        },
-        {
-          type: "FooterBlock",
-          props: { id: "footer-about", copyrightText: "© 2026 STARKORA. All rights reserved." },
-        },
-      ],
-      root: { props: { title: "About Us | STARKORA", palette: "indigo", font: "inter" } },
-    },
-    services: {
-      content: [
-        {
-          type: "NavbarBlock",
-          props: { id: "nav-services", brandName: "STARKORA", ctaLabel: "Inquire", ctaLink: "/contact" },
-        },
-        {
-          type: "HeroBlock",
-          props: {
-            id: "hero-services",
-            badgeText: "OUR SOLUTIONS",
-            heading: "Tailored Services & Packages",
-            subheading: "Transparent packages designed for scale and dependability.",
-            ctaText: "Get in Touch",
-            ctaLink: "/contact",
-            imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=80",
-            theme: "gradient",
-          },
-        },
-        {
-          type: "PricingBlock",
-          props: {
-            id: "pricing-services",
-            sectionTitle: "Transparent Pricing Tiers",
-            sectionSubtitle: "Simple, flexible plans designed for your growth.",
-            plans: [
-              {
-                name: "Standard Package",
-                price: "₦35,000",
-                features: "Complete Setup\nWhatsApp Direct Support\nStandard SLA",
-                isPopular: false,
-                ctaText: "Select Standard",
-              },
-              {
-                name: "Enterprise Executive",
-                price: "₦95,000",
-                features: "Dedicated Manager\nPriority Turnaround\n24/7 Support\nCustom Domain Included",
-                isPopular: true,
-                ctaText: "Select Executive",
-              },
-            ],
-          },
-        },
-        {
-          type: "FooterBlock",
-          props: { id: "footer-services", copyrightText: "© 2026 STARKORA. All rights reserved." },
-        },
-      ],
-      root: { props: { title: "Services | STARKORA", palette: "indigo", font: "inter" } },
-    },
-    contact: {
-      content: [
-        {
-          type: "NavbarBlock",
-          props: { id: "nav-contact", brandName: "STARKORA", ctaLabel: "Home", ctaLink: "/" },
-        },
-        {
-          type: "HeroBlock",
-          props: {
-            id: "hero-contact",
-            badgeText: "REACH OUT",
-            heading: "Contact Our Team",
-            subheading: "Submit an inquiry or connect with us directly on WhatsApp.",
-            ctaText: "Chat on WhatsApp",
-            ctaLink: "#contact",
-            imageUrl: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=800&auto=format&fit=crop&q=80",
-            theme: "dark",
-          },
-        },
-        {
-          type: "ContactWhatsAppBlock",
-          props: {
-            id: "contact-main",
-            title: "Leave an Inquiry",
-            subtitle: "We respond promptly to all incoming communications.",
-            phoneNumber: "+2348012345678",
-            whatsappMessage: "Hello!",
-            email: "support@starkora.com",
-            location: "Lagos, Nigeria",
-          },
-        },
-        {
-          type: "FooterBlock",
-          props: { id: "footer-contact", copyrightText: "© 2026 STARKORA. All rights reserved." },
-        },
-      ],
-      root: { props: { title: "Contact Us | STARKORA", palette: "indigo", font: "inter" } },
-    },
-  },
-};
+  };
+}
 
 const VALID_COMPONENT_TYPES = new Set([
   "NavbarBlock",
@@ -193,9 +205,25 @@ const VALID_COMPONENT_TYPES = new Set([
   "FooterBlock",
 ]);
 
+function normalizeBlockType(rawType: string): string | null {
+  if (!rawType || typeof rawType !== "string") return null;
+  const clean = rawType.toLowerCase().replace(/[^a-z]/g, "");
+
+  if (clean.includes("navbar") || clean.includes("header") || clean.includes("nav")) return "NavbarBlock";
+  if (clean.includes("hero") || clean.includes("banner")) return "HeroBlock";
+  if (clean.includes("feature") || clean.includes("grid")) return "FeatureGridBlock";
+  if (clean.includes("price") || clean.includes("pricing") || clean.includes("plan")) return "PricingBlock";
+  if (clean.includes("testimonial") || clean.includes("review")) return "TestimonialBlock";
+  if (clean.includes("contact") || clean.includes("whatsapp") || clean.includes("form")) return "ContactWhatsAppBlock";
+  if (clean.includes("footer")) return "FooterBlock";
+
+  return null;
+}
+
 function sanitizePagePayload(
   rawPage: any,
-  fallbackPage: Data<ComponentProps, RootProps>
+  fallbackPage: Data<ComponentProps, RootProps>,
+  bizName: string
 ): Data<ComponentProps, RootProps> {
   if (!rawPage || typeof rawPage !== "object") {
     return fallbackPage;
@@ -203,53 +231,52 @@ function sanitizePagePayload(
 
   const root = {
     props: {
-      title: rawPage.root?.props?.title || fallbackPage.root?.props?.title || "STARKORA Site",
+      title: rawPage.root?.props?.title || `${bizName} | Page`,
       palette: rawPage.root?.props?.palette || "indigo",
       font: rawPage.root?.props?.font || "inter",
     },
   };
 
-  const rawContent = Array.isArray(rawPage.content) ? rawPage.content : [];
+  // Check for content, sections, or blocks arrays
+  const rawList = Array.isArray(rawPage.content)
+    ? rawPage.content
+    : Array.isArray(rawPage.sections)
+    ? rawPage.sections
+    : Array.isArray(rawPage.blocks)
+    ? rawPage.blocks
+    : [];
+
   const safeContent: any[] = [];
 
-  for (let i = 0; i < rawContent.length; i++) {
-    const item = rawContent[i];
+  for (let i = 0; i < rawList.length; i++) {
+    const item = rawList[i];
     if (!item || typeof item !== "object") continue;
 
-    let type = item.type;
-    // Map common AI hallucinations to valid components
-    if (type === "HeaderBlock" || type === "Header" || type === "Navbar") type = "NavbarBlock";
-    if (type === "Hero" || type === "BannerBlock" || type === "Banner") type = "HeroBlock";
-    if (type === "FeaturesBlock" || type === "Features" || type === "GridBlock") type = "FeatureGridBlock";
-    if (type === "Pricing" || type === "PricesBlock" || type === "PlansBlock") type = "PricingBlock";
-    if (type === "TestimonialsBlock" || type === "Testimonials" || type === "ReviewsBlock") type = "TestimonialBlock";
-    if (type === "ContactBlock" || type === "Contact" || type === "FormBlock") type = "ContactWhatsAppBlock";
-    if (type === "Footer") type = "FooterBlock";
+    const detectedType = normalizeBlockType(item.type || item.component || item.name || item.block);
+    if (!detectedType || !VALID_COMPONENT_TYPES.has(detectedType)) continue;
 
-    if (!VALID_COMPONENT_TYPES.has(type)) continue;
+    const props = item.props && typeof item.props === "object" ? { ...item.props } : { ...item };
+    delete props.type;
+    delete props.component;
 
-    const props = item.props && typeof item.props === "object" ? { ...item.props } : {};
-
-    // Guarantee that every block has a valid, unique id
     if (!props.id || typeof props.id !== "string") {
-      props.id = `${type}-${Math.random().toString(36).substring(2, 9)}`;
+      props.id = `${detectedType}-${Math.random().toString(36).substring(2, 9)}`;
     }
 
-    // Guarantee required arrays exist
-    if (type === "FeatureGridBlock" && !Array.isArray(props.features)) {
+    if (detectedType === "FeatureGridBlock" && !Array.isArray(props.features)) {
       props.features = [
-        { title: "Quality Guaranteed", description: "Committed to delivering outstanding performance." },
-        { title: "Rapid Turnaround", description: "Fast delivery aligned with your schedule." },
+        { title: "Verified Quality", description: "Committed to delivering outstanding performance." },
+        { title: "Prompt Turnaround", description: "Fast delivery aligned with your schedule." },
       ];
     }
 
-    if (type === "PricingBlock" && !Array.isArray(props.plans)) {
+    if (detectedType === "PricingBlock" && !Array.isArray(props.plans)) {
       props.plans = [
         { name: "Standard Package", price: "₦35,000", features: "Full Delivery\nDirect Support", isPopular: false, ctaText: "Select Plan" },
       ];
     }
 
-    safeContent.push({ type, props });
+    safeContent.push({ type: detectedType, props });
   }
 
   if (safeContent.length === 0) {
@@ -259,33 +286,33 @@ function sanitizePagePayload(
   return { content: safeContent, root };
 }
 
-function normalizeToMultiPage(raw: any): MultiPageSiteData {
-  const result: MultiPageSiteData = {
-    pages: {
-      home: defaultMultiPageData.pages.home,
-      about: defaultMultiPageData.pages.about,
-      services: defaultMultiPageData.pages.services,
-      contact: defaultMultiPageData.pages.contact,
-    },
-  };
+function normalizeToMultiPage(raw: any, bizName: string): MultiPageSiteData {
+  const fallback = createDefaultMultiPage(bizName);
 
   if (!raw || typeof raw !== "object") {
-    return result;
+    return fallback;
   }
 
-  if (raw.pages && typeof raw.pages === "object") {
-    const slugs: PageSlug[] = ["home", "about", "services", "contact"];
-    for (const slug of slugs) {
-      result.pages[slug] = sanitizePagePayload(raw.pages[slug], defaultMultiPageData.pages[slug]);
-    }
+  // Handle { pages: { ... } } or { siteData: { pages: { ... } } }
+  const pagesObj = raw.pages || raw.siteData?.pages || raw;
+
+  if (pagesObj && typeof pagesObj === "object") {
+    const result: MultiPageSiteData = {
+      pages: {
+        home: sanitizePagePayload(pagesObj.home, fallback.pages.home, bizName),
+        about: sanitizePagePayload(pagesObj.about, fallback.pages.about, bizName),
+        services: sanitizePagePayload(pagesObj.services, fallback.pages.services, bizName),
+        contact: sanitizePagePayload(pagesObj.contact, fallback.pages.contact, bizName),
+      },
+    };
     return result;
   }
 
   if (Array.isArray(raw.content)) {
-    result.pages.home = sanitizePagePayload(raw, defaultMultiPageData.pages.home);
+    fallback.pages.home = sanitizePagePayload(raw, fallback.pages.home, bizName);
   }
 
-  return result;
+  return fallback;
 }
 
 function EditorContent() {
@@ -293,7 +320,7 @@ function EditorContent() {
   const searchParams = useSearchParams();
   const siteId = searchParams.get("siteId");
 
-  const [multiPage, setMultiPage] = useState<MultiPageSiteData>(defaultMultiPageData);
+  const [multiPage, setMultiPage] = useState<MultiPageSiteData>(() => createDefaultMultiPage());
   const [activePage, setActivePage] = useState<PageSlug>("home");
   const [editorKey, setEditorKey] = useState(0);
   const [currentSiteId, setCurrentSiteId] = useState<string | null>(siteId);
@@ -312,6 +339,9 @@ function EditorContent() {
         if (authData?.authenticated) setUser(authData.user);
       }
 
+      const activeBizName =
+        localStorage.getItem("starkora_active_business_name") || "Your Business";
+
       if (siteId) {
         try {
           const siteRes = await fetch(`/api/sites?id=${siteId}`);
@@ -319,7 +349,7 @@ function EditorContent() {
             const siteJson = await siteRes.json();
             if (siteJson.site?.layoutData) {
               const parsed = JSON.parse(siteJson.site.layoutData);
-              const normalized = normalizeToMultiPage(parsed);
+              const normalized = normalizeToMultiPage(parsed, siteJson.site.name || activeBizName);
               setMultiPage(normalized);
               setCurrentSiteId(siteJson.site.id);
               setIsProUser(siteJson.site.subscriptionStatus === "active");
@@ -337,12 +367,14 @@ function EditorContent() {
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          const normalized = normalizeToMultiPage(parsed);
+          const normalized = normalizeToMultiPage(parsed, activeBizName);
           setMultiPage(normalized);
           setEditorKey((k) => k + 1);
         } catch (e) {
           console.error("Failed to parse saved local site", e);
         }
+      } else {
+        setMultiPage(createDefaultMultiPage(activeBizName));
       }
       setIsLoaded(true);
     }
@@ -392,7 +424,7 @@ function EditorContent() {
   const handlePageChange = (newPage: PageSlug) => {
     if (!isProUser && newPage !== "home") {
       const proceed = confirm(
-        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts can only edit the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock dedicated About, Services, and Contact pages?"
+        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts are restricted to editing the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock and edit dedicated About, Services, and Contact pages?"
       );
       if (proceed) {
         handleUpgradeToPro();
@@ -457,7 +489,11 @@ function EditorContent() {
 
       const resJson = await res.json();
       if (res.ok && resJson.layoutData) {
-        const sanitized = sanitizePagePayload(resJson.layoutData, defaultMultiPageData.pages[activePage]);
+        const activeBizName =
+          localStorage.getItem("starkora_active_business_name") || "Your Business";
+        const fallback = createDefaultMultiPage(activeBizName);
+        const sanitized = sanitizePagePayload(resJson.layoutData, fallback.pages[activePage], activeBizName);
+
         const updated: MultiPageSiteData = {
           pages: {
             ...multiPage.pages,
@@ -481,8 +517,11 @@ function EditorContent() {
   const homePage = multiPage?.pages?.home;
   const heroBlock = homePage?.content?.find((b) => b?.type === "HeroBlock");
   const contactBlock = homePage?.content?.find((b) => b?.type === "ContactWhatsAppBlock");
-  const inferredBusinessName = homePage?.root?.props?.title?.split("|")?.[0]?.trim() || "STARKORA";
-  const inferredBusinessType = heroBlock?.props?.badgeText || "Enterprise";
+  const inferredBusinessName =
+    homePage?.root?.props?.title?.split("|")?.[0]?.trim() ||
+    (typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_name") : null) ||
+    "STARKORA";
+  const inferredBusinessType = heroBlock?.props?.badgeText || "Services";
   const inferredLocation = contactBlock?.props?.location || "Lagos, Nigeria";
 
   const stableConfig = useMemo(() => {
@@ -501,7 +540,7 @@ function EditorContent() {
     );
   }
 
-  const currentCanvasData = multiPage?.pages?.[activePage] || defaultMultiPageData.pages.home;
+  const currentCanvasData = multiPage?.pages?.[activePage] || createDefaultMultiPage(inferredBusinessName).pages.home;
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden relative">

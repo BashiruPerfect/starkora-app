@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function Home() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<{ email: string; name: string } | null>(null);
 
@@ -16,7 +14,6 @@ export default function Home() {
     description: "",
   });
 
-  // Check active session on page load
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => (res.ok ? res.json() : null))
@@ -29,7 +26,7 @@ export default function Home() {
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
-    router.refresh();
+    window.location.reload();
   };
 
   const handleGenerate = async (e: React.FormEvent) => {
@@ -47,13 +44,18 @@ export default function Home() {
 
       if (data.siteData) {
         localStorage.setItem("starkora_active_site", JSON.stringify(data.siteData));
-        router.push("/editor");
+        localStorage.setItem("starkora_active_business_name", formData.businessName);
+        localStorage.setItem("starkora_active_business_type", formData.businessType);
+        localStorage.setItem("starkora_active_location", formData.location);
+
+        // Force full page reload into editor to bypass soft-navigation caching
+        window.location.href = "/editor";
       } else {
-        alert("Failed to generate site data.");
+        alert("Failed to generate website data. Please try again.");
+        setLoading(false);
       }
     } catch {
       alert("An error occurred during generation.");
-    } finally {
       setLoading(false);
     }
   };
@@ -107,7 +109,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Hero & Generator Form */}
+      {/* Main Generator Form */}
       <main className="flex-1 flex flex-col items-center justify-center p-6 my-10">
         <div className="max-w-xl w-full bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl space-y-6">
           <div className="text-center space-y-2">
@@ -187,7 +189,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="py-6 px-6 border-t border-slate-900 text-center text-xs text-slate-600">
         <p>© 2026 STARKORA Platform. Built for African merchants and global scale.</p>
       </footer>
