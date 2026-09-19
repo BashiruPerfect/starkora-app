@@ -86,6 +86,7 @@ const fontFamilies: Record<ThemeFont, string> = {
   mono: "'JetBrains Mono', monospace",
 };
 
+// Navigation interceptor for preview mode, /live/[subdomain], and custom apex domains
 function navigateToTarget(e: React.MouseEvent<HTMLAnchorElement>, targetSlug: string) {
   if (typeof window === "undefined") return;
 
@@ -146,7 +147,10 @@ function ImageFieldManager({
   };
 
   const handleAiGenerate = async () => {
-    const prompt = window.prompt("Describe the image you want AI to generate:", "Modern business office space with natural lighting");
+    const prompt = window.prompt(
+      "Describe the image you want AI to generate:",
+      "Modern luxury storefront with warm ambient lighting"
+    );
     if (!prompt) return;
 
     setGeneratingAi(true);
@@ -157,14 +161,24 @@ function ImageFieldManager({
         body: JSON.stringify({ prompt }),
       });
 
-      const data = await res.json();
+      const rawText = await res.text();
+      let data: any = {};
+
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        throw new Error(
+          `Server returned non-JSON response (Status ${res.status}). Ensure /api/ai/image is deployed.`
+        );
+      }
+
       if (res.ok && data.url) {
         onChange(data.url);
       } else {
-        alert(data.error || "AI image generation failed.");
+        alert(data.error || `AI image generation failed (Status ${res.status}).`);
       }
-    } catch {
-      alert("Error contacting the AI image engine.");
+    } catch (err: any) {
+      alert(`AI Image Engine Error: ${err.message}`);
     } finally {
       setGeneratingAi(false);
     }
@@ -1008,5 +1022,5 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
   };
 }
 
-// Static fallback config export for server renderers
+// Fallback export for server components
 export const config = createConfig();
