@@ -117,6 +117,25 @@ async function ensureTables() {
     );
   `;
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS password_resets (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token TEXT UNIQUE NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS subscribers (
+      id TEXT PRIMARY KEY,
+      site_id TEXT NOT NULL,
+      email TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `;
+
   tablesInitialized = true;
 }
 
@@ -348,7 +367,6 @@ export const db = {
 
     const id = "site_" + Math.random().toString(36).substring(2, 11);
 
-    // Clean subdomain: strips "welcome to", "the", and unwanted punctuation
     const cleanSubdomain = name
       .toLowerCase()
       .replace(/^welcome\s+to\s+/i, "")
@@ -432,4 +450,65 @@ export const db = {
     `;
     return rows[0]?.count || 0;
   },
-};
+
+  async createPasswordResetToken(userId: string): Promise<string> {
+    await ensureTables();
+    const sql = getSql();
+    const id = "rst_" + Math.random().toString(36).substring(2, 11);
+    const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60);
+
+    await sql`
+      INSERT INTO password_resets (id, user_id, token, expires_at)
+      VALUES (${id}, ${userId}, ${token}, ${expiresAt.toISOString()});
+    `;
+    return token;
+  },
+
+  async verifyAndConsumeResetToken(token: string, newPasswordHash: string): Promise<boolean> {
+    await ensureTables();
+    const sql = getSql();
+    
+    const rows = await sql`
+      SELECT user_id as "userId", expires_at as "expiresAt"
+      FROM password_resets
+      WHERE token = ${token} AND expires_at > NOW()
+      LIMIT 1;
+    `;
+
+    if (rows.length === 0) return false;
+    const userId = rows[0].userId;
+
+    await sql`
+      UPDATE users SET password_hash = ${newPasswordHash} WHERE id = ${userId};
+    `;
+    await sql`
+      DELETE FROM password_resets WHERE token = ${token};
+    `;
+    return true;
+  },
+
+  async addSubscriber(siteId: string, email: string): Promise<boolean> {
+    await ensureTables();
+    const sql = getSql();
+    const id = "sub_" + Math.random().toString(36).substring(2, 11);
+
+    await sql`
+      INSERT INTO subscribers (id, site_id, email)
+      VALUES (${id}, ${siteId}, ${email.toLowerCase().trim()});
+    `;
+    return true;
+  },
+
+  async getSubscribersByUserId(userId: string): Promise<any[]> {
+    await ensureTables();
+    const sql = getSql();
+    return await sql`
+      SELECT sub.id, sub.email, sub.created_at as "createdAt", s.name as "siteName"
+      FROM subscribers sub
+      JOIN sites s ON s.id = sub.site_id
+      WHERE s.user_id = ${userId}
+      ORDER BY sub.created_at DESC;
+    `;
+  },
+}

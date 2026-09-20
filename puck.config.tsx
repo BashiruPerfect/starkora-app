@@ -288,6 +288,7 @@ export type ComponentProps = {
     ctaLink: string;
   };
   HeroBlock: {
+    layout?: "text-left" | "image-left" | "centered";
     badgeText?: string;
     heading: string;
     subheading: string;
@@ -329,6 +330,11 @@ export type ComponentProps = {
     email: string;
     location: string;
   };
+  NewsletterBlock: {
+    title: string;
+    subtitle: string;
+    buttonText: string;
+  };
   FooterBlock: {
     copyrightText: string;
   };
@@ -341,12 +347,16 @@ export interface BusinessContext {
 }
 
 export function createConfig(context?: BusinessContext): Config<ComponentProps, RootProps> {
-  const rawName = context?.businessName || "STARKORA";
+  const fallbackStoredName = typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_name") : null;
+  const fallbackStoredType = typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_type") : null;
+  const fallbackStoredLoc = typeof window !== "undefined" ? localStorage.getItem("starkora_active_location") : null;
+
+  const rawName = context?.businessName || fallbackStoredName || "STARKORA";
   const name = rawName.replace(/^welcome\s+to\s+/i, "").replace(/^the\s+/i, "").trim() || "STARKORA";
 
-  const rawType = context?.businessType || "Culinary & Dining Services";
+  const rawType = context?.businessType || fallbackStoredType || "Culinary & Dining Services";
   const type = rawType.replace(/^welcome\s+to\s+/i, "").trim();
-  const loc = context?.location || "Lagos, Nigeria";
+  const loc = context?.location || fallbackStoredLoc || "Lagos, Nigeria";
 
   return {
     root: {
@@ -480,6 +490,14 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
 
       HeroBlock: {
         fields: {
+          layout: {
+            type: "radio",
+            options: [
+              { label: "Text Left, Image Right", value: "text-left" },
+              { label: "Image Left, Text Right", value: "image-left" },
+              { label: "Centered Banner", value: "centered" },
+            ],
+          },
           badgeText: { type: "text" },
           heading: { type: "text" },
           subheading: { type: "textarea" },
@@ -501,6 +519,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           },
         },
         defaultProps: {
+          layout: "text-left",
           badgeText: "PREMIER SERVICE",
           heading: `${name}`,
           subheading: `Exceptional ${type} crafted with passion, quality, and dedication to our clients across ${loc}.`,
@@ -509,8 +528,10 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
           theme: "gradient",
         },
-        render: ({ badgeText, heading, subheading, ctaText, ctaLink, imageUrl, theme }) => {
+        render: ({ layout = "text-left", badgeText, heading, subheading, ctaText, ctaLink, imageUrl, theme }) => {
           const isGradient = theme === "gradient";
+          const isCentered = layout === "centered";
+          const isImageLeft = layout === "image-left";
 
           return (
             <section
@@ -526,8 +547,18 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                 theme === "light" ? "bg-white text-slate-900" : "bg-slate-950 text-white"
               }`}
             >
-              <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-6 text-left">
+              <div
+                className={`max-w-6xl mx-auto ${
+                  isCentered
+                    ? "flex flex-col items-center text-center space-y-10"
+                    : "grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+                }`}
+              >
+                <div
+                  className={`space-y-6 ${
+                    isCentered ? "max-w-3xl text-center" : isImageLeft ? "lg:order-last text-left" : "text-left"
+                  }`}
+                >
                   {badgeText && (
                     <div className="inline-block">
                       <span
@@ -570,7 +601,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                 </div>
 
                 {imageUrl && (
-                  <div className="relative">
+                  <div className={`w-full ${isCentered ? "max-w-4xl" : isImageLeft ? "lg:order-first" : ""}`}>
                     <div
                       style={{ borderColor: "var(--starkora-card-border)" }}
                       className="rounded-2xl overflow-hidden shadow-2xl border aspect-video lg:aspect-square max-h-[420px] w-full bg-slate-900 flex items-center justify-center relative group"
@@ -583,13 +614,6 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                           target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";
                         }}
                         className="w-full h-full object-cover"
-                      />
-                      <div
-                        style={{
-                          background:
-                            "linear-gradient(to top, rgba(2, 6, 23, 0.7) 0%, transparent 60%)",
-                        }}
-                        className="absolute inset-0 pointer-events-none"
                       />
                     </div>
                   </div>
@@ -699,8 +723,8 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           },
         },
         defaultProps: {
-          sectionTitle: "Curated Packages",
-          sectionSubtitle: "Simple, transparent pricing tailored to your needs.",
+          sectionTitle: `${type} Packages`,
+          sectionSubtitle: "Transparent, value-driven packages designed for your requirements.",
           plans: [
             {
               name: "Standard Package",
@@ -844,7 +868,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           title: `Connect With ${name}`,
           subtitle: `Reach out via WhatsApp or submit your inquiry below for prompt response.`,
           phoneNumber: "+2348012345678",
-          whatsappMessage: `Hello ${name}, I would like to inquire about your services.`,
+          whatsappMessage: `Hello ${name}, I would like to inquire about your ${type}.`,
           email: `contact@${name.toLowerCase().replace(/[^a-z0-9]/g, "") || "business"}.com`,
           location: loc,
         },
@@ -1003,6 +1027,74 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
             </section>
           );
         },
+      },
+
+      NewsletterBlock: {
+        fields: {
+          title: { type: "text" },
+          subtitle: { type: "textarea" },
+          buttonText: { type: "text" },
+        },
+        defaultProps: {
+          title: "Stay Informed with Our Updates",
+          subtitle: `Subscribe to receive seasonal promotions, announcements, and news from ${name} directly in your inbox.`,
+          buttonText: "Subscribe",
+        },
+        render: ({ title, subtitle, buttonText }) => (
+          <section className="py-20 px-6 bg-slate-900 text-white border-t border-slate-800 text-center">
+            <div className="max-w-2xl mx-auto space-y-6">
+              <h2 className="text-3xl font-extrabold tracking-tight">{title}</h2>
+              <p className="text-sm text-slate-400">{subtitle}</p>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const target = e.target as HTMLFormElement;
+                  const emailInput = target.querySelector("input[type='email']") as HTMLInputElement;
+                  const email = emailInput?.value;
+                  if (!email) return;
+
+                  try {
+                    const pathSegments = window.location.pathname.split("/").filter(Boolean);
+                    let siteId = pathSegments[0] === "live" && pathSegments[1] ? pathSegments[1] : window.location.hostname;
+
+                    const res = await fetch("/api/newsletter/subscribe", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ siteId, email }),
+                    });
+
+                    if (res.ok) {
+                      alert("Thank you for subscribing!");
+                      target.reset();
+                    } else {
+                      alert("Subscription failed. Please try again.");
+                    }
+                  } catch {
+                    alert("Error submitting subscription.");
+                  }
+                }}
+                className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+              >
+                <input
+                  type="email"
+                  required
+                  placeholder="Enter your email address"
+                  className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500"
+                />
+                <button
+                  type="submit"
+                  style={{
+                    backgroundColor: "var(--starkora-primary)",
+                    color: "var(--starkora-primary-text)",
+                  }}
+                  className="px-6 py-3 rounded-xl font-bold text-sm transition hover:brightness-110 shadow-lg whitespace-nowrap"
+                >
+                  {buttonText}
+                </button>
+              </form>
+            </div>
+          </section>
+        ),
       },
 
       FooterBlock: {
