@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { createSessionToken } from "@/lib/auth";
 import { cookies } from "next/headers";
-import { sendWelcomeEmail } from "@/lib/mail";
+import { sendWelcomeEmail, sendAdminNewUserAlert } from "@/lib/mail";
 
 export async function POST(req: Request) {
   try {
@@ -44,8 +44,11 @@ export async function POST(req: Request) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    // Fire welcome email asynchronously without blocking registration response
+    // 1. Send personal founder welcome email to the newly registered customer
     sendWelcomeEmail(user.email, user.name || "");
+
+    // 2. Send instant alert notification to you (the business admin)
+    sendAdminNewUserAlert(user.email, user.name || "");
 
     return NextResponse.json({
       success: true,
