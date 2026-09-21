@@ -5,6 +5,7 @@ export interface UserRecord {
   email: string;
   passwordHash: string;
   name?: string;
+  phone?: string;
   createdAt: string;
 }
 
@@ -67,8 +68,14 @@ async function ensureTables() {
       email TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       name TEXT,
+      phone TEXT,
       created_at TIMESTAMPTZ DEFAULT NOW()
     );
+  `;
+
+  // Migration: safely add phone column if the table already existed
+  await sql`
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT;
   `;
 
   await sql`
@@ -144,7 +151,7 @@ export const db = {
     await ensureTables();
     const sql = getSql();
     const rows = await sql`
-      SELECT id, email, password_hash as "passwordHash", name, created_at as "createdAt"
+      SELECT id, email, password_hash as "passwordHash", name, phone, created_at as "createdAt"
       FROM users
       WHERE LOWER(email) = LOWER(${email.trim()})
       LIMIT 1;
@@ -156,7 +163,7 @@ export const db = {
     await ensureTables();
     const sql = getSql();
     const rows = await sql`
-      SELECT id, email, password_hash as "passwordHash", name, created_at as "createdAt"
+      SELECT id, email, password_hash as "passwordHash", name, phone, created_at as "createdAt"
       FROM users
       WHERE id = ${id}
       LIMIT 1;
@@ -169,9 +176,9 @@ export const db = {
     const sql = getSql();
     const id = "usr_" + Math.random().toString(36).substring(2, 11);
     const rows = await sql`
-      INSERT INTO users (id, email, password_hash, name)
-      VALUES (${id}, ${user.email.toLowerCase().trim()}, ${user.passwordHash}, ${user.name || null})
-      RETURNING id, email, password_hash as "passwordHash", name, created_at as "createdAt";
+      INSERT INTO users (id, email, password_hash, name, phone)
+      VALUES (${id}, ${user.email.toLowerCase().trim()}, ${user.passwordHash}, ${user.name || null}, ${user.phone || null})
+      RETURNING id, email, password_hash as "passwordHash", name, phone, created_at as "createdAt";
     `;
     return rows[0] as UserRecord;
   },
@@ -511,4 +518,4 @@ export const db = {
       ORDER BY sub.created_at DESC;
     `;
   },
-}
+};

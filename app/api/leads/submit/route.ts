@@ -1,31 +1,31 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthenticatedUser } from "@/lib/auth";
+import { sendNewLeadAlertToOwner } from "@/lib/mail";
 
 export async function POST(req: Request) {
   try {
-    const { siteId: siteIdentifier, name, phone, email, message } = await req.json();
+    const { siteId: siteIdentifier, name, email, phone, message } = await req.json();
 
-    if (!name || !phone) {
+    if (!name || (!email && !phone)) {
       return NextResponse.json(
-        { error: "Name and Phone number are required." },
+        { error: "Name and at least one contact method (Email or Phone) are required." },
         { status: 400 }
       );
     }
 
     let site = null;
 
-    // 1. Direct identifier lookup (if not the root platform hostname)
     if (
       siteIdentifier &&
       siteIdentifier !== "starkora-app.vercel.app" &&
+      siteIdentifier !== "starkora.website" &&
       siteIdentifier !== "localhost" &&
       !siteIdentifier.includes("localhost:")
     ) {
       site = await db.findSiteByIdentifier(siteIdentifier);
     }
 
-    // 2. Fallback: If submitted from editor/preview on starkora-app.vercel.app, resolve via session
     if (!site) {
       const session = await getAuthenticatedUser();
       if (session) {
@@ -36,26 +36,25 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. Fallback: Resolve to the latest active site in the database
     if (!site) {
       site = await db.findLatestSite();
     }
 
     if (!site) {
       return NextResponse.json(
-        { error: "Could not associate lead with an active website." },
+        { error: "Could not associate inquiry with an active website." },
         { status: 404 }
       );
     }
 
-    // TIER ENFORCEMENT: Free tier is capped at 10 leads per calendar month
+    // Lead quota enforcement for free tier
     if (site.subscriptionStatus !== "active") {
       const currentMonthlyLeads = await db.countMonthlyLeadsBySiteId(site.id);
       if (currentMonthlyLeads >= 10) {
         return NextResponse.json(
           {
             error:
-              "This business has reached its monthly inquiry limit on the Free Plan. Please reach out to them directly via WhatsApp or phone.",
+              "This business has reached its monthly inquiry limit on the Free Plan. Please reach out to them directly.",
           },
           { status: 429 }
         );
@@ -65,10 +64,23 @@ export async function POST(req: Request) {
     const lead = await db.createLead({
       siteId: site.id,
       name,
-      phone,
+      phone: phone || "",
       email: email || "",
       message: message || "General inquiry from website",
     });
+
+    // Notify site owner via email with direct Reply-To configuration
+    const owner = await db.findUserById(site.userId);
+    if (owner && owner.email) {
+      sendNewLeadAlertToOwner({
+        ownerEmail: owner.email,
+        siteName: site.name,
+        leadName: name,
+        leadEmail: email || undefined,
+        leadPhone: phone || undefined,
+        message: message || "Interested in your services",
+      });
+    }
 
     return NextResponse.json({ success: true, lead });
   } catch (error: any) {

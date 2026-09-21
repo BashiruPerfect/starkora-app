@@ -10,6 +10,7 @@ export default function Home() {
   const [formData, setFormData] = useState({
     businessName: "",
     businessType: "Restaurant & Bar",
+    phone: "",
     location: "Lagos, Nigeria",
     description: "",
   });
@@ -46,9 +47,10 @@ export default function Home() {
         localStorage.setItem("starkora_active_site", JSON.stringify(data.siteData));
         localStorage.setItem("starkora_active_business_name", formData.businessName);
         localStorage.setItem("starkora_active_business_type", formData.businessType);
+        localStorage.setItem("starkora_active_phone", formData.phone);
         localStorage.setItem("starkora_active_location", formData.location);
 
-        // Force full page reload into editor to bypass soft-navigation caching
+        // Force full page reload into editor to avoid client-side route caching
         window.location.href = "/editor";
       } else {
         alert("Failed to generate website data. Please try again.");
@@ -109,7 +111,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Generator Form */}
+      {/* Main Hero & Generator Form */}
       <main className="flex-1 flex flex-col items-center justify-center p-6 my-10">
         <div className="max-w-xl w-full bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl space-y-6">
           <div className="text-center space-y-2">
@@ -151,18 +153,33 @@ export default function Home() {
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
                 />
               </div>
+
               <div>
                 <label className="block text-xs font-medium uppercase text-slate-400 mb-1">
-                  Location
+                  WhatsApp / Phone Number
                 </label>
                 <input
-                  type="text"
-                  placeholder="e.g. Abuja, Nigeria"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  type="tel"
+                  required
+                  placeholder="e.g. +234 801 234 5678"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium uppercase text-slate-400 mb-1">
+                Location
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Abuja, Nigeria"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+              />
             </div>
 
             <div>
@@ -189,6 +206,7 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Footer */}
       <footer className="py-6 px-6 border-t border-slate-900 text-center text-xs text-slate-600">
         <p>© 2026 STARKORA Platform. Built for African merchants and global scale.</p>
       </footer>

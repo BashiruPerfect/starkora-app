@@ -354,7 +354,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
   const rawName = context?.businessName || fallbackStoredName || "STARKORA";
   const name = rawName.replace(/^welcome\s+to\s+/i, "").replace(/^the\s+/i, "").trim() || "STARKORA";
 
-  const rawType = context?.businessType || fallbackStoredType || "Culinary & Dining Services";
+  const rawType = context?.businessType || fallbackStoredType || "Professional Services";
   const type = rawType.replace(/^welcome\s+to\s+/i, "").trim();
   const loc = context?.location || fallbackStoredLoc || "Lagos, Nigeria";
 
@@ -723,20 +723,20 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           },
         },
         defaultProps: {
-          sectionTitle: `${type} Packages`,
-          sectionSubtitle: "Transparent, value-driven packages designed for your requirements.",
+          sectionTitle: "Curated Packages",
+          sectionSubtitle: "Simple, transparent pricing tailored to your needs.",
           plans: [
             {
               name: "Standard Package",
               price: "₦35,000",
-              features: `Complete ${type} Delivery\nDirect WhatsApp Support\nStandard Quality Assurance`,
+              features: `Complete ${type} Delivery\nDirect Support & Consultation\nStandard Quality Assurance`,
               isPopular: false,
-              ctaText: "Order Standard",
+              ctaText: "Select Standard",
             },
             {
               name: "Executive Tier",
               price: "₦95,000",
-              features: `Priority ${type} Execution\nDedicated Support Line\nExtended Warranty\nCustom Specifications`,
+              features: `Priority Execution\nDedicated Support Line\nExtended Warranty\nCustom Specifications Included`,
               isPopular: true,
               ctaText: "Select Executive",
             },
@@ -866,16 +866,16 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
         },
         defaultProps: {
           title: `Connect With ${name}`,
-          subtitle: `Reach out via WhatsApp or submit your inquiry below for prompt response.`,
+          subtitle: `Send us a message below or contact us directly. We respond promptly during business hours.`,
           phoneNumber: "+2348012345678",
-          whatsappMessage: `Hello ${name}, I would like to inquire about your ${type}.`,
+          whatsappMessage: `Hello ${name}, I would like to inquire about your services.`,
           email: `contact@${name.toLowerCase().replace(/[^a-z0-9]/g, "") || "business"}.com`,
           location: loc,
         },
         render: ({ title, subtitle, phoneNumber, whatsappMessage, email, location }) => {
           const cleanNumber = phoneNumber?.replace(/[^0-9]/g, "") || "";
           const encodedMsg = encodeURIComponent(whatsappMessage || "Hello!");
-          const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMsg}`;
+          const whatsappUrl = cleanNumber ? `https://wa.me/${cleanNumber}?text=${encodedMsg}` : "";
 
           return (
             <section id="contact" className="py-24 px-6 bg-slate-900/40 text-white border-t border-slate-800">
@@ -887,29 +887,32 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                   <div className="bg-slate-950/70 border border-slate-800 p-6 rounded-2xl space-y-6">
-                    <h3 className="text-lg font-bold text-white">Instant Contact</h3>
+                    <h3 className="text-lg font-bold text-white">Direct Information</h3>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      Have an urgent inquiry? Reach us immediately on WhatsApp or email.
+                      Have questions or require assistance? You can reach us directly via email or our direct phone lines.
                     </p>
                     <div className="space-y-3">
                       <a
-                        href={whatsappUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm transition"
-                      >
-                        <span>💬 Chat on WhatsApp</span>
-                      </a>
-                      <a
                         href={`mailto:${email}`}
-                        className="w-full py-3.5 px-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm text-slate-200 transition"
+                        className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm text-white transition shadow-lg"
                       >
-                        <span>✉️ Send Email</span>
+                        <span>✉️ Email Us Directly</span>
                       </a>
+                      {whatsappUrl && (
+                        <a
+                          href={whatsappUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-3.5 px-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm text-emerald-400 transition"
+                        >
+                          <span>💬 Chat on WhatsApp</span>
+                        </a>
+                      )}
                     </div>
                     <div className="pt-4 border-t border-slate-800 text-xs text-slate-500 space-y-1">
                       <p>📍 Location: {location}</p>
-                      <p>📞 Phone: {phoneNumber}</p>
+                      {phoneNumber && <p>📞 Phone: {phoneNumber}</p>}
+                      <p>✉️ Email: {email}</p>
                     </div>
                   </div>
 
@@ -920,13 +923,14 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                         const target = e.target as HTMLFormElement;
                         const formData = new FormData(target);
                         const senderName = formData.get("name") as string;
+                        const senderEmail = formData.get("email") as string;
                         const senderPhone = formData.get("phone") as string;
-                        const message = formData.get("message") as string;
+                        const senderMessage = formData.get("message") as string;
                         const submitBtn = target.querySelector("button[type='submit']") as HTMLButtonElement;
 
                         if (submitBtn) {
                           submitBtn.disabled = true;
-                          submitBtn.innerText = "Sending...";
+                          submitBtn.innerText = "Sending Message...";
                         }
 
                         try {
@@ -949,15 +953,15 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                             body: JSON.stringify({
                               siteId: siteIdentifier,
                               name: senderName,
+                              email: senderEmail,
                               phone: senderPhone,
-                              email: "",
-                              message,
+                              message: senderMessage,
                             }),
                           });
 
                           const result = await res.json();
                           if (res.ok) {
-                            alert("Thank you! Your message has been sent. We will contact you shortly.");
+                            alert("Thank you! Your message has been sent successfully. The site owner will respond to your email shortly.");
                             target.reset();
                           } else {
                             alert(result.error || "Failed to submit message.");
@@ -967,13 +971,13 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                         } finally {
                           if (submitBtn) {
                             submitBtn.disabled = false;
-                            submitBtn.innerText = "Send Inquiry ➔";
+                            submitBtn.innerText = "Send Message ➔";
                           }
                         }
                       }}
                       className="space-y-4"
                     >
-                      <h3 className="text-lg font-bold text-white">Leave a Message</h3>
+                      <h3 className="text-lg font-bold text-white">Send a Message</h3>
                       <div>
                         <label className="block text-[11px] uppercase font-semibold text-slate-400 mb-1">
                           Your Name
@@ -986,21 +990,34 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                           className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
                         />
                       </div>
-                      <div>
-                        <label className="block text-[11px] uppercase font-semibold text-slate-400 mb-1">
-                          Phone / WhatsApp Number
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          required
-                          placeholder="e.g. +234 801 234 5678"
-                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
-                        />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] uppercase font-semibold text-slate-400 mb-1">
+                            Your Email Address
+                          </label>
+                          <input
+                            type="email"
+                            name="email"
+                            required
+                            placeholder="tunde@gmail.com"
+                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] uppercase font-semibold text-slate-400 mb-1">
+                            Phone Number (Optional)
+                          </label>
+                          <input
+                            type="tel"
+                            name="phone"
+                            placeholder="+234..."
+                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                          />
+                        </div>
                       </div>
                       <div>
                         <label className="block text-[11px] uppercase font-semibold text-slate-400 mb-1">
-                          Message or Service Needed
+                          Your Inquiry or Request
                         </label>
                         <textarea
                           name="message"
@@ -1018,7 +1035,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                         }}
                         className="w-full py-3.5 font-bold rounded-xl text-sm transition hover:brightness-110 shadow-lg"
                       >
-                        Send Inquiry ➔
+                        Send Message ➔
                       </button>
                     </form>
                   </div>
@@ -1050,8 +1067,8 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                   e.preventDefault();
                   const target = e.target as HTMLFormElement;
                   const emailInput = target.querySelector("input[type='email']") as HTMLInputElement;
-                  const email = emailInput?.value;
-                  if (!email) return;
+                  const emailVal = emailInput?.value;
+                  if (!emailVal) return;
 
                   try {
                     const pathSegments = window.location.pathname.split("/").filter(Boolean);
@@ -1060,7 +1077,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     const res = await fetch("/api/newsletter/subscribe", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ siteId, email }),
+                      body: JSON.stringify({ siteId, email: emailVal }),
                     });
 
                     if (res.ok) {

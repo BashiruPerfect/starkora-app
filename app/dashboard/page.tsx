@@ -341,7 +341,6 @@ export default function DashboardPage() {
 
                       <h2 className="text-xl font-bold tracking-tight line-clamp-1">{site.name}</h2>
 
-                      {/* Live Subdomain / Custom Domain Links */}
                       <div className="space-y-1">
                         <p className="text-xs font-mono text-slate-400">
                           <a
@@ -481,18 +480,22 @@ export default function DashboardPage() {
                 </div>
                 <div className="divide-y divide-slate-800">
                   {leads.map((lead) => {
-                    const cleanPhone = lead.phone.replace(/[^0-9]/g, "");
+                    const cleanPhone = lead.phone ? lead.phone.replace(/[^0-9]/g, "") : "";
                     const defaultReply = encodeURIComponent(
                       `Hello ${lead.name}, thank you for reaching out through our website regarding: "${lead.message}". How can we help you today?`
                     );
-                    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${defaultReply}`;
+                    const whatsappUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${defaultReply}` : null;
+                    const emailSubject = encodeURIComponent(`Regarding your inquiry on our website`);
+                    const emailBody = encodeURIComponent(`Hello ${lead.name},\n\nThank you for reaching out regarding: "${lead.message}".\n\n`);
+                    const emailUrl = lead.email ? `mailto:${lead.email}?subject=${emailSubject}&body=${emailBody}` : null;
 
                     return (
                       <div key={lead.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <h4 className="font-bold text-white text-sm">{lead.name}</h4>
-                            <span className="text-xs text-slate-500 font-mono">{lead.phone}</span>
+                            {lead.email && <span className="text-xs text-indigo-300 font-mono">✉️ {lead.email}</span>}
+                            {lead.phone && <span className="text-xs text-slate-400 font-mono">📞 {lead.phone}</span>}
                             <span className="text-[10px] text-slate-500">
                               {new Date(lead.createdAt).toLocaleDateString()}
                             </span>
@@ -501,15 +504,25 @@ export default function DashboardPage() {
                             {lead.message}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <a
-                            href={whatsappUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg flex items-center gap-1.5 transition whitespace-nowrap"
-                          >
-                            <span>💬 Reply on WhatsApp</span>
-                          </a>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {emailUrl && (
+                            <a
+                              href={emailUrl}
+                              className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-lg flex items-center gap-1.5 transition whitespace-nowrap"
+                            >
+                              <span>✉️ Reply via Email</span>
+                            </a>
+                          )}
+                          {whatsappUrl && (
+                            <a
+                              href={whatsappUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg flex items-center gap-1.5 transition whitespace-nowrap"
+                            >
+                              <span>💬 WhatsApp</span>
+                            </a>
+                          )}
                         </div>
                       </div>
                     );

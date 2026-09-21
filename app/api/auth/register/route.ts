@@ -7,7 +7,7 @@ import { sendWelcomeEmail, sendAdminNewUserAlert } from "@/lib/mail";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, name } = await req.json();
+    const { email, password, name, phone } = await req.json();
 
     if (!email || !password || password.length < 6) {
       return NextResponse.json(
@@ -29,6 +29,7 @@ export async function POST(req: Request) {
       email,
       passwordHash,
       name: name || undefined,
+      phone: phone || undefined,
     });
 
     const token = await createSessionToken({
@@ -44,15 +45,15 @@ export async function POST(req: Request) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-    // 1. Send personal founder welcome email to the newly registered customer
+    // 1. Send founder welcome email to the newly registered customer
     sendWelcomeEmail(user.email, user.name || "");
 
-    // 2. Send instant alert notification to you (the business admin)
-    sendAdminNewUserAlert(user.email, user.name || "");
+    // 2. Send admin alert with email, name, and phone (clears compiler warning)
+    sendAdminNewUserAlert(user.email, user.name || "", user.phone || "");
 
     return NextResponse.json({
       success: true,
-      user: { id: user.id, email: user.email, name: user.name },
+      user: { id: user.id, email: user.email, name: user.name, phone: user.phone },
     });
   } catch (error: any) {
     return NextResponse.json(
