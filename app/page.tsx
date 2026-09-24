@@ -6,44 +6,54 @@ import Link from "next/link";
 const INDUSTRIES = [
   {
     id: "fashion",
-    name: "Fashion & Retail",
-    headline: "Bespoke African Fashion & Luxury Boutiques",
-    subtext: "Showcase seasonal collections, Senator wears, and custom Agbada with direct WhatsApp order links.",
+    name: "Fashion & Luxury",
+    headline: "Bespoke Couture, Senator Suits & African Luxury",
+    subtext: "Showcase seasonal lookbooks, tailored Agbada, and designer ready-to-wear with integrated customer inquiry routing.",
     tag: "High Converting",
-    color: "from-amber-500/20 to-orange-500/10",
+    image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1200&auto=format&fit=crop&q=80",
+    stats: "₦1.8M/mo average merchant sales",
+    metrics: "48h turnaround on custom fits",
   },
   {
     id: "food",
-    name: "Food & Catering",
+    name: "Catering & Dining",
     headline: "Gourmet Restaurants, Cloud Kitchens & Event Catering",
-    subtext: "Present daily menus, take banquet reservations, and route party orders directly to your phone.",
+    subtext: "Present dynamic menus, take event banquet bookings, and route customer orders straight to your phone and email.",
     tag: "Most Popular",
-    color: "from-rose-500/20 to-red-500/10",
+    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&auto=format&fit=crop&q=80",
+    stats: "35+ weekly banquet inquiries",
+    metrics: "Zero cart abandonment on food",
   },
   {
     id: "realestate",
     name: "Real Estate",
     headline: "Property Brokers, Shortlets & Luxury Developers",
-    subtext: "Display property portfolios in Lekki and Abuja with neighborhood insights and direct inspection bookings.",
-    tag: "High Value",
-    color: "from-emerald-500/20 to-teal-500/10",
+    subtext: "Present luxury listings in Ikoyi, Lekki, and Abuja with high-resolution gallery viewports and direct inspection booking forms.",
+    tag: "High Ticket",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&auto=format&fit=crop&q=80",
+    stats: "₦85M+ closed transactions",
+    metrics: "1-click private inspection booking",
   },
   {
     id: "consulting",
-    name: "Professional Services",
-    headline: "Legal Advisors, Accountants & Business Consultants",
-    subtext: "Establish instant institutional credibility with structured service tiers, case studies, and client intake.",
-    tag: "Corporate",
-    color: "from-indigo-500/20 to-blue-500/10",
+    name: "Corporate Advisory",
+    headline: "Legal Counsel, Accountants & Strategic Consultants",
+    subtext: "Establish institutional authority with structured engagement packages, practice area breakdowns, and confidential intake forms.",
+    tag: "Enterprise",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80",
+    stats: "Top 50 firms adopting edge sites",
+    metrics: "Retainer tiers built in",
   },
-  {
-    id: "services",
-    name: "Home & Auto Services",
-    headline: "Cleaning Agencies, Car Detailing & Solar Installers",
-    subtext: "Capture emergency service bookings, quote requests, and local customer inquiries 24/7.",
-    tag: "Fast Turnaround",
-    color: "from-cyan-500/20 to-sky-500/10",
-  },
+];
+
+const INTEGRATIONS = [
+  "⚡ Vercel Global Anycast Edge",
+  "💳 Paystack Native NGN & Cards",
+  "🐘 Neon Serverless PostgreSQL",
+  "✨ OpenAI Generative Engine",
+  "📬 Resend Transactional Mail",
+  "🛡️ Cloudflare Enterprise Security",
+  "🌐 NiRA Certified .NG Engine",
 ];
 
 const FAQS = [
@@ -138,7 +148,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden">
       {/* 1. Global Navigation Bar */}
       <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md px-6 sm:px-12 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-8">
@@ -193,172 +203,266 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 2. Hero Section with Generator Engine */}
-      <section id="generator" className="relative pt-16 pb-24 px-6 overflow-hidden">
+      {/* 2. Hero Section with Interactive Generator and Floating Mockup */}
+      <section id="generator" className="relative pt-12 pb-24 px-6 overflow-hidden">
         {/* Ambient Gradient Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-600/15 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute top-48 right-10 w-[400px] h-[300px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-indigo-600/15 blur-[140px] rounded-full pointer-events-none" />
+        <div className="absolute top-72 right-4 w-[500px] h-[350px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto text-center space-y-6 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-indigo-500/30 text-indigo-400 text-xs font-semibold shadow-inner">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>The Complete Autonomous AI Website Builder</span>
-          </div>
-
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] max-w-4xl mx-auto">
-            Launch a High-Converting Website in <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-300 to-indigo-200">30 Seconds</span>
-          </h1>
-
-          <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Generate a full 4-page website tailored to your business, with built-in customer lead capture, instant email alerts, and Anycast edge delivery.
-          </p>
-
-          {/* Social Proof Stats */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 font-medium">
-            <div className="flex items-center gap-1.5">
-              <span className="text-amber-400 font-bold">★★★★★</span>
-              <span className="font-semibold text-white">4.9 / 5</span> rating
+        <div className="max-w-6xl mx-auto space-y-12 relative z-10">
+          <div className="text-center space-y-5 max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-indigo-500/30 text-indigo-400 text-xs font-semibold shadow-inner">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Autonomous AI Engine for African Businesses</span>
             </div>
-            <span>•</span>
-            <div><strong className="text-white">12,000+</strong> websites launched</div>
-            <span>•</span>
-            <div><strong className="text-white">100%</strong> Native Paystack billing</div>
+
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08]">
+              Launch a High-Converting Website in{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-300 to-indigo-200">
+                30 Seconds
+              </span>
+            </h1>
+
+            <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+              Generate full 4-page websites tailored to your brand, equipped with direct WhatsApp lead capture, instant email alerts, and Anycast edge delivery.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 font-medium">
+              <div className="flex items-center gap-1.5">
+                <span className="text-amber-400 font-bold">★★★★★</span>
+                <span className="font-semibold text-white">4.9 / 5</span> rating
+              </div>
+              <span>•</span>
+              <div><strong className="text-white">12,000+</strong> websites launched</div>
+              <span>•</span>
+              <div><strong className="text-white">100%</strong> Native Paystack billing</div>
+            </div>
           </div>
 
-          {/* The AI Generator Form Card */}
-          <div className="pt-8 max-w-2xl mx-auto text-left">
-            <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden ring-1 ring-white/10">
-              <div className="flex items-center justify-between pb-6 border-b border-slate-800">
-                <div>
-                  <h3 className="text-lg font-bold text-white">Synthesize Your Platform</h3>
-                  <p className="text-xs text-slate-400">Tell the AI about your brand to generate all 4 pages instantly.</p>
-                </div>
-                <span className="text-[11px] font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-semibold">
-                  Prompt to Website
-                </span>
-              </div>
-
-              <form onSubmit={handleGenerate} className="space-y-4 pt-6">
-                <div>
-                  <label className="block text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
-                    What is your business name?
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Zikora Luxury Bespoke, Grace Kitchen, Alpha Realty"
-                    value={formData.businessName}
-                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Grid: Left Column (Generator Form) | Right Column (Interactive Browser Frame & Micro-Badges) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-6xl mx-auto">
+            {/* The Generator Form Card */}
+            <div className="lg:col-span-6 text-left">
+              <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden ring-1 ring-white/10">
+                <div className="flex items-center justify-between pb-5 border-b border-slate-800">
                   <div>
-                    <label className="block text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
-                      Industry / Category
+                    <h3 className="text-base font-bold text-white">Synthesize Your Platform</h3>
+                    <p className="text-xs text-slate-400">Tell the AI about your brand to generate all 4 pages instantly.</p>
+                  </div>
+                  <span className="text-[11px] font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-semibold">
+                    Instant AI Engine
+                  </span>
+                </div>
+
+                <form onSubmit={handleGenerate} className="space-y-3.5 pt-5">
+                  <div>
+                    <label className="block text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-1">
+                      Business Name
                     </label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Fashion, Catering, Real Estate"
-                      value={formData.businessType}
-                      onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+                      placeholder="e.g. Zikora Luxury Bespoke, Grace Kitchen"
+                      value={formData.businessName}
+                      onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
                     />
                   </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="block text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-1">
+                        Industry / Category
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Fashion, Catering"
+                        value={formData.businessType}
+                        onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
+                        className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-1">
+                        WhatsApp / Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="e.g. +234 803 123 4567"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <label className="block text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
-                      WhatsApp / Phone Number
+                    <label className="block text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-1">
+                      City & Region (Location)
                     </label>
                     <input
-                      type="tel"
-                      required
-                      placeholder="e.g. +234 803 123 4567"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+                      type="text"
+                      placeholder="e.g. Victoria Island, Lagos or Abuja, Nigeria"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
                     />
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
-                    City & Region (Location)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Victoria Island, Lagos or Abuja, Nigeria"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
-                    Describe what you offer (Optional context for AI)
-                  </label>
-                  <textarea
-                    rows={2}
-                    placeholder="e.g. Luxury custom tailoring, senator suits, wedding wear with 48h turnaround..."
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 font-bold rounded-xl shadow-xl transition disabled:opacity-50 text-sm tracking-wide flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <span>Generate Your 4-Page Website ➔</span>
-                </button>
-              </form>
-
-              {/* Real-time Generation Progress Modal Overlay */}
-              {loading && (
-                <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-5 z-20">
-                  <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-                  <div className="space-y-1">
-                    <h4 className="text-base font-bold text-white">Synthesizing Your Digital Platform</h4>
-                    <p className="text-xs text-slate-400">Our generative engine is building your custom pages...</p>
+                  <div>
+                    <label className="block text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-1">
+                      Describe your service or brand vibe (Optional)
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="e.g. Custom tailoring, wedding wears, 48h turnaround..."
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+                    />
                   </div>
 
-                  <div className="w-full max-w-sm space-y-2 text-left text-xs font-mono">
-                    <div className={`p-2 rounded flex items-center gap-2 ${generationStep >= 1 ? "bg-indigo-950/80 text-indigo-300" : "text-slate-600"}`}>
-                      <span>{generationStep > 1 ? "✓" : "●"}</span>
-                      <span>Analyzing business context and audience...</span>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3.5 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 font-bold rounded-xl shadow-xl transition disabled:opacity-50 text-sm tracking-wide flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>Generate 4-Page Website ➔</span>
+                  </button>
+                </form>
+
+                {/* Real-Time Generation Progress Overlay */}
+                {loading && (
+                  <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-5 z-20">
+                    <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+                    <div className="space-y-1">
+                      <h4 className="text-base font-bold text-white">Synthesizing Your Digital Platform</h4>
+                      <p className="text-xs text-slate-400">Building tailored pages and layouts...</p>
                     </div>
-                    <div className={`p-2 rounded flex items-center gap-2 ${generationStep >= 2 ? "bg-indigo-950/80 text-indigo-300" : "text-slate-600"}`}>
-                      <span>{generationStep > 2 ? "✓" : "●"}</span>
-                      <span>Structuring Home, About, Services, Contact...</span>
+
+                    <div className="w-full max-w-sm space-y-2 text-left text-xs font-mono">
+                      <div className={`p-2 rounded flex items-center gap-2 ${generationStep >= 1 ? "bg-indigo-950/80 text-indigo-300" : "text-slate-600"}`}>
+                        <span>{generationStep > 1 ? "✓" : "●"}</span>
+                        <span>Analyzing business context and audience...</span>
+                      </div>
+                      <div className={`p-2 rounded flex items-center gap-2 ${generationStep >= 2 ? "bg-indigo-950/80 text-indigo-300" : "text-slate-600"}`}>
+                        <span>{generationStep > 2 ? "✓" : "●"}</span>
+                        <span>Structuring Home, About, Services, Contact...</span>
+                      </div>
+                      <div className={`p-2 rounded flex items-center gap-2 ${generationStep >= 3 ? "bg-indigo-950/80 text-indigo-300" : "text-slate-600"}`}>
+                        <span>{generationStep > 3 ? "✓" : "●"}</span>
+                        <span>Writing conversion copy and pricing tiers...</span>
+                      </div>
+                      <div className={`p-2 rounded flex items-center gap-2 ${generationStep >= 4 ? "bg-indigo-950/80 text-indigo-300" : "text-slate-600"}`}>
+                        <span>{generationStep >= 4 ? "●" : "○"}</span>
+                        <span>Allocating Anycast edge routing & SSL...</span>
+                      </div>
                     </div>
-                    <div className={`p-2 rounded flex items-center gap-2 ${generationStep >= 3 ? "bg-indigo-950/80 text-indigo-300" : "text-slate-600"}`}>
-                      <span>{generationStep > 3 ? "✓" : "●"}</span>
-                      <span>Writing conversion copy and pricing tiers...</span>
-                    </div>
-                    <div className={`p-2 rounded flex items-center gap-2 ${generationStep >= 4 ? "bg-indigo-950/80 text-indigo-300" : "text-slate-600"}`}>
-                      <span>{generationStep >= 4 ? "●" : "○"}</span>
-                      <span>Allocating Anycast edge routing & SSL...</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column: Interactive Browser Frame with Floating Micro-Badges */}
+            <div className="lg:col-span-6 relative">
+              {/* Floating Badge 1: Speed */}
+              <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900/90 border border-slate-700/80 shadow-2xl backdrop-blur-md absolute -top-4 -left-4 z-20 animate-pulse">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                <span className="text-[11px] font-mono font-bold text-slate-200">⚡ 38ms Edge TTFB (Lagos)</span>
+              </div>
+
+              {/* Floating Badge 2: Payment Received */}
+              <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900/90 border border-emerald-500/40 shadow-2xl backdrop-blur-md absolute -bottom-5 -left-4 z-20">
+                <span className="text-emerald-400 font-bold text-xs">✓</span>
+                <span className="text-[11px] font-mono font-semibold text-slate-200">
+                  ₦165,000 via Paystack
+                </span>
+              </div>
+
+              {/* Floating Badge 3: WhatsApp Lead */}
+              <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900/90 border border-indigo-500/40 shadow-2xl backdrop-blur-md absolute -top-4 -right-4 z-20">
+                <span className="text-xs">💬</span>
+                <span className="text-[11px] font-mono font-semibold text-slate-200">
+                  New Lead: &quot;I need 3 Senator suits&quot;
+                </span>
+              </div>
+
+              {/* Browser Window Mockup */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 shadow-2xl overflow-hidden ring-1 ring-white/10 text-left">
+                {/* Safari / Browser Header */}
+                <div className="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                  </div>
+                  <div className="px-4 py-1 rounded-md bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-400 flex items-center gap-1.5 truncate max-w-[240px]">
+                    <span className="text-emerald-400">🔒</span>
+                    <span className="truncate">zikora-bespoke.starkora.website</span>
+                  </div>
+                  <span className="text-xs text-slate-600">⋯</span>
+                </div>
+
+                {/* Rendered Mockup Content */}
+                <div className="p-6 space-y-6 bg-gradient-to-b from-slate-900 to-slate-950">
+                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                    <span className="font-extrabold text-sm tracking-wider text-white">ZIKORA BESPOKE</span>
+                    <span className="px-3 py-1 bg-indigo-600 text-white text-[10px] font-bold rounded-lg shadow">
+                      Contact Us
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-bold uppercase tracking-wider">
+                      Couture & Craftsmanship
+                    </span>
+                    <h4 className="text-2xl font-black text-white leading-tight">
+                      Bespoke Tailoring Crafted for Prestige
+                    </h4>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      Custom Senator wears, luxury Agbada, and bridal couture delivered in 48 hours across Victoria Island.
+                    </p>
+                  </div>
+
+                  <div className="aspect-video w-full rounded-xl overflow-hidden border border-slate-800 relative">
+                    <img
+                      src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&auto=format&fit=crop&q=80"
+                      alt="Sample Website Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-3">
+                      <span className="text-[10px] font-mono text-emerald-400">● Live on Anycast Edge Network</span>
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. Industry Showcase Tabs (Durable Pattern) */}
-      <section id="showcase" className="py-24 px-6 border-t border-slate-900 bg-slate-950/50">
+      {/* 3. Infinite Integration Marquee Ticker */}
+      <section className="py-6 border-y border-slate-900 bg-slate-950/70 overflow-hidden">
+        <div className="flex gap-8 whitespace-nowrap animate-[marquee_25s_linear_infinite]">
+          {[...INTEGRATIONS, ...INTEGRATIONS].map((item, idx) => (
+            <div key={idx} className="flex items-center gap-2 text-xs font-mono font-semibold text-slate-400">
+              <span>{item}</span>
+              <span className="text-slate-700">•</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 4. Interactive Industry Showcase (Durable / Vzy Pattern) */}
+      <section id="showcase" className="py-24 px-6 border-b border-slate-900 bg-slate-900/30">
         <div className="max-w-6xl mx-auto space-y-12 text-center">
           <div className="space-y-3">
-            <span className="text-xs uppercase font-bold tracking-widest text-indigo-400">Built For Your Niche</span>
+            <span className="text-xs uppercase font-bold tracking-widest text-indigo-400">Live Demonstrations</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Tailored to How African Businesses Actually Sell</h2>
             <p className="text-sm text-slate-400 max-w-xl mx-auto">
-              From boutiques and catering kitchens to corporate firms, STARKORA generates industry-specific blocks and packages.
+              From boutiques and cloud kitchens to corporate firms, STARKORA generates industry-specific blocks and packages.
             </p>
           </div>
 
@@ -380,34 +484,52 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Showcase Display Card */}
-          <div className="max-w-4xl mx-auto p-8 rounded-3xl bg-slate-900/80 border border-slate-800 text-left space-y-6 shadow-2xl relative overflow-hidden">
-            <div className="space-y-2">
-              <span className="text-xs font-mono uppercase text-indigo-400 font-bold">{selectedIndustry.name} Showcase</span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-white">{selectedIndustry.headline}</h3>
-              <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">{selectedIndustry.subtext}</p>
-            </div>
+          {/* Showcase Display Card with Real Commercial Imagery */}
+          <div className="max-w-4xl mx-auto rounded-3xl bg-slate-900/90 border border-slate-800 text-left overflow-hidden shadow-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              <div className="p-8 flex flex-col justify-between space-y-6">
+                <div className="space-y-3">
+                  <span className="text-[11px] font-mono uppercase text-indigo-400 font-bold">{selectedIndustry.name} Architecture</span>
+                  <h3 className="text-2xl font-bold text-white leading-tight">{selectedIndustry.headline}</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">{selectedIndustry.subtext}</p>
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-800">
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
-                <span className="text-xs font-bold text-white">4 Dedicated Pages</span>
-                <p className="text-[11px] text-slate-400">Home, About Story, Detailed Services/Pricing, and Contact form.</p>
+                <div className="space-y-2 pt-4 border-t border-slate-800">
+                  <div className="flex items-center gap-2 text-xs text-emerald-400">
+                    <span>✓</span>
+                    <span className="font-mono">{selectedIndustry.stats}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-indigo-300">
+                    <span>✓</span>
+                    <span className="font-mono">{selectedIndustry.metrics}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <a
+                    href="#generator"
+                    className="inline-block px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow transition"
+                  >
+                    Generate This Template ➔
+                  </a>
+                </div>
               </div>
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
-                <span className="text-xs font-bold text-white">WhatsApp & Email Inquiries</span>
-                <p className="text-[11px] text-slate-400">Prospects can message your WhatsApp or submit inquiries straight to your email.</p>
-              </div>
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
-                <span className="text-xs font-bold text-white">Naira Pricing Blocks</span>
-                <p className="text-[11px] text-slate-400">Pre-configured service packages formatted with realistic Nigerian market rates.</p>
+
+              <div className="relative min-h-[300px] md:min-h-full">
+                <img
+                  src={selectedIndustry.image}
+                  alt={selectedIndustry.headline}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent md:bg-gradient-to-r md:from-slate-900 md:to-transparent" />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. All-in-One Platform Value Pillars */}
-      <section id="platform" className="py-24 px-6 border-t border-slate-900 bg-slate-900/30">
+      {/* 5. All-in-One Platform Value Pillars */}
+      <section id="platform" className="py-24 px-6 border-b border-slate-900 bg-slate-950">
         <div className="max-w-6xl mx-auto space-y-16">
           <div className="text-center space-y-3">
             <span className="text-xs uppercase font-bold tracking-widest text-indigo-400">All-in-One Architecture</span>
@@ -469,8 +591,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. Cost Comparison Section (The "Replace 6 Subscriptions" Matrix) */}
-      <section id="comparison" className="py-24 px-6 border-t border-slate-900 bg-slate-950">
+      {/* 6. Comparison Section: Replace 6 Subscriptions */}
+      <section id="comparison" className="py-24 px-6 border-b border-slate-900 bg-slate-900/20">
         <div className="max-w-4xl mx-auto space-y-12 text-center">
           <div className="space-y-3">
             <span className="text-xs uppercase font-bold tracking-widest text-indigo-400">Value Comparison</span>
@@ -532,53 +654,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. Testimonials Section */}
-      <section className="py-24 px-6 border-t border-slate-900 bg-slate-900/20">
-        <div className="max-w-6xl mx-auto space-y-12 text-center">
-          <div className="space-y-3">
-            <span className="text-xs uppercase font-bold tracking-widest text-indigo-400">Customer Proof</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Trusted by Fast-Growing Businesses</h2>
-            <p className="text-sm text-slate-400 max-w-lg mx-auto">
-              See how Nigerian founders and vendors are using STARKORA to capture customers.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
-              <p className="text-xs text-slate-300 leading-relaxed italic">
-                “I was losing so many Instagram sales because customers didn't trust sending money without a website. I generated my boutique site on STARKORA in 30 seconds and linked my WhatsApp. Orders increased immediately.”
-              </p>
-              <div>
-                <h4 className="text-xs font-bold text-white">Adaobi Okonkwo</h4>
-                <p className="text-[11px] text-slate-400">Founder, Ada Luxury Fashion (Lekki, Lagos)</p>
-              </div>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
-              <p className="text-xs text-slate-300 leading-relaxed italic">
-                “Building our catering site through an agency was quoted at ₦350,000 with a 3-week wait. STARKORA wrote all our menu packages and contact forms in less than a minute. The email inquiry alerts work seamlessly.”
-              </p>
-              <div>
-                <h4 className="text-xs font-bold text-white">Chef Femi Balogun</h4>
-                <p className="text-[11px] text-slate-400">Managing Director, Royal Palm Kitchen (Abuja)</p>
-              </div>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
-              <p className="text-xs text-slate-300 leading-relaxed italic">
-                “Being able to pay with our standard Naira card via Paystack without FX conversion problems made this a no-brainer. Having custom domains and Meta tracking ready for our real estate ads is incredible.”
-              </p>
-              <div>
-                <h4 className="text-xs font-bold text-white">Emeka Nnamdi</h4>
-                <p className="text-[11px] text-slate-400">Principal Broker, Horizon Prime Realty (Port Harcourt)</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* 7. Pricing Section */}
-      <section id="pricing" className="py-24 px-6 border-t border-slate-900 bg-slate-950">
+      <section id="pricing" className="py-24 px-6 border-b border-slate-900 bg-slate-950">
         <div className="max-w-5xl mx-auto space-y-12 text-center">
           <div className="space-y-3">
             <span className="text-xs uppercase font-bold tracking-widest text-indigo-400">Transparent Subscriptions</span>
@@ -644,7 +721,7 @@ export default function Home() {
       </section>
 
       {/* 8. FAQs Section */}
-      <section id="faqs" className="py-24 px-6 border-t border-slate-900 bg-slate-900/20">
+      <section id="faqs" className="py-24 px-6 border-b border-slate-900 bg-slate-900/20">
         <div className="max-w-3xl mx-auto space-y-10">
           <div className="text-center space-y-3">
             <span className="text-xs uppercase font-bold tracking-widest text-indigo-400">Got Questions?</span>
@@ -670,8 +747,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9. Bottom CTA Banner */}
-      <section className="py-20 px-6 border-t border-slate-900 bg-gradient-to-b from-slate-950 to-indigo-950/30 text-center">
+      {/* 9. Bottom Call to Action */}
+      <section className="py-24 px-6 bg-gradient-to-b from-slate-950 to-indigo-950/30 text-center">
         <div className="max-w-3xl mx-auto space-y-6">
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight">
             Build Your Business Website in Minutes
@@ -690,7 +767,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 10. Multi-Column Footer */}
+      {/* 10. Multi-Column Footer with Active Compliance Links */}
       <footer className="py-12 px-6 sm:px-12 border-t border-slate-900 bg-slate-950 text-xs text-slate-500">
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mb-10 text-left">
           <div className="space-y-3">
@@ -721,9 +798,9 @@ export default function Home() {
           <div className="space-y-2">
             <span className="font-bold text-slate-300">Legal</span>
             <ul className="space-y-1.5 text-slate-400">
-              <li><span>Terms of Service</span></li>
-              <li><span>Privacy Policy</span></li>
-              <li><span>Refund Policy</span></li>
+              <li><Link href="/terms" className="hover:text-white transition">Terms of Service</Link></li>
+              <li><Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link></li>
+              <li><Link href="/refund" className="hover:text-white transition">Refund Policy</Link></li>
             </ul>
           </div>
         </div>

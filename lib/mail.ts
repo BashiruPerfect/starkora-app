@@ -4,7 +4,7 @@ const rawKey = (process.env.RESEND_API_KEY || "").replace(/["']/g, "").trim();
 const resend = rawKey ? new Resend(rawKey) : null;
 
 const SENDER_EMAIL = "Bashiru Perfect <bashiru@starkora.website>";
-const NOTIFICATION_SENDER = "STARKORA Notifications <system@starkora.website>";
+const NOTIFICATION_SENDER = "STARKORA System <system@starkora.website>";
 const ADMIN_NOTIFICATION_EMAIL = process.env.ADMIN_EMAIL || "bashiru@starkora.website";
 
 export async function sendWelcomeEmail(toEmail: string, name?: string) {
@@ -13,24 +13,40 @@ export async function sendWelcomeEmail(toEmail: string, name?: string) {
     return;
   }
 
-  const firstName = name ? name.split(" ")[0] : "there";
+  const recipientName = name && name.trim() ? name.trim().split(" ")[0] : "Owolabi";
+
   const plainText = `
-Hello ${firstName},
+Hello ${recipientName},
 
-My name is Bashiru Perfect — I'm the Founder and CEO of STARKORA.
+I am Bashiru Perfect, Founder and CEO of STARKORA.
 
-I started STARKORA because I want small and large-scale businesses and organizations to be able to create their professional websites themselves without breaking the bank and without stress, ASAP.
+First, thank you for choosing and using STARKORA. We truly appreciate having you with us.
 
-Whether you are running ads, selling products, or offering professional services, STARKORA was built to give you high-converting web pages with reliable customer inquiry channels from day one.
+I created STARKORA with a simple vision: to make it easier for businesses and organizations of every size to establish a professional online presence without the high cost, technical complexity, or long waiting times.
 
-You can manage and customize your website anytime here:
+Whether you sell products, run advertisements, provide professional services, or are simply looking to take your business online, STARKORA gives you the tools to create a professional website designed to help you attract visitors and turn them into customers.
+
+And your next step is already waiting for you.
+
+Your STARKORA dashboard is ready. Your dashboard gives you access to everything you need to start building and managing your website.
+
+Open your STARKORA dashboard:
 https://starkora.website/dashboard
 
-If you ever have any questions, feedback, or need help setting up your site, just reply directly to this email. It goes straight to my personal inbox.
+Take a few minutes to explore what is available and see how quickly you can bring your business online.
+
+If you have any questions, feedback, or need help setting things up, simply reply to this email. Your message will come directly to my personal inbox, and I will be happy to assist.
+
+Once again, thank you for using STARKORA and for being part of what we are building.
+
+Your business deserves a strong presence online.
+Let’s build it.
 
 Best regards,
+
 Bashiru Perfect
-Founder & CEO, STARKORA
+Founder and CEO
+STARKORA
   `.trim();
 
   try {
@@ -38,39 +54,63 @@ Founder & CEO, STARKORA
       from: SENDER_EMAIL,
       to: toEmail,
       replyTo: "bashiru@starkora.website",
-      subject: "Welcome to STARKORA",
+      subject: "Welcome to STARKORA — Let's build your online presence",
       text: plainText,
       html: `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 32px 20px; color: #1e293b; line-height: 1.6;">
-          <p style="font-size: 15px; margin-bottom: 18px;">Hello ${firstName},</p>
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 36px 24px; background-color: #ffffff; color: #1e293b; line-height: 1.65; border: 1px solid #e2e8f0; border-radius: 12px;">
+          <div style="margin-bottom: 24px;">
+            <span style="font-size: 18px; font-weight: 900; color: #4f46e5; letter-spacing: 0.05em;">STARKORA</span>
+          </div>
 
-          <p style="font-size: 15px; margin-bottom: 18px;">
-            My name is <strong>Bashiru Perfect</strong> — I'm the Founder and CEO of STARKORA.
+          <p style="font-size: 15px; margin-bottom: 18px; color: #0f172a;">Hello <strong>${recipientName}</strong>,</p>
+
+          <p style="font-size: 15px; margin-bottom: 18px; color: #334155;">
+            I am <strong>Bashiru Perfect</strong>, Founder and CEO of <strong>STARKORA</strong>.
           </p>
 
-          <p style="font-size: 15px; margin-bottom: 18px;">
-            I started STARKORA because I want small and large-scale businesses and organizations to be able to create their professional websites themselves without breaking the bank and without stress, ASAP.
+          <p style="font-size: 15px; margin-bottom: 18px; color: #334155;">
+            First, thank you for choosing and using STARKORA. We truly appreciate having you with us.
           </p>
 
-          <p style="font-size: 15px; margin-bottom: 18px;">
-            Whether you are running ads, selling products, or offering professional services, STARKORA was built to give you high-converting web pages with reliable customer inquiry channels from day one.
+          <p style="font-size: 15px; margin-bottom: 18px; color: #334155;">
+            I created STARKORA with a simple vision: to make it easier for businesses and organizations of every size to establish a professional online presence without the high cost, technical complexity, or long waiting times.
           </p>
 
-          <div style="margin: 28px 0;">
-            <a href="https://starkora.website/dashboard" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">
-              Open Your Dashboard ➔
+          <p style="font-size: 15px; margin-bottom: 24px; color: #334155;">
+            Whether you sell products, run advertisements, provide professional services, or are simply looking to take your business online, STARKORA gives you the tools to create a professional website designed to help you attract visitors and turn them into customers.
+          </p>
+
+          <div style="background-color: #f8fafc; border-left: 4px solid #4f46e5; padding: 18px 20px; border-radius: 6px; margin: 24px 0;">
+            <p style="margin: 0 0 6px; font-size: 15px; font-weight: 700; color: #0f172a;">And your next step is already waiting for you.</p>
+            <p style="margin: 0 0 16px; font-size: 14px; color: #475569;">
+              Your STARKORA dashboard is ready. It gives you access to everything you need to start building and managing your website.
+            </p>
+            <a href="https://starkora.website/dashboard" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px; display: inline-block;">
+              OPEN YOUR STARKORA DASHBOARD ➔
             </a>
           </div>
 
-          <p style="font-size: 15px; margin-bottom: 18px;">
-            If you ever have any questions, feedback, or need help setting up your site, just reply directly to this email. It goes straight to my personal inbox.
+          <p style="font-size: 15px; margin-bottom: 18px; color: #334155;">
+            Take a few minutes to explore what is available and see how quickly you can bring your business online.
           </p>
 
-          <p style="font-size: 15px; margin-top: 28px; line-height: 1.4;">
-            Best regards,<br />
-            <strong>Bashiru Perfect</strong><br />
-            <span style="color: #64748b; font-size: 13px;">Founder & CEO, STARKORA</span>
+          <p style="font-size: 15px; margin-bottom: 18px; color: #334155;">
+            If you have any questions, feedback, or need help setting things up, simply reply to this email. Your message will come directly to my personal inbox, and I will be happy to assist.
           </p>
+
+          <p style="font-size: 15px; margin-bottom: 20px; color: #334155;">
+            Once again, <em>thank you for using STARKORA and for being part of what we are building.</em>
+          </p>
+
+          <p style="font-size: 15px; margin-bottom: 4px; color: #0f172a;">Your business deserves a strong presence online.</p>
+          <p style="font-size: 15px; font-weight: 700; color: #4f46e5; margin-top: 0;"><em>Let’s build it.</em></p>
+
+          <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+            <p style="font-size: 14px; margin: 0; color: #0f172a;">Best regards,</p>
+            <p style="font-size: 15px; font-weight: 700; margin: 4px 0 0; color: #0f172a;"><em>Bashiru Perfect</em></p>
+            <p style="font-size: 13px; color: #64748b; margin: 2px 0 0;">Founder and CEO</p>
+            <p style="font-size: 13px; font-weight: 700; color: #4f46e5; margin: 2px 0 0;"><em>STARKORA</em></p>
+          </div>
         </div>
       `,
     });
@@ -86,7 +126,12 @@ export async function sendAdminNewUserAlert(
 ) {
   if (!resend) return;
 
-  const plainText = `New user signed up on STARKORA:\nName: ${newUserName || "Not provided"}\nEmail: ${newUserEmail}\nPhone: ${newUserPhone || "Not provided"}\nTime: ${new Date().toUTCString()}`;
+  const cleanPhone = (newUserPhone || "").replace(/[^0-9]/g, "");
+  const whatsappUrl = cleanPhone
+    ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello ${newUserName || "there"}, welcome to STARKORA! How is your website setup going?`)}`
+    : "";
+
+  const plainText = `New user registered on STARKORA:\nName: ${newUserName || "Not provided"}\nEmail: ${newUserEmail}\nPhone: ${newUserPhone || "Not provided"}\nTime: ${new Date().toUTCString()}`;
 
   try {
     await resend.emails.send({
@@ -96,17 +141,30 @@ export async function sendAdminNewUserAlert(
       text: plainText,
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 24px; max-width: 520px; color: #0f172a; line-height: 1.5;">
-          <h2 style="color: #4f46e5; margin: 0 0 16px;">New Registration on STARKORA</h2>
+          <h2 style="color: #4f46e5; margin: 0 0 16px;">New User on STARKORA</h2>
           <p style="font-size: 14px; color: #334155; margin-bottom: 16px;">A new merchant has created an account on the platform:</p>
           <ul style="background: #f8fafc; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; list-style: none; margin: 0 0 20px;">
             <li style="margin-bottom: 8px; font-size: 14px;"><strong>Name:</strong> ${newUserName || "Not provided"}</li>
             <li style="margin-bottom: 8px; font-size: 14px;"><strong>Email:</strong> ${newUserEmail}</li>
-            <li style="margin-bottom: 8px; font-size: 14px;"><strong>Phone:</strong> ${newUserPhone || "Not provided"}</li>
+            <li style="margin-bottom: 8px; font-size: 14px;"><strong>WhatsApp / Phone:</strong> ${newUserPhone || "Not provided"}</li>
             <li style="font-size: 12px; color: #64748b;"><strong>Time:</strong> ${new Date().toUTCString()}</li>
           </ul>
-          <p style="margin-top: 20px;">
-            <a href="https://starkora.website/dashboard" style="color: #4f46e5; font-weight: bold; text-decoration: underline;">
-              View Platform Dashboard ➔
+
+          ${
+            whatsappUrl
+              ? `
+            <div style="margin: 20px 0;">
+              <a href="${whatsappUrl}" style="background-color: #10b981; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; display: inline-block;">
+                💬 Chat with Merchant on WhatsApp ➔
+              </a>
+            </div>
+          `
+              : ""
+          }
+
+          <p style="margin-top: 24px; font-size: 12px; color: #64748b;">
+            <a href="https://starkora.website/dashboard" style="color: #4f46e5; text-decoration: underline;">
+              Open Platform Admin Dashboard
             </a>
           </p>
         </div>
@@ -151,7 +209,6 @@ To respond to this customer, simply click 'Reply' to this email!
     await resend.emails.send({
       from: NOTIFICATION_SENDER,
       to: ownerEmail,
-      // Sets reply-to directly to the customer's email address
       replyTo: leadEmail || ownerEmail,
       subject: `📬 New Customer Message from ${leadName} on ${siteName}`,
       text: plainText,
@@ -171,14 +228,14 @@ To respond to this customer, simply click 'Reply' to this email!
           <div style="margin: 24px 0 16px;">
             ${
               leadEmail
-                ? `<a href="mailto:${leadEmail}?subject=Re: Your inquiry on${encodeURIComponent(siteName)}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; display: inline-block;">
+                ? `<a href="mailto:${leadEmail}?subject=Re: Your inquiry on ${encodeURIComponent(siteName)}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; display: inline-block;">
                     ✉️ Click Here to Reply to ${leadName} ➔
                    </a>`
-                : `<p style="font-size: 13px; color: #94a3b8;">Hit &quot;Reply&quot; in your email program to respond.</p>`
+                : `<p style="font-size: 13px; color: #94a3b8;">Hit "Reply" in your email client to respond directly.</p>`
             }
           </div>
 
-          <p style="font-size: 12px; color: #64748b; margin-top: 24px; border-top: 1px solid #1e293b; pt-4;">
+          <p style="font-size: 12px; color: #64748b; margin-top: 24px; border-top: 1px solid #1e293b; padding-top: 16px;">
             View all inquiries anytime in your <a href="https://starkora.website/dashboard" style="color: #818cf8; text-decoration: underline;">STARKORA Dashboard</a>.
           </p>
         </div>
