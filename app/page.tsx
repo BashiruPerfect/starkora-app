@@ -198,6 +198,34 @@ const TEMPLATES: TemplateItem[] = [
   },
 ];
 
+interface FaqItem {
+  q: string;
+  a: string;
+}
+
+const FAQS: FaqItem[] = [
+  {
+    q: "How does STARKORA generate a complete website in 30 seconds?",
+    a: "STARKORA uses structured AI models to synthesize a complete 4-page website (Home, About, Services, Contact) based on your business name, industry, and location. It automatically writes high-converting copy, arranges responsive layouts, injects commercial photography, and sets up contact channels instantly.",
+  },
+  {
+    q: "Can I connect my own custom domain (e.g., mybusiness.com or mybrand.ng)?",
+    a: "Yes. On the Pro Plan ($10/mo or $110/yr), you can connect any custom domain (.com, .ng, .com.ng, .net). We automatically provision SSL certificates across our global edge network, and our brand watermark is completely removed.",
+  },
+  {
+    q: "How do customer inquiries and orders reach me?",
+    a: "Every generated website includes integrated lead channels. Visitors can click the direct WhatsApp button to chat immediately with your phone, or fill out the contact form. Inquiries are stored in your dashboard and emailed directly to your inbox with a 1-click reply button.",
+  },
+  {
+    q: "Do I need coding, design, or technical hosting skills?",
+    a: "None whatsoever. STARKORA handles cloud database provisioning, edge hosting, mobile responsiveness, and design tokens automatically. If you want to change any text or image, you can click and edit directly on the visual canvas.",
+  },
+  {
+    q: "How does payment processing work for subscriptions?",
+    a: "We integrate directly with Paystack. You can subscribe seamlessly using Nigerian debit cards (Mastercard, Visa, Verve), direct bank transfers, or international credit cards with zero foreign exchange failure rates.",
+  },
+];
+
 function buildTemplateSiteData(tmpl: TemplateItem) {
   const p = tmpl.preset;
   const brandSlug = p.businessName.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -382,7 +410,6 @@ export default function Home() {
   const [user, setUser] = useState<{ email: string; name: string } | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  // Template Preview Modal State
   const [previewTemplate, setPreviewTemplate] = useState<TemplateItem | null>(null);
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
   const [previewTab, setPreviewTab] = useState<"home" | "about" | "services" | "contact">("home");
@@ -410,7 +437,6 @@ export default function Home() {
     window.location.reload();
   };
 
-  // Instant 1-Click Launch into Editor with Template Data
   const handleUseTemplateDirectly = (template: TemplateItem) => {
     const siteData = buildTemplateSiteData(template);
     const p = template.preset;
@@ -421,7 +447,6 @@ export default function Home() {
     localStorage.setItem("starkora_active_phone", p.phone);
     localStorage.setItem("starkora_active_location", p.location);
 
-    // Direct transition into editor
     window.location.href = "/editor";
   };
 
@@ -465,7 +490,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-[#005AAD]/30 overflow-x-hidden">
-      {/* 1. Global Navigation Bar with Official Brand Logo */}
+      {/* 1. Global Navigation Bar */}
       <header className="border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-md px-6 sm:px-12 py-3.5 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-3 group">
@@ -691,7 +716,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Column: Interactive Browser Frame with Micro-Badges */}
+            {/* Right Column: Interactive Browser Frame with Floating Micro-Badges */}
             <div className="lg:col-span-6 relative">
               <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900/90 border border-slate-700/80 shadow-2xl backdrop-blur-md absolute -top-4 -left-4 z-20">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -766,14 +791,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Interactive Templates Gallery with Direct-to-Editor & Preview Modal */}
+      {/* 3. Interactive Templates Gallery */}
       <section id="templates" className="py-24 px-6 border-y border-slate-900 bg-slate-900/30">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
             <span className="text-xs uppercase font-bold tracking-widest text-sky-400">Curated Architecture</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Explore High-Converting Templates</h2>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Preview any design or click <strong>Use This Template</strong> to instantly launch the complete 4-page site directly in your editor.
+              Preview any design or click <strong>Use Template</strong> to launch the complete 4-page site directly in your editor.
             </p>
           </div>
 
@@ -1088,7 +1113,6 @@ export default function Home() {
       {/* 9. Interactive Template Preview Modal (Full-Screen Overlay) */}
       {previewTemplate && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex flex-col justify-between overflow-hidden">
-          {/* Top Control Bar */}
           <div className="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-4">
               <span className="text-xs uppercase font-bold tracking-wider text-sky-400">Template Preview:</span>
@@ -1098,7 +1122,6 @@ export default function Home() {
               </span>
             </div>
 
-            {/* Device Switcher & Page Tabs */}
             <div className="hidden md:flex items-center gap-3">
               <div className="bg-slate-950 p-1 rounded-xl border border-slate-800 flex items-center gap-1 text-xs">
                 <button
@@ -1145,27 +1168,23 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Interactive Preview Canvas */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-8 flex items-start justify-center bg-slate-950">
             <div
               className={`transition-all duration-300 rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden shadow-2xl ${
                 previewDevice === "mobile" ? "w-[390px] max-w-full min-h-[750px] ring-8 ring-slate-800" : "w-full max-w-5xl"
               }`}
             >
-              {/* Simulated Browser Bar */}
               <div className="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
                 </div>
-                <span>https://{previewTemplate.id}.starkora.website/{previewTab === "home" ? "" : previewTab}</span>
+                <span>{`https://${previewTemplate.id}.starkora.website/${previewTab === "home" ? "" : previewTab}`}</span>
                 <span className="text-[10px] text-emerald-400">SSL Live</span>
               </div>
 
-              {/* Rendered Template View */}
               <div className="p-6 sm:p-10 space-y-12 text-left bg-gradient-to-b from-slate-900 to-slate-950">
-                {/* Header preview */}
                 <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                   <span className="font-extrabold text-lg text-white">{previewTemplate.preset.businessName}</span>
                   <div className="flex items-center gap-4 text-xs text-slate-400 font-medium">
@@ -1176,7 +1195,6 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Hero Preview */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                   <div className="space-y-4">
                     <span className="px-3 py-1 rounded-full bg-[#005AAD]/20 text-sky-300 text-[10px] font-bold uppercase tracking-wider">
@@ -1207,7 +1225,6 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Pricing / Packages Preview */}
                 <div className="space-y-4 pt-6 border-t border-slate-800">
                   <h3 className="text-lg font-bold text-white">Curated Packages</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1221,7 +1238,6 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Contact Preview */}
                 <div className="p-6 rounded-2xl border border-slate-800 bg-slate-950 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="space-y-1">
                     <h4 className="text-sm font-bold text-white">Connect with {previewTemplate.preset.businessName}</h4>
@@ -1237,7 +1253,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* 10. Multi-Column Footer */}
+      {/* 10. Multi-Column Footer with Active Compliance Links */}
       <footer className="py-12 px-6 sm:px-12 border-t border-slate-900 bg-slate-950 text-xs text-slate-500">
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mb-10 text-left">
           <div className="space-y-3">
