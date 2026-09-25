@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import type { Config } from "@puckeditor/core";
 
-export type ThemePalette = "indigo" | "emerald" | "gold" | "crimson" | "minimal";
+export type ThemePalette = "sapphire" | "indigo" | "emerald" | "gold" | "crimson" | "minimal";
 export type ThemeFont = "inter" | "jakarta" | "playfair" | "cinzel" | "space" | "mono";
 
 export const paletteDefinitions: Record<
@@ -20,6 +20,17 @@ export const paletteDefinitions: Record<
     badgeText: string;
   }
 > = {
+  sapphire: {
+    primary: "#005AAD", // Official Brand Sapphire Blue
+    primaryText: "#ffffff",
+    accent: "#38bdf8",
+    glow: "rgba(0, 90, 173, 0.32)",
+    gradientStart: "#032b5f",
+    gradientEnd: "#020617",
+    cardBorder: "rgba(0, 90, 173, 0.4)",
+    badgeBg: "rgba(0, 90, 173, 0.2)",
+    badgeText: "#7dd3fc",
+  },
   indigo: {
     primary: "#4f46e5",
     primaryText: "#ffffff",
@@ -239,7 +250,7 @@ function ImageFieldManager({
           onClick={handleAiGenerate}
           disabled={generatingAi}
           style={{
-            background: "#4f46e5",
+            background: "#005AAD",
             color: "#ffffff",
             padding: "8px",
             borderRadius: "8px",
@@ -305,6 +316,16 @@ export type ComponentProps = {
       description: string;
     }[];
   };
+  GalleryGridBlock: {
+    sectionTitle: string;
+    sectionSubtitle: string;
+    layout: "3-column" | "card-grid";
+    items: {
+      title: string;
+      description: string;
+      imageUrl: string;
+    }[];
+  };
   PricingBlock: {
     sectionTitle: string;
     sectionSubtitle: string;
@@ -365,33 +386,34 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
         palette: {
           type: "select",
           options: [
+            { label: "Sapphire Ocean (#005AAD - Primary)", value: "sapphire" },
             { label: "Midnight Indigo (Tech & Modern)", value: "indigo" },
-            { label: "Emerald Growth (Fintech & Healthcare)", value: "emerald" },
+            { label: "Emerald Growth (Fintech & Dining)", value: "emerald" },
             { label: "Obsidian Gold (Luxury & Real Estate)", value: "gold" },
-            { label: "Crimson Bold (Creative & Food)", value: "crimson" },
+            { label: "Crimson Bold (Creative & Fashion)", value: "crimson" },
             { label: "Minimal Studio (Clean Monochrome)", value: "minimal" },
           ],
         },
         font: {
           type: "select",
           options: [
-            { label: "Inter (Modern Minimal)", value: "inter" },
-            { label: "Plus Jakarta Sans (Startup & Fintech)", value: "jakarta" },
-            { label: "Playfair Display (Luxury Editorial Serif)", value: "playfair" },
-            { label: "Cinzel (Classic Prestige / High-End)", value: "cinzel" },
+            { label: "Plus Jakarta Sans (Startup & Modern)", value: "jakarta" },
+            { label: "Inter (Clean & Minimal)", value: "inter" },
+            { label: "Playfair Display (Luxury Serif)", value: "playfair" },
+            { label: "Cinzel (Classic Prestige)", value: "cinzel" },
             { label: "Space Grotesk (Creative Agency)", value: "space" },
-            { label: "JetBrains Mono (Technical / Code)", value: "mono" },
+            { label: "JetBrains Mono (Technical)", value: "mono" },
           ],
         },
       },
       defaultProps: {
         title: `${name} | Official Website`,
-        palette: "indigo",
-        font: "inter",
+        palette: "sapphire",
+        font: "jakarta",
       },
-      render: ({ children, palette = "indigo", font = "inter" }) => {
-        const activePalette = paletteDefinitions[palette] || paletteDefinitions.indigo;
-        const activeFont = fontFamilies[font] || fontFamilies.inter;
+      render: ({ children, palette = "sapphire", font = "jakarta" }) => {
+        const activePalette = paletteDefinitions[palette] || paletteDefinitions.sapphire;
+        const activeFont = fontFamilies[font] || fontFamilies.jakarta;
 
         return (
           <div
@@ -409,7 +431,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                 fontFamily: activeFont,
               } as React.CSSProperties
             }
-            className="min-h-screen bg-slate-950 text-white transition-all selection:bg-indigo-500/30"
+            className="min-h-screen bg-slate-950 text-white transition-all selection:bg-sky-500/30"
           >
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -522,10 +544,10 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           layout: "text-left",
           badgeText: "PREMIER SERVICE",
           heading: `${name}`,
-          subheading: `Exceptional ${type} crafted with passion, quality, and dedication to our clients across ${loc}.`,
+          subheading: `Exceptional ${type} crafted with passion, quality, and dedication across ${loc}.`,
           ctaText: "Explore Offerings",
           ctaLink: "/services",
-          imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80",
           theme: "gradient",
         },
         render: ({ layout = "text-left", badgeText, heading, subheading, ctaText, ctaLink, imageUrl, theme }) => {
@@ -622,6 +644,86 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
             </section>
           );
         },
+      },
+
+      GalleryGridBlock: {
+        fields: {
+          sectionTitle: { type: "text" },
+          sectionSubtitle: { type: "textarea" },
+          layout: {
+            type: "radio",
+            options: [
+              { label: "3-Column Grid", value: "3-column" },
+              { label: "Stacked Cards", value: "card-grid" },
+            ],
+          },
+          items: {
+            type: "array",
+            arrayFields: {
+              title: { type: "text" },
+              description: { type: "textarea" },
+              imageUrl: { type: "text" },
+            },
+          },
+        },
+        defaultProps: {
+          sectionTitle: "Signature Gallery",
+          sectionSubtitle: "Explore our latest projects, deliverables, and collection pieces.",
+          layout: "3-column",
+          items: [
+            {
+              title: "Executive Masterpiece",
+              description: "Custom crafted with premier materials and attention to detail.",
+              imageUrl: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&auto=format&fit=crop&q=80",
+            },
+            {
+              title: "Modern Collection",
+              description: "Designed for contemporary aesthetics and high-impact presence.",
+              imageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80",
+            },
+            {
+              title: "Bespoke Portfolio",
+              description: "Engineered specifically to client requirements and exact specifications.",
+              imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80",
+            },
+          ],
+        },
+        render: ({ sectionTitle, sectionSubtitle, layout = "3-column", items }) => (
+          <section className="py-24 px-6 bg-slate-900/40 text-white border-t border-slate-800">
+            <div className="max-w-6xl mx-auto space-y-12">
+              <div className="text-center space-y-3">
+                <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{sectionTitle}</h2>
+                <p className="text-slate-400 max-w-xl mx-auto text-sm">{sectionSubtitle}</p>
+              </div>
+
+              <div className={`grid gap-6 ${layout === "3-column" ? "grid-cols-1 md:grid-cols-3" : "grid-cols-1 md:grid-cols-2"}`}>
+                {items?.map((item, idx) => (
+                  <div
+                    key={idx}
+                    style={{ borderColor: "var(--starkora-card-border)" }}
+                    className="rounded-2xl border bg-slate-950 overflow-hidden shadow-xl hover:-translate-y-1 transition duration-200 flex flex-col justify-between"
+                  >
+                    <div className="aspect-video w-full overflow-hidden bg-slate-900 relative">
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";
+                        }}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-6 space-y-2">
+                      <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                      <p className="text-xs text-slate-400 leading-relaxed">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        ),
       },
 
       FeatureGridBlock: {
@@ -731,7 +833,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
               price: "₦35,000",
               features: `Complete ${type} Delivery\nDirect Support & Consultation\nStandard Quality Assurance`,
               isPopular: false,
-              ctaText: "Select Standard",
+              ctaText: "Order Standard",
             },
             {
               name: "Executive Tier",
@@ -894,7 +996,8 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     <div className="space-y-3">
                       <a
                         href={`mailto:${email}`}
-                        className="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm text-white transition shadow-lg"
+                        className="w-full py-3.5 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm text-white transition shadow-lg hover:brightness-110"
+                        style={{ backgroundColor: "var(--starkora-primary)" }}
                       >
                         <span>✉️ Email Us Directly</span>
                       </a>
@@ -987,7 +1090,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                           name="name"
                           required
                           placeholder="e.g. Tunde Balogun"
-                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-sky-500"
                         />
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1000,7 +1103,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                             name="email"
                             required
                             placeholder="tunde@gmail.com"
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-sky-500"
                           />
                         </div>
                         <div>
@@ -1011,7 +1114,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                             type="tel"
                             name="phone"
                             placeholder="+234..."
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-sky-500"
                           />
                         </div>
                       </div>
@@ -1024,7 +1127,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                           rows={3}
                           required
                           placeholder="Tell us what you're looking for..."
-                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-sky-500"
                         />
                       </div>
                       <button
@@ -1096,7 +1199,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                   type="email"
                   required
                   placeholder="Enter your email address"
-                  className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500"
+                  className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-500"
                 />
                 <button
                   type="submit"
