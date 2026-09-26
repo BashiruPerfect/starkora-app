@@ -21,7 +21,7 @@ export const paletteDefinitions: Record<
   }
 > = {
   sapphire: {
-    primary: "#005AAD", // Official Brand Sapphire Blue
+    primary: "#005AAD",
     primaryText: "#ffffff",
     accent: "#38bdf8",
     glow: "rgba(0, 90, 173, 0.32)",
@@ -105,19 +105,13 @@ function navigateToTarget(e: React.MouseEvent<HTMLAnchorElement>, targetSlug: st
   if (pathname.includes("/preview")) {
     e.preventDefault();
     const cleanSlug = targetSlug === "/" ? "home" : targetSlug.replace(/^\//, "");
-    window.location.href = `/preview?page=${cleanSlug}`;
-    return;
-  }
-
-  const parts = pathname.split("/").filter(Boolean);
-  if (parts[0] === "live" && parts[1]) {
-    e.preventDefault();
-    const cleanSlug = targetSlug === "/" ? "" : `/${targetSlug.replace(/^\//, "")}`;
+    window.location.href = `/preview?page=${cleanSlug}`;     return;   }    const parts = pathname.split("/").filter(Boolean);   if (parts[0] === "live" && parts[1]) {     e.preventDefault();     const cleanSlug = targetSlug === "/" ? "" : `/${targetSlug.replace(/^\//, "")}`;
     window.location.href = `/live/${parts[1]}${cleanSlug}`;
     return;
   }
 }
 
+// In-Sidebar Image Manager supporting File Uploads & On-Demand AI Generation
 function ImageFieldManager({
   value,
   onChange,
@@ -158,7 +152,7 @@ function ImageFieldManager({
   const handleAiGenerate = async () => {
     const prompt = window.prompt(
       "Describe the image you want AI to generate:",
-      "Modern luxury storefront with warm ambient lighting"
+      "Modern luxury commercial storefront with ambient lighting"
     );
     if (!prompt) return;
 
@@ -177,7 +171,7 @@ function ImageFieldManager({
         data = JSON.parse(rawText);
       } catch {
         throw new Error(
-          `Server returned non-JSON response (Status ${res.status}). Ensure /api/ai/image is deployed.`
+          `Server returned unexpected response (Status ${res.status}). Ensure /api/ai/image is deployed.`
         );
       }
 
@@ -187,227 +181,7 @@ function ImageFieldManager({
         alert(data.error || `AI image generation failed (Status ${res.status}).`);
       }
     } catch (err: any) {
-      alert(`AI Image Engine Error: ${err.message}`);
-    } finally {
-      setGeneratingAi(false);
-    }
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100%", marginBottom: "14px" }}>
-      <span style={{ fontSize: "11px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-        {label}
-      </span>
-
-      {value && (
-        <div
-          style={{
-            width: "100%",
-            height: "95px",
-            borderRadius: "8px",
-            overflow: "hidden",
-            border: "1px solid #334155",
-            background: "#020617",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <img
-            src={value}
-            alt="Thumbnail"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";
-            }}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        </div>
-      )}
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-        <label
-          style={{
-            display: "block",
-            textAlign: "center",
-            background: "#334155",
-            color: "#ffffff",
-            padding: "8px",
-            borderRadius: "8px",
-            fontSize: "11px",
-            fontWeight: 600,
-            cursor: uploading ? "not-allowed" : "pointer",
-            opacity: uploading ? 0.6 : 1,
-            transition: "all 0.2s ease",
-          }}
-        >
-          {uploading ? "Reading..." : "Upload File 📁"}
-          <input type="file" accept="image/*" onChange={handleUpload} disabled={uploading} style={{ display: "none" }} />
-        </label>
-
-        <button
-          type="button"
-          onClick={handleAiGenerate}
-          disabled={generatingAi}
-          style={{
-            background: "#005AAD",
-            color: "#ffffff",
-            padding: "8px",
-            borderRadius: "8px",
-            fontSize: "11px",
-            fontWeight: 600,
-            border: "none",
-            cursor: generatingAi ? "not-allowed" : "pointer",
-            opacity: generatingAi ? 0.6 : 1,
-          }}
-        >
-          {generatingAi ? "Generating..." : "Generate AI 🎨"}
-        </button>
-      </div>
-
-      <input
-        type="text"
-        value={value || ""}
-        placeholder="or paste image link..."
-        onChange={(e) => onChange(e.target.value)}
-        style={{
-          width: "100%",
-          padding: "7px 10px",
-          fontSize: "11px",
-          borderRadius: "6px",
-          background: "#0f172a",
-          border: "1px solid #334155",
-          color: "#f8fafc",
-          boxSizing: "border-box",
-        }}
-      />
-    </div>
-  );
-}
-
-export type RootProps = {
-  title: string;
-  palette: ThemePalette;
-  font: ThemeFont;
-};
-
-export type ComponentProps = {
-  NavbarBlock: {
-    brandName: string;
-    logoUrl?: string;
-    ctaLabel: string;
-    ctaLink: string;
-  };
-  HeroBlock: {
-    layout?: "text-left" | "image-left" | "centered";
-    badgeText?: string;
-    heading: string;
-    subheading: string;
-    ctaText: string;
-    ctaLink: string;
-    imageUrl?: string;
-    theme: "light" | "dark" | "gradient";
-  };
-  FeatureGridBlock: {
-    sectionBadge?: string;
-    sectionTitle: string;
-    features: {
-      title: string;
-      description: string;
-    }[];
-  };
-  GalleryGridBlock: {
-    sectionTitle: string;
-    sectionSubtitle: string;
-    layout: "3-column" | "card-grid";
-    items: {
-      title: string;
-      description: string;
-      imageUrl: string;
-    }[];
-  };
-  PricingBlock: {
-    sectionTitle: string;
-    sectionSubtitle: string;
-    plans: {
-      name: string;
-      price: string;
-      features: string;
-      isPopular: boolean;
-      ctaText: string;
-    }[];
-  };
-  TestimonialBlock: {
-    quote: string;
-    author: string;
-    role: string;
-    company: string;
-  };
-  ContactWhatsAppBlock: {
-    title: string;
-    subtitle: string;
-    phoneNumber: string;
-    whatsappMessage: string;
-    email: string;
-    location: string;
-  };
-  NewsletterBlock: {
-    title: string;
-    subtitle: string;
-    buttonText: string;
-  };
-  FooterBlock: {
-    copyrightText: string;
-  };
-};
-
-export interface BusinessContext {
-  businessName?: string;
-  businessType?: string;
-  location?: string;
-}
-
-export function createConfig(context?: BusinessContext): Config<ComponentProps, RootProps> {
-  const fallbackStoredName = typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_name") : null;
-  const fallbackStoredType = typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_type") : null;
-  const fallbackStoredLoc = typeof window !== "undefined" ? localStorage.getItem("starkora_active_location") : null;
-
-  const rawName = context?.businessName || fallbackStoredName || "STARKORA";
-  const name = rawName.replace(/^welcome\s+to\s+/i, "").replace(/^the\s+/i, "").trim() || "STARKORA";
-
-  const rawType = context?.businessType || fallbackStoredType || "Professional Services";
-  const type = rawType.replace(/^welcome\s+to\s+/i, "").trim();
-  const loc = context?.location || fallbackStoredLoc || "Lagos, Nigeria";
-
-  return {
-    root: {
-      fields: {
-        title: { type: "text" },
-        palette: {
-          type: "select",
-          options: [
-            { label: "Sapphire Ocean (#005AAD - Primary)", value: "sapphire" },
-            { label: "Midnight Indigo (Tech & Modern)", value: "indigo" },
-            { label: "Emerald Growth (Fintech & Dining)", value: "emerald" },
-            { label: "Obsidian Gold (Luxury & Real Estate)", value: "gold" },
-            { label: "Crimson Bold (Creative & Fashion)", value: "crimson" },
-            { label: "Minimal Studio (Clean Monochrome)", value: "minimal" },
-          ],
-        },
-        font: {
-          type: "select",
-          options: [
-            { label: "Plus Jakarta Sans (Startup & Modern)", value: "jakarta" },
-            { label: "Inter (Clean & Minimal)", value: "inter" },
-            { label: "Playfair Display (Luxury Serif)", value: "playfair" },
-            { label: "Cinzel (Classic Prestige)", value: "cinzel" },
-            { label: "Space Grotesk (Creative Agency)", value: "space" },
-            { label: "JetBrains Mono (Technical)", value: "mono" },
-          ],
-        },
-      },
-      defaultProps: {
-        title: `${name} | Official Website`,
+      alert(`AI Image Engine Error: ${err.message}`);     } finally {       setGeneratingAi(false);     }   };    return (     <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100\%", marginBottom: "14px" }}>       <span style={{ fontSize: "11px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>         {label}       </span>        {value && (         <div           style={{             width: "100\%",             height: "95px",             borderRadius: "8px",             overflow: "hidden",             border: "1px solid #334155",             background: "#020617",             display: "flex",             alignItems: "center",             justifyContent: "center",           }}         >           <img             src={value}             alt="Thumbnail"             onError={(e) => {               const target = e.target as HTMLImageElement;               target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";             }}             style={{ width: "100\%", height: "100\%", objectFit: "cover" }}           />         </div>       )}        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>         <label           style={{             display: "block",             textAlign: "center",             background: "#334155",             color: "#ffffff",             padding: "8px",             borderRadius: "8px",             fontSize: "11px",             fontWeight: 600,             cursor: uploading ? "not-allowed" : "pointer",             opacity: uploading ? 0.6 : 1,             transition: "all 0.2s ease",           }}         >           {uploading ? "Reading..." : "Upload File 📁"}           <input type="file" accept="image/*" onChange={handleUpload} disabled={uploading} style={{ display: "none" }} />         </label>          <button           type="button"           onClick={handleAiGenerate}           disabled={generatingAi}           style={{             background: "#005AAD",             color: "#ffffff",             padding: "8px",             borderRadius: "8px",             fontSize: "11px",             fontWeight: 600,             border: "none",             cursor: generatingAi ? "not-allowed" : "pointer",             opacity: generatingAi ? 0.6 : 1,           }}         >           {generatingAi ? "Generating..." : "Generate AI 🎨"}         </button>       </div>        <input         type="text"         value={value \vert{}\vert{} ""}         placeholder="or paste image link..."         onChange={(e) => onChange(e.target.value)}         style={{           width: "100\%",           padding: "7px 10px",           fontSize: "11px",           borderRadius: "6px",           background: "#0f172a",           border: "1px solid #334155",           color: "#f8fafc",           boxSizing: "border-box",         }}       />     </div>   ); }  export type RootProps = {   title: string;   palette: ThemePalette;   font: ThemeFont; };  export type ComponentProps = {   NavbarBlock: {     brandName: string;     logoUrl?: string;     ctaLabel: string;     ctaLink: string;   };   HeroBlock: {     layout?: "text-left" \vert{} "image-left" \vert{} "centered";     badgeText?: string;     heading: string;     subheading: string;     ctaText: string;     ctaLink: string;     imageUrl?: string;     theme: "light" \vert{} "dark" \vert{} "gradient";   };   AboutTeaserBlock: {     sectionBadge?: string;     heading: string;     storyText: string;     points: { title: string; desc: string }[];     imageUrl: string;     ctaText: string;     ctaLink: string;   };   ServicesGridBlock: {     sectionBadge?: string;     sectionTitle: string;     sectionSubtitle: string;     services: {       title: string;       description: string;       price: string;       ctaText: string;     }[];   };   FeatureGridBlock: {     sectionBadge?: string;     sectionTitle: string;     features: {       title: string;       description: string;     }[];   };   GalleryGridBlock: {     sectionTitle: string;     sectionSubtitle: string;     items: {       title: string;       description: string;       imageUrl: string;     }[];   };   PricingBlock: {     sectionTitle: string;     sectionSubtitle: string;     plans: {       name: string;       price: string;       features: string;       isPopular: boolean;       ctaText: string;     }[];   };   TestimonialBlock: {     sectionBadge?: string;     sectionTitle: string;     testimonials: {       quote: string;       author: string;       role: string;       company: string;       rating: number;     }[];   };   ContactWhatsAppBlock: {     title: string;     subtitle: string;     phoneNumber: string;     whatsappMessage: string;     email: string;     location: string;   };   NewsletterBlock: {     title: string;     subtitle: string;     buttonText: string;   };   FooterBlock: {     brandName: string;     logoUrl?: string;     tagline: string;     copyrightText: string;     instagram?: string;     whatsapp?: string;     twitter?: string;     linkedin?: string;   }; };  export interface BusinessContext {   businessName?: string;   businessType?: string;   location?: string; }  export function createConfig(context?: BusinessContext): Config<ComponentProps, RootProps> {   const fallbackStoredName = typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_name") : null;   const fallbackStoredType = typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_type") : null;   const fallbackStoredLoc = typeof window !== "undefined" ? localStorage.getItem("starkora_active_location") : null;    const rawName = context?.businessName \vert{}\vert{} fallbackStoredName \vert{}\vert{} "STARKORA";   const name = rawName.replace(/^welcome\s+to\s+/i, "").replace(/^the\s+/i, "").trim() \vert{}\vert{} "STARKORA";    const rawType = context?.businessType \vert{}\vert{} fallbackStoredType \vert{}\vert{} "Professional Enterprise";   const type = rawType.replace(/^welcome\s+to\s+/i, "").trim();   const loc = context?.location \vert{}\vert{} fallbackStoredLoc \vert{}\vert{} "Lagos, Nigeria";    return {     root: {       fields: {         title: { type: "text" },         palette: {           type: "select",           options: [             { label: "Sapphire Ocean (#005AAD - Primary)", value: "sapphire" },             { label: "Midnight Indigo (Tech & Modern)", value: "indigo" },             { label: "Emerald Growth (Fintech & Dining)", value: "emerald" },             { label: "Obsidian Gold (Luxury & Real Estate)", value: "gold" },             { label: "Crimson Bold (Creative & Fashion)", value: "crimson" },             { label: "Minimal Studio (Clean Monochrome)", value: "minimal" },           ],         },         font: {           type: "select",           options: [             { label: "Plus Jakarta Sans (Startup & Modern)", value: "jakarta" },             { label: "Inter (Clean & Minimal)", value: "inter" },             { label: "Playfair Display (Luxury Serif)", value: "playfair" },             { label: "Cinzel (Classic Prestige)", value: "cinzel" },             { label: "Space Grotesk (Creative Agency)", value: "space" },             { label: "JetBrains Mono (Technical)", value: "mono" },           ],         },       },       defaultProps: {         title: `${name} | Official Website`,
         palette: "sapphire",
         font: "jakarta",
       },
@@ -461,53 +235,138 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
         defaultProps: {
           brandName: name,
           logoUrl: "",
-          ctaLabel: "Contact Us",
+          ctaLabel: "Inquire Now",
           ctaLink: "/contact",
         },
-        render: ({ brandName, logoUrl, ctaLabel, ctaLink }) => (
-          <header className="w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-4 px-6">
-            <div className="max-w-6xl mx-auto flex items-center justify-between">
-              <div className="flex items-center gap-8">
-                <a
-                  href="/"
-                  onClick={(e) => navigateToTarget(e, "/")}
-                  className="flex items-center gap-3"
-                >
-                  {logoUrl ? (
-                    <img src={logoUrl} alt={brandName} className="h-9 max-w-[160px] object-contain" />
-                  ) : (
-                    <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                      <span
-                        style={{ backgroundColor: "var(--starkora-primary)" }}
-                        className="w-2.5 h-2.5 rounded-full inline-block"
-                      />
+        render: ({ brandName, logoUrl, ctaLabel, ctaLink }) => {
+          const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+          return (
+            <header className="w-full bg-slate-950/85 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-3.5 px-4 sm:px-8">
+              <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+                {/* Brand Logo & Title with Strict Truncation to Prevent Clutter */}
+                <div className="flex items-center gap-2 min-w-0">
+                  <a
+                    href="/"
+                    onClick={(e) => navigateToTarget(e, "/")}
+                    className="flex items-center gap-2.5 truncate"
+                  >
+                    {logoUrl ? (
+                      <img src={logoUrl} alt={brandName} className="h-8 max-w-[130px] object-contain shrink-0" />
+                    ) : (
+                      <span className="w-2.5 h-2.5 rounded-full inline-block shrink-0" style={{ backgroundColor: "var(--starkora-primary)" }} />
+                    )}
+                    <span className="text-base sm:text-lg font-black tracking-tight text-white truncate max-w-[160px] sm:max-w-[260px]">
                       {brandName}
                     </span>
-                  )}
-                </a>
+                  </a>
+                </div>
 
-                <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
-                  <a href="/" onClick={(e) => navigateToTarget(e, "/")} className="hover:text-white transition cursor-pointer">Home</a>
-                  <a href="/about" onClick={(e) => navigateToTarget(e, "/about")} className="hover:text-white transition cursor-pointer">About</a>
-                  <a href="/services" onClick={(e) => navigateToTarget(e, "/services")} className="hover:text-white transition cursor-pointer">Services</a>
-                  <a href="/contact" onClick={(e) => navigateToTarget(e, "/contact")} className="hover:text-white transition cursor-pointer">Contact</a>
+                {/* Desktop Navigation Links */}
+                <nav className="hidden md:flex items-center gap-6 text-xs uppercase tracking-wider font-semibold text-slate-300">
+                  <a href="/" onClick={(e) => navigateToTarget(e, "/")} className="hover:text-white transition">Home</a>
+                  <a href="/about" onClick={(e) => navigateToTarget(e, "/about")} className="hover:text-white transition">About</a>
+                  <a href="/services" onClick={(e) => navigateToTarget(e, "/services")} className="hover:text-white transition">Services</a>
+                  <a href="/contact" onClick={(e) => navigateToTarget(e, "/contact")} className="hover:text-white transition">Contact</a>
                 </nav>
+
+                {/* Action Items: CTA Button + Mobile Hamburger Toggle */}
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <a
+                    href={ctaLink}
+                    onClick={(e) => navigateToTarget(e, ctaLink)}
+                    style={{
+                      backgroundColor: "var(--starkora-primary)",
+                      color: "var(--starkora-primary-text)",
+                    }}
+                    className="hidden sm:inline-flex px-4 py-2 text-xs font-bold rounded-xl shadow transition hover:brightness-110"
+                  >
+                    {ctaLabel}
+                  </a>
+
+                  {/* Mobile Hamburger Button */}
+                  <button
+                    type="button"
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:text-white hover:bg-slate-800 transition"
+                    aria-label="Toggle navigation menu"
+                  >
+                    {mobileMenuOpen ? (
+                      <span className="text-base font-bold">✕</span>
+                    ) : (
+                      <span className="text-base font-bold">☰</span>
+                    )}
+                  </button>
+                </div>
               </div>
 
-              <a
-                href={ctaLink}
-                onClick={(e) => navigateToTarget(e, ctaLink)}
-                style={{
-                  backgroundColor: "var(--starkora-primary)",
-                  color: "var(--starkora-primary-text)",
-                }}
-                className="px-5 py-2.5 text-sm font-semibold rounded-xl transition hover:brightness-110 shadow-lg cursor-pointer"
-              >
-                {ctaLabel}
-              </a>
-            </div>
-          </header>
-        ),
+              {/* Mobile Slide-Down Drawer */}
+              {mobileMenuOpen && (
+                <div className="md:hidden mt-3 pt-3 border-t border-slate-800/80 space-y-3 pb-2 text-left">
+                  <nav className="flex flex-col space-y-2 text-sm font-semibold text-slate-300">
+                    <a
+                      href="/"
+                      onClick={(e) => {
+                        setMobileMenuOpen(false);
+                        navigateToTarget(e, "/");
+                      }}
+                      className="px-3 py-2 rounded-lg hover:bg-slate-900 transition"
+                    >
+                      Home
+                    </a>
+                    <a
+                      href="/about"
+                      onClick={(e) => {
+                        setMobileMenuOpen(false);
+                        navigateToTarget(e, "/about");
+                      }}
+                      className="px-3 py-2 rounded-lg hover:bg-slate-900 transition"
+                    >
+                      About Us
+                    </a>
+                    <a
+                      href="/services"
+                      onClick={(e) => {
+                        setMobileMenuOpen(false);
+                        navigateToTarget(e, "/services");
+                      }}
+                      className="px-3 py-2 rounded-lg hover:bg-slate-900 transition"
+                    >
+                      Services & Packages
+                    </a>
+                    <a
+                      href="/contact"
+                      onClick={(e) => {
+                        setMobileMenuOpen(false);
+                        navigateToTarget(e, "/contact");
+                      }}
+                      className="px-3 py-2 rounded-lg hover:bg-slate-900 transition"
+                    >
+                      Contact
+                    </a>
+                  </nav>
+
+                  <div className="pt-2 border-t border-slate-800/60">
+                    <a
+                      href={ctaLink}
+                      onClick={(e) => {
+                        setMobileMenuOpen(false);
+                        navigateToTarget(e, ctaLink);
+                      }}
+                      style={{
+                        backgroundColor: "var(--starkora-primary)",
+                        color: "var(--starkora-primary-text)",
+                      }}
+                      className="w-full py-2.5 text-center text-xs font-bold rounded-xl shadow transition block"
+                    >
+                      {ctaLabel}
+                    </a>
+                  </div>
+                </div>
+              )}
+            </header>
+          );
+        },
       },
 
       HeroBlock: {
@@ -544,8 +403,8 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           layout: "text-left",
           badgeText: "PREMIER SERVICE",
           heading: `${name}`,
-          subheading: `Exceptional ${type} crafted with passion, quality, and dedication across ${loc}.`,
-          ctaText: "Explore Offerings",
+          subheading: `Exceptional ${type} crafted with passion, quality, and dedication across${loc}.`,
+          ctaText: "Explore Packages",
           ctaLink: "/services",
           imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80",
           theme: "gradient",
@@ -565,14 +424,14 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     }
                   : {}
               }
-              className={`py-24 px-6 relative transition-colors ${
+              className={`py-20 sm:py-24 px-6 relative transition-colors ${
                 theme === "light" ? "bg-white text-slate-900" : "bg-slate-950 text-white"
               }`}
             >
               <div
                 className={`max-w-6xl mx-auto ${
                   isCentered
-                    ? "flex flex-col items-center text-center space-y-10"
+                    ? "flex flex-col items-center text-center space-y-8"
                     : "grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
                 }`}
               >
@@ -589,7 +448,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                           color: "var(--starkora-badge-text)",
                           borderColor: "var(--starkora-card-border)",
                         }}
-                        className="px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase border inline-flex items-center gap-1.5"
+                        className="px-3.5 py-1 rounded-full text-xs font-bold tracking-widest uppercase border inline-flex items-center gap-1.5"
                       >
                         <span
                           style={{ backgroundColor: "var(--starkora-accent)" }}
@@ -600,10 +459,10 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     </div>
                   )}
 
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
                     {heading}
                   </h1>
-                  <p className="text-lg opacity-85 leading-relaxed max-w-xl text-slate-300">
+                  <p className="text-sm sm:text-base opacity-85 leading-relaxed max-w-xl text-slate-300">
                     {subheading}
                   </p>
                   <div>
@@ -615,7 +474,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                         color: "var(--starkora-primary-text)",
                         boxShadow: "0 10px 25px -5px var(--starkora-glow)",
                       }}
-                      className="inline-block px-8 py-4 rounded-xl font-bold shadow-xl transition hover:brightness-110 text-sm cursor-pointer"
+                      className="inline-block px-7 py-3.5 rounded-xl font-bold shadow-xl transition hover:brightness-110 text-sm cursor-pointer"
                     >
                       {ctaText}
                     </a>
@@ -635,7 +494,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                           const target = e.target as HTMLImageElement;
                           target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";
                         }}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                       />
                     </div>
                   </div>
@@ -646,30 +505,200 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
         },
       },
 
+      AboutTeaserBlock: {
+        fields: {
+          sectionBadge: { type: "text" },
+          heading: { type: "text" },
+          storyText: { type: "textarea" },
+          imageUrl: {
+            type: "custom",
+            render: ({ value, onChange }) => (
+              <ImageFieldManager value={value} onChange={onChange} label="About Visual / Story Photo" />
+            ),
+          },
+          ctaText: { type: "text" },
+          ctaLink: { type: "text" },
+        },
+        defaultProps: {
+          sectionBadge: "OUR MISSION",
+          heading: `Crafted with Purpose & Integrity`,
+          storyText: `At ${name}, our journey started with a singular dedication: delivering uncompromised quality in ${type} for clients who value authenticity, transparency, and rapid delivery across${loc}.`,
+          imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1000&auto=format&fit=crop&q=80",
+          ctaText: "Read Full Story ➔",
+          ctaLink: "/about",
+        },
+        render: ({ sectionBadge, heading, storyText, imageUrl, ctaText, ctaLink }) => (
+          <section className="py-24 px-6 bg-slate-900/30 border-t border-slate-900 text-left">
+            <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="aspect-video lg:aspect-4/3 w-full rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-xl relative">
+                <img
+                  src={imageUrl}
+                  alt={heading}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80";
+                  }}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="space-y-6">
+                {sectionBadge && (
+                  <span
+                    style={{
+                      backgroundColor: "var(--starkora-badge-bg)",
+                      color: "var(--starkora-badge-text)",
+                    }}
+                    className="px-3.5 py-1 rounded-full text-xs font-bold tracking-widest uppercase inline-block"
+                  >
+                    {sectionBadge}
+                  </span>
+                )}
+
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+                  {heading}
+                </h2>
+
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  {storyText}
+                </p>
+
+                <div className="space-y-3 pt-2 text-xs text-slate-400">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-emerald-400 font-bold">✓</span>
+                    <span>Verified customer satisfaction and quality assurance.</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-emerald-400 font-bold">✓</span>
+                    <span>Responsive direct support on WhatsApp and email.</span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <a
+                    href={ctaLink}
+                    onClick={(e) => navigateToTarget(e, ctaLink)}
+                    className="inline-block text-xs font-bold tracking-wide uppercase text-indigo-400 hover:text-indigo-300 transition"
+                  >
+                    {ctaText}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        ),
+      },
+
+      ServicesGridBlock: {
+        fields: {
+          sectionBadge: { type: "text" },
+          sectionTitle: { type: "text" },
+          sectionSubtitle: { type: "textarea" },
+          services: {
+            type: "array",
+            arrayFields: {
+              title: { type: "text" },
+              description: { type: "textarea" },
+              price: { type: "text" },
+              ctaText: { type: "text" },
+            },
+          },
+        },
+        defaultProps: {
+          sectionBadge: "WHAT WE DELIVER",
+          sectionTitle: "Specialized Service Offerings",
+          sectionSubtitle: `Explore our specialized solutions engineered for measurable client satisfaction.`,
+          services: [
+            {
+              title: "Essential Package",
+              description: `Entry tier ${type} delivery with personalized consultation.`,
+              price: "₦35,000",
+              ctaText: "Inquire Now",
+            },
+            {
+              title: "Executive Masterclass",
+              description: `Priority engagement including full custom specifications.`,
+              price: "₦85,000",
+              ctaText: "Book Service",
+            },
+            {
+              title: "Full Bespoke Retainer",
+              description: `Comprehensive turnkey execution tailored to executive requirements.`,
+              price: "₦180,000",
+              ctaText: "Request Quote",
+            },
+          ],
+        },
+        render: ({ sectionBadge, sectionTitle, sectionSubtitle, services }) => (
+          <section className="py-24 px-6 bg-slate-950 border-t border-slate-900 text-left">
+            <div className="max-w-6xl mx-auto space-y-12">
+              <div className="text-center space-y-3 max-w-2xl mx-auto">
+                {sectionBadge && (
+                  <span
+                    style={{
+                      backgroundColor: "var(--starkora-badge-bg)",
+                      color: "var(--starkora-badge-text)",
+                    }}
+                    className="px-3.5 py-1 rounded-full text-xs font-bold tracking-widest uppercase inline-block"
+                  >
+                    {sectionBadge}
+                  </span>
+                )}
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">{sectionTitle}</h2>
+                <p className="text-sm text-slate-400">{sectionSubtitle}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {services?.map((svc, idx) => (
+                  <div
+                    key={idx}
+                    style={{ borderColor: "var(--starkora-card-border)" }}
+                    className="rounded-2xl border bg-slate-900/60 p-7 flex flex-col justify-between space-y-6 hover:-translate-y-1.5 transition duration-300 shadow-xl"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">0{idx + 1}</span>
+                        <span className="text-sm font-black" style={{ color: "var(--starkora-accent)" }}>{svc.price}</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-white">{svc.title}</h3>
+                      <p className="text-xs text-slate-300 leading-relaxed">{svc.description}</p>
+                    </div>
+
+                    <a
+                      href="#contact"
+                      className="w-full py-2.5 rounded-xl text-center text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white transition block"
+                    >
+                      {svc.ctaText || "Select Service"} ➔
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        ),
+      },
+
       GalleryGridBlock: {
         fields: {
           sectionTitle: { type: "text" },
           sectionSubtitle: { type: "textarea" },
-          layout: {
-            type: "radio",
-            options: [
-              { label: "3-Column Grid", value: "3-column" },
-              { label: "Stacked Cards", value: "card-grid" },
-            ],
-          },
           items: {
             type: "array",
             arrayFields: {
               title: { type: "text" },
               description: { type: "textarea" },
-              imageUrl: { type: "text" },
+              imageUrl: {
+                type: "custom",
+                render: ({ value, onChange }) => (
+                  <ImageFieldManager value={value} onChange={onChange} label="Gallery Photo" />
+                ),
+              },
             },
           },
         },
         defaultProps: {
           sectionTitle: "Signature Gallery",
-          sectionSubtitle: "Explore our latest projects, deliverables, and collection pieces.",
-          layout: "3-column",
+          sectionSubtitle: "Explore our latest deliverables, client projects, and visual portfolio.",
           items: [
             {
               title: "Executive Masterpiece",
@@ -688,20 +717,20 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
             },
           ],
         },
-        render: ({ sectionTitle, sectionSubtitle, layout = "3-column", items }) => (
-          <section className="py-24 px-6 bg-slate-900/40 text-white border-t border-slate-800">
+        render: ({ sectionTitle, sectionSubtitle, items }) => (
+          <section className="py-24 px-6 bg-slate-900/40 text-white border-t border-slate-900">
             <div className="max-w-6xl mx-auto space-y-12">
-              <div className="text-center space-y-3">
+              <div className="text-center space-y-3 max-w-2xl mx-auto">
                 <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{sectionTitle}</h2>
-                <p className="text-slate-400 max-w-xl mx-auto text-sm">{sectionSubtitle}</p>
+                <p className="text-slate-400 text-sm">{sectionSubtitle}</p>
               </div>
 
-              <div className={`grid gap-6 ${layout === "3-column" ? "grid-cols-1 md:grid-cols-3" : "grid-cols-1 md:grid-cols-2"}`}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {items?.map((item, idx) => (
                   <div
                     key={idx}
                     style={{ borderColor: "var(--starkora-card-border)" }}
-                    className="rounded-2xl border bg-slate-950 overflow-hidden shadow-xl hover:-translate-y-1 transition duration-200 flex flex-col justify-between"
+                    className="rounded-2xl border bg-slate-950 overflow-hidden shadow-xl hover:-translate-y-1.5 transition duration-300 flex flex-col justify-between group"
                   >
                     <div className="aspect-video w-full overflow-hidden bg-slate-900 relative">
                       <img
@@ -711,10 +740,10 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                           const target = e.target as HTMLImageElement;
                           target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";
                         }}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                       />
                     </div>
-                    <div className="p-6 space-y-2">
+                    <div className="p-6 space-y-2 text-left">
                       <h3 className="text-lg font-bold text-white">{item.title}</h3>
                       <p className="text-xs text-slate-400 leading-relaxed">{item.description}</p>
                     </div>
@@ -766,7 +795,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                       backgroundColor: "var(--starkora-badge-bg)",
                       color: "var(--starkora-badge-text)",
                     }}
-                    className="px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase"
+                    className="px-3.5 py-1 rounded-full text-xs font-bold tracking-widest uppercase"
                   >
                     {sectionBadge}
                   </span>
@@ -774,7 +803,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                 <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{sectionTitle}</h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
                 {features?.map((item, idx) => (
                   <div
                     key={idx}
@@ -851,7 +880,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
               <p className="text-slate-400 text-sm">{sectionSubtitle}</p>
             </div>
 
-            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
               {plans?.map((plan, idx) => (
                 <div
                   key={idx}
@@ -876,7 +905,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                             backgroundColor: "var(--starkora-badge-bg)",
                             color: "var(--starkora-badge-text)",
                           }}
-                          className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-indigo-500/20"
+                          className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-sky-500/20"
                         >
                           Recommended
                         </span>
@@ -911,7 +940,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     }
                     className={`w-full py-3.5 text-center rounded-xl font-bold text-sm transition hover:brightness-110 ${
                       plan.isPopular
-                        ? "shadow-lg"
+                        ? "shadow-lg text-white"
                         : "bg-slate-800 hover:bg-slate-700 text-slate-200"
                     }`}
                   >
@@ -926,31 +955,88 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
 
       TestimonialBlock: {
         fields: {
-          quote: { type: "textarea" },
-          author: { type: "text" },
-          role: { type: "text" },
-          company: { type: "text" },
+          sectionBadge: { type: "text" },
+          sectionTitle: { type: "text" },
+          testimonials: {
+            type: "array",
+            arrayFields: {
+              quote: { type: "textarea" },
+              author: { type: "text" },
+              role: { type: "text" },
+              company: { type: "text" },
+              rating: { type: "number" },
+            },
+          },
         },
         defaultProps: {
-          quote: `Working with ${name} was effortless. Their commitment to quality and punctuality exceeded all expectations.`,
-          author: "Alhaji Ibrahim Danjuma",
-          role: "Managing Director",
-          company: "Danjuma Holdings",
+          sectionBadge: "CLIENT REVIEWS",
+          sectionTitle: "Endorsed by Industry Leaders",
+          testimonials: [
+            {
+              quote: `Working with ${name} was effortless. Their commitment to quality and punctuality exceeded all expectations.`,
+              author: "Alhaji Ibrahim Danjuma",
+              role: "Managing Director",
+              company: "Danjuma Holdings",
+              rating: 5,
+            },
+            {
+              quote: `The speed of execution and attention to detail transformed our operations completely. Outstanding professionalism.`,
+              author: "Chioma Adeleke",
+              role: "Creative Director",
+              company: "Adeleke Luxury Brand",
+              rating: 5,
+            },
+            {
+              quote: `Their team delivers verified results with zero downtime. Highly recommended for any serious business.`,
+              author: "Tunde Babalola",
+              role: "Principal Broker",
+              company: "Apex Capital Properties",
+              rating: 5,
+            },
+          ],
         },
-        render: ({ quote, author, role, company }) => (
-          <section className="py-24 px-6 bg-slate-950 text-white border-t border-slate-900 text-center">
-            <div className="max-w-3xl mx-auto space-y-6">
-              <div style={{ color: "var(--starkora-accent)" }} className="text-5xl font-serif">
-                “
+        render: ({ sectionBadge, sectionTitle, testimonials }) => (
+          <section className="py-24 px-6 bg-slate-950 text-white border-t border-slate-900 text-left">
+            <div className="max-w-6xl mx-auto space-y-12">
+              <div className="text-center space-y-3 max-w-2xl mx-auto">
+                {sectionBadge && (
+                  <span
+                    style={{
+                      backgroundColor: "var(--starkora-badge-bg)",
+                      color: "var(--starkora-badge-text)",
+                    }}
+                    className="px-3.5 py-1 rounded-full text-xs font-bold tracking-widest uppercase inline-block"
+                  >
+                    {sectionBadge}
+                  </span>
+                )}
+                <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{sectionTitle}</h2>
               </div>
-              <p className="text-xl sm:text-2xl font-medium leading-relaxed italic text-slate-200">
-                {quote}
-              </p>
-              <div className="pt-6 border-t border-slate-800 inline-block">
-                <h4 className="font-bold text-white text-base">{author}</h4>
-                <p className="text-xs text-slate-400">
-                  {role} • <span style={{ color: "var(--starkora-accent)" }}>{company}</span>
-                </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {testimonials?.map((t, idx) => (
+                  <div
+                    key={idx}
+                    style={{ borderColor: "var(--starkora-card-border)" }}
+                    className="p-8 rounded-2xl border bg-slate-900/60 flex flex-col justify-between space-y-6 shadow-xl hover:-translate-y-1 transition duration-200"
+                  >
+                    <div className="space-y-4">
+                      <div className="text-amber-400 text-sm tracking-widest">
+                        {"★".repeat(t.rating || 5)}
+                      </div>
+                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic">
+                        &quot;{t.quote}&quot;
+                      </p>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-800">
+                      <h4 className="font-bold text-white text-sm">{t.author}</h4>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {t.role} • <span style={{ color: "var(--starkora-accent)" }}>{t.company}</span>
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
@@ -987,11 +1073,11 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                   <p className="text-slate-400 max-w-xl mx-auto text-sm">{subtitle}</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start text-left">
                   <div className="bg-slate-950/70 border border-slate-800 p-6 rounded-2xl space-y-6">
                     <h3 className="text-lg font-bold text-white">Direct Information</h3>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      Have questions or require assistance? You can reach us directly via email or our direct phone lines.
+                      Have questions or require assistance? You can reach us directly via email or our phone line.
                     </p>
                     <div className="space-y-3">
                       <a
@@ -1108,7 +1194,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                         </div>
                         <div>
                           <label className="block text-[11px] uppercase font-semibold text-slate-400 mb-1">
-                            Phone Number (Optional)
+                            Phone (Optional)
                           </label>
                           <input
                             type="tel"
@@ -1126,7 +1212,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                           name="message"
                           rows={3}
                           required
-                          placeholder="Tell us what you're looking for..."
+                          placeholder="Tell us what you are looking for..."
                           className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-sky-500"
                         />
                       </div>
@@ -1136,7 +1222,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                           backgroundColor: "var(--starkora-primary)",
                           color: "var(--starkora-primary-text)",
                         }}
-                        className="w-full py-3.5 font-bold rounded-xl text-sm transition hover:brightness-110 shadow-lg"
+                        className="w-full py-3.5 font-bold rounded-xl text-sm transition hover:brightness-110 shadow-lg cursor-pointer"
                       >
                         Send Message ➔
                       </button>
@@ -1207,7 +1293,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     backgroundColor: "var(--starkora-primary)",
                     color: "var(--starkora-primary-text)",
                   }}
-                  className="px-6 py-3 rounded-xl font-bold text-sm transition hover:brightness-110 shadow-lg whitespace-nowrap"
+                  className="px-6 py-3 rounded-xl font-bold text-sm transition hover:brightness-110 shadow-lg whitespace-nowrap cursor-pointer"
                 >
                   {buttonText}
                 </button>
@@ -1219,14 +1305,91 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
 
       FooterBlock: {
         fields: {
+          brandName: { type: "text" },
+          logoUrl: {
+            type: "custom",
+            render: ({ value, onChange }) => (
+              <ImageFieldManager value={value} onChange={onChange} label="Footer Logo" />
+            ),
+          },
+          tagline: { type: "textarea" },
           copyrightText: { type: "text" },
+          instagram: { type: "text" },
+          whatsapp: { type: "text" },
+          twitter: { type: "text" },
+          linkedin: { type: "text" },
         },
         defaultProps: {
-          copyrightText: `© ${new Date().getFullYear()} ${name}. Powered by STARKORA.`,
+          brandName: name,
+          logoUrl: "",
+          tagline: `Industry-leading ${type} solutions across${loc}. Engineered for excellence and verified dependability.`,
+          copyrightText: `© ${new Date().getFullYear()}${name}. Powered by STARKORA.`,
+          instagram: "https://instagram.com",
+          whatsapp: "https://wa.me/2348012345678",
+          twitter: "https://x.com",
+          linkedin: "https://linkedin.com",
         },
-        render: ({ copyrightText }) => (
-          <footer className="py-8 px-6 bg-slate-950 text-slate-500 text-center text-sm border-t border-slate-900">
-            <p>{copyrightText}</p>
+        render: ({ brandName, logoUrl, tagline, copyrightText, instagram, whatsapp, twitter, linkedin }) => (
+          <footer className="py-14 px-6 sm:px-12 bg-slate-950 text-slate-400 text-xs border-t border-slate-900 text-left">
+            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-900">
+              {/* Col 1: Logo & Bio */}
+              <div className="md:col-span-2 space-y-4">
+                <div className="flex items-center gap-2.5">
+                  {logoUrl ? (
+                    <img src={logoUrl} alt={brandName} className="h-7 max-w-[140px] object-contain" />
+                  ) : (
+                    <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: "var(--starkora-primary)" }} />
+                  )}
+                  <span className="text-base font-black tracking-tight text-white">{brandName}</span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
+                  {tagline}
+                </p>
+              </div>
+
+              {/* Col 2: Navigation Links */}
+              <div className="space-y-3">
+                <span className="font-bold text-white text-xs uppercase tracking-wider">Quick Navigation</span>
+                <ul className="space-y-2 text-xs">
+                  <li><a href="/" onClick={(e) => navigateToTarget(e, "/")} className="hover:text-white transition">Home</a></li>
+                  <li><a href="/about" onClick={(e) => navigateToTarget(e, "/about")} className="hover:text-white transition">About Us</a></li>
+                  <li><a href="/services" onClick={(e) => navigateToTarget(e, "/services")} className="hover:text-white transition">Services & Rates</a></li>
+                  <li><a href="/contact" onClick={(e) => navigateToTarget(e, "/contact")} className="hover:text-white transition">Contact Us</a></li>
+                </ul>
+              </div>
+
+              {/* Col 3: Social Channels */}
+              <div className="space-y-3">
+                <span className="font-bold text-white text-xs uppercase tracking-wider">Connect Channels</span>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {instagram && (
+                    <a href={instagram} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 hover:text-white transition">
+                      Instagram
+                    </a>
+                  )}
+                  {whatsapp && (
+                    <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-emerald-400 hover:text-emerald-300 transition">
+                      WhatsApp
+                    </a>
+                  )}
+                  {twitter && (
+                    <a href={twitter} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 hover:text-white transition">
+                      X (Twitter)
+                    </a>
+                  )}
+                  {linkedin && (
+                    <a href={linkedin} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 hover:text-white transition">
+                      LinkedIn
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="max-w-6xl mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-600">
+              <p>{copyrightText}</p>
+              <p className="text-[11px]">Deployed with sub-50ms Anycast Edge Acceleration.</p>
+            </div>
           </footer>
         ),
       },
