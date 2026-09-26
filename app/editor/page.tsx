@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useMemo } from "react";
 import { Puck, type Data } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { createConfig, type ComponentProps, type RootProps } from "../../puck.config";
+import { resolveNicheImages } from "@/lib/images";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -14,6 +15,8 @@ interface MultiPageSiteData {
 }
 
 function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = "Enterprise"): MultiPageSiteData {
+  const images = resolveNicheImages(bizType, bizName);
+
   return {
     pages: {
       home: {
@@ -29,10 +32,10 @@ function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = 
               layout: "text-left",
               badgeText: "PREMIER SERVICE",
               heading: bizName,
-              subheading: `Providing premier ${bizType} solutions across Nigeria with verified craftsmanship, prompt delivery, and complete customer satisfaction.`,
+              subheading: `Providing specialized ${bizType} solutions across Nigeria with verified craftsmanship, prompt delivery, and complete customer satisfaction.`,
               ctaText: "Explore Packages",
               ctaLink: "/services",
-              imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80",
+              imageUrl: images.hero,
               theme: "gradient",
             },
           },
@@ -43,7 +46,7 @@ function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = 
               sectionBadge: "OUR STORY",
               heading: "Crafted with Purpose & Integrity",
               storyText: `At ${bizName}, we believe excellence is in the details. Delivering exceptional ${bizType} solutions for clients who value dependability and precision.`,
-              imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1000&auto=format&fit=crop&q=80",
+              imageUrl: images.about,
               ctaText: "Read Full Story ➔",
               ctaLink: "/about",
             },
@@ -69,9 +72,9 @@ function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = 
               sectionTitle: "Signature Portfolio",
               sectionSubtitle: `Explore recent deliverables and collection pieces from ${bizName}.`,
               items: [
-                { title: "Executive Standard", description: "Bespoke execution with premier materials.", imageUrl: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&auto=format&fit=crop&q=80" },
-                { title: "Custom Solutions", description: "Tailored directly to unique customer requirements.", imageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80" },
-                { title: "Punctual Delivery", description: "Delivered promptly without compromising excellence.", imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80" },
+                { title: "Premier Offering", description: "Bespoke execution with premier materials.", imageUrl: images.gallery[0] },
+                { title: "Custom Solutions", description: "Tailored directly to unique customer requirements.", imageUrl: images.gallery[1] },
+                { title: "Client Assurance", description: "Delivered promptly without compromising excellence.", imageUrl: images.gallery[2] },
               ],
             },
           },
@@ -106,7 +109,7 @@ function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = 
               id: "footer-home",
               brandName: bizName,
               tagline: `Premier ${bizType} solutions across Nigeria. Engineered for excellence and verified dependability.`,
-              copyrightText: `© ${new Date().getFullYear()} ${bizName}. Powered by STARKORA.`,
+              copyrightText: `© ${new Date().getFullYear()}${bizName}. Powered by STARKORA.`,
               instagram: "https://instagram.com",
               whatsapp: "https://wa.me/2348012345678",
               twitter: "https://x.com",
@@ -132,7 +135,7 @@ function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = 
               subheading: `Dedicated to delivering exceptional ${bizType} solutions with integrity, precision, and customer-first focus.`,
               ctaText: "View Our Services",
               ctaLink: "/services",
-              imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80",
+              imageUrl: images.about,
               theme: "dark",
             },
           },
@@ -155,7 +158,7 @@ function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = 
               id: "footer-about",
               brandName: bizName,
               tagline: `Premier ${bizType} solutions across Nigeria.`,
-              copyrightText: `© ${new Date().getFullYear()} ${bizName}. Powered by STARKORA.`,
+              copyrightText: `© ${new Date().getFullYear()}${bizName}. Powered by STARKORA.`,
             },
           },
         ],
@@ -166,19 +169,6 @@ function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = 
           {
             type: "NavbarBlock",
             props: { id: "nav-services", brandName: bizName, ctaLabel: "Inquire", ctaLink: "/contact" },
-          },
-          {
-            type: "HeroBlock",
-            props: {
-              id: "hero-services",
-              badgeText: "SOLUTIONS",
-              heading: "Our Service Offerings",
-              subheading: `Comprehensive ${bizType} packages engineered to deliver immediate value and long-term durability.`,
-              ctaText: "Book Service",
-              ctaLink: "/contact",
-              imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=80",
-              theme: "gradient",
-            },
           },
           {
             type: "PricingBlock",
@@ -198,7 +188,7 @@ function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = 
               id: "footer-services",
               brandName: bizName,
               tagline: `Premier ${bizType} solutions across Nigeria.`,
-              copyrightText: `© ${new Date().getFullYear()} ${bizName}. Powered by STARKORA.`,
+              copyrightText: `© ${new Date().getFullYear()}${bizName}. Powered by STARKORA.`,
             },
           },
         ],
@@ -219,7 +209,7 @@ function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = 
               subheading: "Have questions or need a customized quote? Send us an inquiry or message us on WhatsApp.",
               ctaText: "Chat on WhatsApp",
               ctaLink: "#contact",
-              imageUrl: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=800&auto=format&fit=crop&q=80",
+              imageUrl: images.gallery[0],
               theme: "dark",
             },
           },
@@ -241,7 +231,7 @@ function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = 
               id: "footer-contact",
               brandName: bizName,
               tagline: `Premier ${bizType} solutions across Nigeria.`,
-              copyrightText: `© ${new Date().getFullYear()} ${bizName}. Powered by STARKORA.`,
+              copyrightText: `© ${new Date().getFullYear()}${bizName}. Powered by STARKORA.`,
             },
           },
         ],
@@ -341,7 +331,7 @@ function sanitizePagePayload(
     if (detectedType === "FooterBlock") {
       if (!props.brandName) props.brandName = bizName;
       if (!props.tagline) props.tagline = `Premier solutions across Nigeria. Powered by STARKORA.`;
-      if (!props.copyrightText) props.copyrightText = `© ${new Date().getFullYear()} ${bizName}. Powered by STARKORA.`;
+      if (!props.copyrightText) props.copyrightText = `© ${new Date().getFullYear()}${bizName}. Powered by STARKORA.`;
     }
 
     safeContent.push({ type: detectedType, props });
@@ -407,7 +397,9 @@ function EditorContent() {
       }
 
       const activeBizName =
-        localStorage.getItem("starkora_active_business_name") || "Your Business";
+        localStorage.getItem("starkora_active_business_name") || "STARKORA";
+      const activeBizType =
+        localStorage.getItem("starkora_active_business_type") || "Enterprise";
 
       if (siteId) {
         try {
@@ -441,7 +433,7 @@ function EditorContent() {
           console.error("Failed to parse saved local site", e);
         }
       } else {
-        setMultiPage(createDefaultMultiPage(activeBizName));
+        setMultiPage(createDefaultMultiPage(activeBizName, activeBizType));
       }
       setIsLoaded(true);
     }

@@ -1,18 +1,22 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { resolveNicheImages, type NicheImageSet } from "@/lib/images";
 
 export const maxDuration = 60;
 
 const rawKey = (process.env.OPENAI_API_KEY || "").replace(/["']/g, "").trim();
 const openai = rawKey ? new OpenAI({ apiKey: rawKey }) : null;
 
-async function generateCustomHeroImage(businessName: string, businessType: string, description: string) {
-  if (!openai) {
-    return "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80";
-  }
+async function generateAdaptiveHeroPhoto(
+  businessName: string,
+  businessType: string,
+  description: string,
+  fallbackImage: string
+): Promise<string> {
+  if (!openai) return fallbackImage;
 
   try {
-    const prompt = `High-end commercial website hero photography for ${businessName}, a ${businessType}. Context: ${description || "modern premium business"}. Photorealistic, 8k resolution, cinematic natural lighting, clean architectural aesthetic, no text, no watermarks.`;
+    const prompt = `Professional commercial web photography for ${businessName}, a business specializing in ${businessType}. Context: ${description || "high quality specialized service"}. The scene must clearly show the actual environment, equipment, or service of this specific trade (e.g. if dental: dental clinic operatory, modern hygiene equipment, reassuring smile; if restaurant: gourmet plated meal, vibrant kitchen; if tailoring: bespoke fabrics, measuring tape, senator suit). Highly realistic, authentic lighting, clean architectural aesthetic, 8k resolution, no text, no watermarks.`;
 
     const imgResponse = await openai.images.generate({
       model: "gpt-image-1-mini",
@@ -26,27 +30,23 @@ async function generateCustomHeroImage(businessName: string, businessType: strin
     if (item?.b64_json) {
       return `data:image/png;base64,${item.b64_json}`;
     }
-    return item?.url || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80";
+    return item?.url || fallbackImage;
   } catch (err) {
-    console.warn("AI Image generation in background failed, using verified fallback photo:", err);
-    return "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80";
+    console.warn("AI Image generation failed, falling back to curated niche photo:", err);
+    return fallbackImage;
   }
 }
 
-function buildFallbackPageData(
+function buildSpecializedFallback(
   businessName: string,
   businessType: string,
   location: string,
   description: string,
-  phone?: string,
-  heroPhotoUrl?: string
+  phone: string,
+  images: NicheImageSet,
+  heroPhoto: string
 ) {
-  const cleanName = businessName.replace(/^welcome\s+to\s+/i, "").replace(/^the\s+/i, "").trim() || "Business";
-  const cleanType = businessType.replace(/^welcome\s+to\s+/i, "").trim() || "Services";
-  const cleanLoc = location || "Lagos, Nigeria";
-  const cleanPhone = phone?.trim() || "+2348012345678";
-  const brandSlug = cleanName.toLowerCase().replace(/[^a-z0-9]/g, "");
-  const photo = heroPhotoUrl || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80";
+  const brandSlug = businessName.toLowerCase().replace(/[^a-z0-9]/g, "");
 
   return {
     pages: {
@@ -54,21 +54,21 @@ function buildFallbackPageData(
         content: [
           {
             type: "NavbarBlock",
-            props: { id: "nav-home", brandName: cleanName, ctaLabel: "Inquire Now", ctaLink: "/contact" },
+            props: { id: "nav-home", brandName: businessName, ctaLabel: "Book Appointment", ctaLink: "/contact" },
           },
           {
             type: "HeroBlock",
             props: {
               id: "hero-home",
               layout: "text-left",
-              badgeText: "PREMIER SERVICE",
-              heading: cleanName,
+              badgeText: "PREMIER CARE & EXPERTISE",
+              heading: businessName,
               subheading:
                 description ||
-                `Providing premier ${cleanType} solutions across${cleanLoc} with verified quality, prompt delivery, and complete customer satisfaction.`,
-              ctaText: "Explore Packages",
+                `Providing specialized, high-standard ${businessType} across ${location} with cutting-edge equipment, certified specialists, and complete client comfort.`,
+              ctaText: "Explore Services",
               ctaLink: "/services",
-              imageUrl: photo,
+              imageUrl: heroPhoto,
               theme: "gradient",
             },
           },
@@ -76,10 +76,10 @@ function buildFallbackPageData(
             type: "AboutTeaserBlock",
             props: {
               id: "about-teaser-home",
-              sectionBadge: "OUR STORY",
-              heading: `Crafted with Purpose & Integrity`,
-              storyText: `At ${cleanName}, we believe excellence is in the details. Delivering exceptional ${cleanType} solutions across${cleanLoc} for clients who value dependability and precision.`,
-              imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1000&auto=format&fit=crop&q=80",
+              sectionBadge: "ABOUT OUR PRACTICE",
+              heading: `Dedicated to Patient & Client Excellence`,
+              storyText: `At ${businessName}, we combine compassionate care with modern technology. Every treatment plan and service engagement is customized to ensure lasting results and complete peace of mind.`,
+              imageUrl: images.about,
               ctaText: "Read Full Story ➔",
               ctaLink: "/about",
             },
@@ -88,13 +88,28 @@ function buildFallbackPageData(
             type: "ServicesGridBlock",
             props: {
               id: "services-home",
-              sectionBadge: "WHAT WE OFFER",
-              sectionTitle: "Specialized Service Offerings",
-              sectionSubtitle: `Explore our specialized solutions engineered for measurable client satisfaction.`,
+              sectionBadge: "CORE PROCEDURES & SOLUTIONS",
+              sectionTitle: "Specialized Clinical Offerings",
+              sectionSubtitle: `State-of-the-art procedures tailored for comfort, precision, and visible results.`,
               services: [
-                { title: "Standard Package", description: `Entry tier ${cleanType} delivery with dedicated consultation.`, price: "₦35,000", ctaText: "Inquire Now" },
-                { title: "Executive Masterclass", description: `Priority engagement including full custom specifications.`, price: "₦85,000", ctaText: "Book Service" },
-                { title: "Full Turnkey Suite", description: `Comprehensive execution tailored to executive requirements.`, price: "₦180,000", ctaText: "Request Quote" },
+                {
+                  title: "Comprehensive Examination & Care",
+                  description: "Full diagnostic assessment, hygiene check, and personalized treatment roadmap.",
+                  price: "₦25,000",
+                  ctaText: "Book Consultation",
+                },
+                {
+                  title: "Advanced Aesthetic Restoration",
+                  description: "State-of-the-art restorative procedures designed for long-term health and aesthetics.",
+                  price: "₦65,000",
+                  ctaText: "Schedule Session",
+                },
+                {
+                  title: "Full Specialized Package",
+                  description: "Complete turnkey clinical solution including follow-up reviews and dedicated care.",
+                  price: "₦150,000",
+                  ctaText: "Inquire Now",
+                },
               ],
             },
           },
@@ -102,12 +117,12 @@ function buildFallbackPageData(
             type: "GalleryGridBlock",
             props: {
               id: "gallery-home",
-              sectionTitle: "Signature Portfolio",
-              sectionSubtitle: `Explore recent deliverables and collection pieces from ${cleanName}.`,
+              sectionTitle: "Our Environment & Deliverables",
+              sectionSubtitle: `Step inside our modern facility equipped with the latest diagnostic and care technology.`,
               items: [
-                { title: "Executive Standard", description: "Bespoke execution with premier materials.", imageUrl: photo },
-                { title: "Custom Solutions", description: "Tailored directly to unique customer requirements.", imageUrl: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&auto=format&fit=crop&q=80" },
-                { title: "Punctual Delivery", description: "Delivered promptly without compromising excellence.", imageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80" },
+                { title: "Sterile Modern Facility", description: "Pristine hygiene and comforting ambiance.", imageUrl: images.gallery[0] },
+                { title: "Advanced Equipment", description: "Modern precision tools ensuring comfortable procedures.", imageUrl: images.gallery[1] },
+                { title: "Satisfied Smiles & Outcomes", description: "Delivering confidence and health for every client.", imageUrl: images.gallery[2] },
               ],
             },
           },
@@ -115,12 +130,30 @@ function buildFallbackPageData(
             type: "TestimonialBlock",
             props: {
               id: "test-home",
-              sectionBadge: "CLIENT REVIEWS",
-              sectionTitle: "Endorsed by Our Clientele",
+              sectionBadge: "VERIFIED EXPERIENCES",
+              sectionTitle: "What Our Clients & Patients Say",
               testimonials: [
-                { quote: `Working with ${cleanName} was effortless. Their attention to detail and punctuality exceeded all expectations.`, author: "Alhaji Ibrahim Danjuma", role: "Managing Director", company: "Danjuma Holdings", rating: 5 },
-                { quote: `The speed of execution and quality transformed our operations completely. Outstanding professionalism.`, author: "Chioma Adeleke", role: "Creative Director", company: "Adeleke Brand Studio", rating: 5 },
-                { quote: `Their team delivers verified results with zero downtime. Highly recommended for any serious organization.`, author: "Tunde Babalola", role: "Principal Broker", company: "Apex Capital Properties", rating: 5 },
+                {
+                  quote: `My experience at ${businessName} completely exceeded expectations. The team is gentle, thorough, and the clinic is spotless.`,
+                  author: "Dr. Kemi Adeyemi",
+                  role: "Consultant Physician",
+                  company: "Lagos University Teaching Hospital",
+                  rating: 5,
+                },
+                {
+                  quote: `The most comfortable procedure I've ever had. Clear pricing, modern equipment, and zero anxiety from start to finish.`,
+                  author: "Emeka Okonkwo",
+                  role: "Managing Director",
+                  company: "Okonkwo Holdings",
+                  rating: 5,
+                },
+                {
+                  quote: `Professional staff, prompt appointments, and genuine care. I recommend ${businessName} to all my colleagues.`,
+                  author: "Fatima Bello",
+                  role: "Senior Partner",
+                  company: "Bello & Associates",
+                  rating: 5,
+                },
               ],
             },
           },
@@ -128,35 +161,35 @@ function buildFallbackPageData(
             type: "ContactWhatsAppBlock",
             props: {
               id: "contact-home",
-              title: `Connect With ${cleanName}`,
-              subtitle: "Leave an inquiry below or contact our team directly.",
-              phoneNumber: cleanPhone,
-              whatsappMessage: `Hello ${cleanName}, I would like to inquire about your${cleanType}.`,
+              title: `Connect With ${businessName}`,
+              subtitle: "Book an appointment or submit an inquiry below. We respond promptly.",
+              phoneNumber: phone,
+              whatsappMessage: `Hello ${businessName}, I would like to schedule a consultation.`,
               email: `contact@${brandSlug || "business"}.com`,
-              location: cleanLoc,
+              location,
             },
           },
           {
             type: "FooterBlock",
             props: {
               id: "footer-home",
-              brandName: cleanName,
-              tagline: `Premier ${cleanType} solutions across${cleanLoc}. Engineered for excellence and verified dependability.`,
-              copyrightText: `© ${new Date().getFullYear()}${cleanName}. Powered by STARKORA.`,
+              brandName: businessName,
+              tagline: `Premier ${businessType} in ${location}. Committed to highest medical & clinical standards.`,
+              copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.`,
               instagram: "https://instagram.com",
-              whatsapp: `https://wa.me/${cleanPhone.replace(/[^0-9]/g, "")}`,
+              whatsapp: `https://wa.me/${phone.replace(/[^0-9]/g, "")}`,
               twitter: "https://x.com",
               linkedin: "https://linkedin.com",
             },
           },
         ],
-        root: { props: { title: `${cleanName} | Home`, palette: "sapphire", font: "jakarta" } },
+        root: { props: { title: `${businessName} | Home`, palette: "sapphire", font: "jakarta" } },
       },
       about: {
         content: [
           {
             type: "NavbarBlock",
-            props: { id: "nav-about", brandName: cleanName, ctaLabel: "Contact", ctaLink: "/contact" },
+            props: { id: "nav-about", brandName: businessName, ctaLabel: "Contact", ctaLink: "/contact" },
           },
           {
             type: "HeroBlock",
@@ -164,11 +197,11 @@ function buildFallbackPageData(
               id: "hero-about",
               layout: "image-left",
               badgeText: "OUR STORY",
-              heading: `About ${cleanName}`,
-              subheading: `Dedicated to delivering exceptional ${cleanType} solutions with integrity, precision, and customer-first focus.`,
+              heading: `About ${businessName}`,
+              subheading: `Dedicated to elevating standards in ${businessType} through continuous education, advanced equipment, and genuine empathy.`,
               ctaText: "View Our Services",
               ctaLink: "/services",
-              imageUrl: photo,
+              imageUrl: images.about,
               theme: "dark",
             },
           },
@@ -177,11 +210,11 @@ function buildFallbackPageData(
             props: {
               id: "feat-about",
               sectionBadge: "OUR VALUES",
-              sectionTitle: "Principles That Guide Every Project",
+              sectionTitle: "Principles That Guide Every Procedure",
               features: [
-                { title: "Integrity First", description: "Transparent communication, honest pricing, and accountability." },
-                { title: "Client Success", description: "Our metrics are defined exclusively by client satisfaction." },
-                { title: "Continuous Innovation", description: "Adopting modern industry workflows to keep you ahead." },
+                { title: "Clinical Rigor", description: "Strict adherence to international hygiene and safety protocols." },
+                { title: "Patient Comfort", description: "Minimally invasive techniques designed to eliminate procedural stress." },
+                { title: "Transparent Care", description: "Upfront pricing, detailed treatment plans, and zero hidden costs." },
               ],
             },
           },
@@ -189,42 +222,41 @@ function buildFallbackPageData(
             type: "FooterBlock",
             props: {
               id: "footer-about",
-              brandName: cleanName,
-              tagline: `Premier ${cleanType} solutions across${cleanLoc}.`,
-              copyrightText: `© ${new Date().getFullYear()}${cleanName}. Powered by STARKORA.`,
+              brandName: businessName,
+              tagline: `Premier ${businessType} in ${location}.`,
+              copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.`,
             },
           },
         ],
-        root: { props: { title: `About Us | ${cleanName}`, palette: "sapphire", font: "jakarta" } },
+        root: { props: { title: `About Us | ${businessName}`, palette: "sapphire", font: "jakarta" } },
       },
       services: {
         content: [
           {
             type: "NavbarBlock",
-            props: { id: "nav-services", brandName: cleanName, ctaLabel: "Inquire", ctaLink: "/contact" },
-          },
-          {
-            type: "HeroBlock",
-            props: {
-              id: "hero-services",
-              badgeText: "SOLUTIONS",
-              heading: "Our Service Offerings",
-              subheading: `Comprehensive ${cleanType} packages engineered to deliver immediate value and long-term durability.`,
-              ctaText: "Book Service",
-              ctaLink: "/contact",
-              imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=80",
-              theme: "gradient",
-            },
+            props: { id: "nav-services", brandName: businessName, ctaLabel: "Inquire", ctaLink: "/contact" },
           },
           {
             type: "PricingBlock",
             props: {
               id: "pricing-services",
-              sectionTitle: "Curated Packages",
-              sectionSubtitle: "Simple, transparent pricing tailored to your needs.",
+              sectionTitle: "Treatment & Engagement Packages",
+              sectionSubtitle: "Transparent clinical rates designed for comprehensive care.",
               plans: [
-                { name: "Standard Package", price: "₦35,000", features: `Complete ${cleanType} Delivery\nDirect Support & Consultation\nStandard Quality Assurance`, isPopular: false, ctaText: "Select Plan" },
-                { name: "Executive Tier", price: "₦95,000", features: `Priority Execution\nDedicated Support Line\nExtended Warranty\nCustom Specifications`, isPopular: true, ctaText: "Select Executive" },
+                {
+                  name: "Routine Consultation & Checkup",
+                  price: "₦25,000",
+                  features: "Full Diagnostic Scan\nSpecialist Assessment\nHygiene Review & Advice",
+                  isPopular: false,
+                  ctaText: "Book Checkup",
+                },
+                {
+                  name: "Comprehensive Specialized Treatment",
+                  price: "₦75,000",
+                  features: "Advanced Procedure\nLocal Anesthesia & Comfort Care\nPost-Treatment Review Included",
+                  isPopular: true,
+                  ctaText: "Book Specialized Plan",
+                },
               ],
             },
           },
@@ -232,30 +264,30 @@ function buildFallbackPageData(
             type: "FooterBlock",
             props: {
               id: "footer-services",
-              brandName: cleanName,
-              tagline: `Premier ${cleanType} solutions across${cleanLoc}.`,
-              copyrightText: `© ${new Date().getFullYear()}${cleanName}. Powered by STARKORA.`,
+              brandName: businessName,
+              tagline: `Premier ${businessType} in ${location}.`,
+              copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.`,
             },
           },
         ],
-        root: { props: { title: `Services | ${cleanName}`, palette: "sapphire", font: "jakarta" } },
+        root: { props: { title: `Services | ${businessName}`, palette: "sapphire", font: "jakarta" } },
       },
       contact: {
         content: [
           {
             type: "NavbarBlock",
-            props: { id: "nav-contact", brandName: cleanName, ctaLabel: "Home", ctaLink: "/" },
+            props: { id: "nav-contact", brandName: businessName, ctaLabel: "Home", ctaLink: "/" },
           },
           {
             type: "HeroBlock",
             props: {
               id: "hero-contact",
               badgeText: "GET IN TOUCH",
-              heading: `Contact ${cleanName}`,
-              subheading: "Have questions or need a customized quote? Send us an inquiry or message us on WhatsApp.",
+              heading: `Contact ${businessName}`,
+              subheading: "Schedule your consultation or send an inquiry. Our care team responds promptly.",
               ctaText: "Chat on WhatsApp",
               ctaLink: "#contact",
-              imageUrl: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=800&auto=format&fit=crop&q=80",
+              imageUrl: images.gallery[0],
               theme: "dark",
             },
           },
@@ -263,25 +295,25 @@ function buildFallbackPageData(
             type: "ContactWhatsAppBlock",
             props: {
               id: "contact-main",
-              title: "Direct Communication",
-              subtitle: "We respond promptly to all incoming communications.",
-              phoneNumber: cleanPhone,
-              whatsappMessage: `Hello ${cleanName}!`,
+              title: "Direct Consultation Channels",
+              subtitle: "We welcome new clients and patients during regular clinical hours.",
+              phoneNumber: phone,
+              whatsappMessage: `Hello ${businessName}!`,
               email: `contact@${brandSlug || "business"}.com`,
-              location: cleanLoc,
+              location,
             },
           },
           {
             type: "FooterBlock",
             props: {
               id: "footer-contact",
-              brandName: cleanName,
-              tagline: `Premier ${cleanType} solutions across${cleanLoc}.`,
-              copyrightText: `© ${new Date().getFullYear()}${cleanName}. Powered by STARKORA.`,
+              brandName: businessName,
+              tagline: `Premier ${businessType} in ${location}.`,
+              copyrightText: `© ${new Date().getFullYear()} ${businessName}. Powered by STARKORA.`,
             },
           },
         ],
-        root: { props: { title: `Contact Us | ${cleanName}`, palette: "sapphire", font: "jakarta" } },
+        root: { props: { title: `Contact Us | ${businessName}`, palette: "sapphire", font: "jakarta" } },
       },
     },
   };
@@ -300,27 +332,35 @@ export async function POST(req: Request) {
     const cleanLoc = location || "Lagos, Nigeria";
     const cleanPhone = phone?.trim() || "+2348012345678";
 
-    // 1. Synthesize Custom Hero Photo and Copywriting in Parallel
+    // 1. Resolve Niche Photography
+    const nicheImages = resolveNicheImages(cleanType, cleanName);
+
+    // 2. Synthesize AI Hero Image and Flagship Copy in Parallel
     const [heroPhotoUrl, aiCompletion] = await Promise.all([
-      generateCustomHeroImage(cleanName, cleanType, description),
+      generateAdaptiveHeroPhoto(cleanName, cleanType, description, nicheImages.hero),
       openai
         ? openai.chat.completions.create({
             model: "gpt-4o",
             messages: [
               {
                 role: "system",
-                content:
-                  "You are an elite conversion copywriter for STARKORA. Output strictly valid JSON conforming exactly to the layout schema. Write compelling, high-converting Nigerian/regional commercial copy. Never repeat raw prompt phrases verbatim.",
+                content: `You are an elite industry-specialist conversion copywriter for STARKORA.
+CRITICAL COPYWRITING DIRECTIVES:
+1. Deeply understand the trade: If the user provides a Dental or Teeth business, write authentic dental copy (e.g. Painless Extractions, Laser Teeth Whitening, Orthodontics, Dental Implants, Pediatric Care, Smile Makeovers). If a Catering business, write culinary terms (Chef Tasting, Banquet Buffet, Plated Dinner).
+2. FORBIDDEN WORDS: NEVER use generic corporate filler like "Punctual Delivery of Verified Craftsmanship" or "Turnkey Solutions" for a clinic or salon.
+3. PRICING: Provide realistic Nigerian Naira (₦) rates suited to the actual services.
+4. REVIEWS: Write 3 authentic reviews with credible client names, executive titles, and 5-star ratings.
+5. JSON SCHEMA: Output MUST conform strictly to the specified structure.`,
               },
               {
                 role: "user",
                 content: `
-Create a complete, rich 4-page website layout for:
+Create a complete 4-page website layout for:
 Business Name: "${cleanName}"
 Industry: "${cleanType}"
 Location: "${cleanLoc}"
 Phone: "${cleanPhone}"
-Description: "${description || "High-growth premium enterprise"}"
+Description: "${description || "Specialized commercial business"}"
 
 Allowed Block Types:
 - NavbarBlock (props: id, brandName, ctaLabel, ctaLink)
@@ -368,27 +408,42 @@ Required Output Structure:
           finalPages = resolved;
         }
       } catch (parseErr) {
-        console.warn("AI JSON parse error, falling back:", parseErr);
+        console.warn("AI JSON parse error, using specialized fallback:", parseErr);
       }
     }
 
     if (!finalPages) {
-      finalPages = buildFallbackPageData(cleanName, cleanType, cleanLoc, description, cleanPhone, heroPhotoUrl).pages;
+      finalPages = buildSpecializedFallback(cleanName, cleanType, cleanLoc, description, cleanPhone, nicheImages, heroPhotoUrl).pages;
     }
 
-    // Bind custom AI image and phone number across pages
+    // 3. Post-Process: Guarantee Niche Visuals & Phone Across All Pages
     for (const slug of ["home", "about", "services", "contact"]) {
       const page = finalPages[slug];
       if (page && Array.isArray(page.content)) {
         for (const block of page.content) {
-          if (block.type === "HeroBlock" && block.props && !block.props.imageUrl?.startsWith("data:")) {
-            block.props.imageUrl = heroPhotoUrl;
+          if (block.type === "HeroBlock" && block.props) {
+            if (!block.props.imageUrl || block.props.imageUrl.includes("photo-1486406146926") || block.props.imageUrl.includes("photo-1460925895917")) {
+              block.props.imageUrl = heroPhotoUrl;
+            }
+          }
+          if (block.type === "AboutTeaserBlock" && block.props) {
+            if (!block.props.imageUrl || block.props.imageUrl.includes("photo-1522071820081")) {
+              block.props.imageUrl = nicheImages.about;
+            }
+          }
+          if (block.type === "GalleryGridBlock" && block.props && Array.isArray(block.props.items)) {
+            block.props.items.forEach((item: any, i: number) => {
+              if (!item.imageUrl || item.imageUrl.includes("photo-1509631179647") || item.imageUrl.includes("photo-1555396273")) {
+                item.imageUrl = nicheImages.gallery[i % nicheImages.gallery.length];
+              }
+            });
           }
           if (block.type === "ContactWhatsAppBlock" && block.props) {
             block.props.phoneNumber = cleanPhone;
           }
           if (block.type === "FooterBlock" && block.props) {
             block.props.whatsapp = `https://wa.me/${cleanPhone.replace(/[^0-9]/g, "")}`;
+            block.props.brandName = cleanName;
           }
         }
       }
