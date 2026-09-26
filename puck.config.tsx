@@ -118,7 +118,6 @@ function navigateToTarget(e: React.MouseEvent<HTMLAnchorElement>, targetSlug: st
   }
 }
 
-// In-Sidebar Image Manager with File Upload and On-Demand AI Generation
 function ImageFieldManager({
   value,
   onChange,
@@ -294,97 +293,102 @@ export type RootProps = {
 
 export type ComponentProps = {
   NavbarBlock: {
-    brandName: string;
+    brandName?: string;
     logoUrl?: string;
-    ctaLabel: string;
-    ctaLink: string;
+    ctaLabel?: string;
+    ctaLink?: string;
   };
   HeroBlock: {
     layout?: "text-left" | "image-left" | "centered";
     badgeText?: string;
-    heading: string;
-    subheading: string;
-    ctaText: string;
-    ctaLink: string;
+    heading?: string;
+    subheading?: string;
+    ctaText?: string;
+    ctaLink?: string;
     imageUrl?: string;
-    theme: "light" | "dark" | "gradient";
+    theme?: "light" | "dark" | "gradient";
   };
   AboutTeaserBlock: {
     sectionBadge?: string;
-    heading: string;
-    storyText: string;
-    imageUrl: string;
-    ctaText: string;
-    ctaLink: string;
+    heading?: string;
+    storyText?: string;
+    imageUrl?: string;
+    ctaText?: string;
+    ctaLink?: string;
   };
   ServicesGridBlock: {
     sectionBadge?: string;
-    sectionTitle: string;
-    sectionSubtitle: string;
-    services: {
+    sectionTitle?: string;
+    sectionSubtitle?: string;
+    services?: {
       title: string;
       description: string;
-      price: string;
-      ctaText: string;
+      price?: string;
+      ctaText?: string;
     }[];
   };
   FeatureGridBlock: {
     sectionBadge?: string;
-    sectionTitle: string;
-    features: {
+    sectionTitle?: string;
+    features?: {
       title: string;
       description: string;
     }[];
   };
   GalleryGridBlock: {
-    sectionTitle: string;
-    sectionSubtitle: string;
-    items: {
+    sectionTitle?: string;
+    sectionSubtitle?: string;
+    items?: {
       title: string;
       description: string;
       imageUrl: string;
     }[];
   };
   PricingBlock: {
-    sectionTitle: string;
-    sectionSubtitle: string;
-    plans: {
+    sectionTitle?: string;
+    sectionSubtitle?: string;
+    plans?: {
       name: string;
       price: string;
       features: string;
-      isPopular: boolean;
-      ctaText: string;
+      isPopular?: boolean;
+      ctaText?: string;
     }[];
   };
   TestimonialBlock: {
     sectionBadge?: string;
-    sectionTitle: string;
-    testimonials: {
+    sectionTitle?: string;
+    quote?: string;
+    author?: string;
+    role?: string;
+    company?: string;
+    rating?: number;
+    testimonials?: {
       quote: string;
       author: string;
       role: string;
       company: string;
-      rating: number;
+      rating?: number;
     }[];
   };
   ContactWhatsAppBlock: {
-    title: string;
-    subtitle: string;
-    phoneNumber: string;
-    whatsappMessage: string;
-    email: string;
-    location: string;
+    title?: string;
+    subtitle?: string;
+    phoneNumber?: string;
+    whatsappMessage?: string;
+    email?: string;
+    location?: string;
   };
   NewsletterBlock: {
-    title: string;
-    subtitle: string;
-    buttonText: string;
+    title?: string;
+    subtitle?: string;
+    buttonText?: string;
   };
   FooterBlock: {
-    brandName: string;
+    brandName?: string;
     logoUrl?: string;
-    tagline: string;
-    copyrightText: string;
+    tagline?: string;
+    copyrightText?: string;
     instagram?: string;
     whatsapp?: string;
     twitter?: string;
@@ -497,6 +501,9 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
         },
         render: ({ brandName, logoUrl, ctaLabel, ctaLink }) => {
           const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+          const brandText = brandName || name;
+          const buttonText = ctaLabel || "Inquire Now";
+          const linkTarget = ctaLink || "/contact";
 
           return (
             <header className="w-full bg-slate-950/85 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-3.5 px-4 sm:px-8">
@@ -508,12 +515,12 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     className="flex items-center gap-2.5 truncate"
                   >
                     {logoUrl ? (
-                      <img src={logoUrl} alt={brandName} className="h-8 max-w-[130px] object-contain shrink-0" />
+                      <img src={logoUrl} alt={brandText} className="h-8 max-w-[130px] object-contain shrink-0" />
                     ) : (
                       <span className="w-2.5 h-2.5 rounded-full inline-block shrink-0" style={{ backgroundColor: "var(--starkora-primary)" }} />
                     )}
                     <span className="text-base sm:text-lg font-black tracking-tight text-white truncate max-w-[160px] sm:max-w-[260px]">
-                      {brandName}
+                      {brandText}
                     </span>
                   </a>
                 </div>
@@ -527,15 +534,15 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
 
                 <div className="flex items-center gap-2.5 shrink-0">
                   <a
-                    href={ctaLink}
-                    onClick={(e) => navigateToTarget(e, ctaLink)}
+                    href={linkTarget}
+                    onClick={(e) => navigateToTarget(e, linkTarget)}
                     style={{
                       backgroundColor: "var(--starkora-primary)",
                       color: "var(--starkora-primary-text)",
                     }}
                     className="hidden sm:inline-flex px-4 py-2 text-xs font-bold rounded-xl shadow transition hover:brightness-110"
                   >
-                    {ctaLabel}
+                    {buttonText}
                   </a>
 
                   <button
@@ -600,10 +607,10 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
 
                   <div className="pt-2 border-t border-slate-800/60">
                     <a
-                      href={ctaLink}
+                      href={linkTarget}
                       onClick={(e) => {
                         setMobileMenuOpen(false);
-                        navigateToTarget(e, ctaLink);
+                        navigateToTarget(e, linkTarget);
                       }}
                       style={{
                         backgroundColor: "var(--starkora-primary)",
@@ -611,7 +618,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                       }}
                       className="w-full py-2.5 text-center text-xs font-bold rounded-xl shadow transition block"
                     >
-                      {ctaLabel}
+                      {buttonText}
                     </a>
                   </div>
                 </div>
@@ -665,6 +672,10 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           const isGradient = theme === "gradient";
           const isCentered = layout === "centered";
           const isImageLeft = layout === "image-left";
+          const resolvedHeading = heading || name;
+          const resolvedSubheading = subheading || `Exceptional ${type} crafted across${loc}.`;
+          const resolvedCtaText = ctaText || "Explore Packages";
+          const resolvedCtaLink = ctaLink || "/services";
 
           return (
             <section
@@ -712,15 +723,15 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                   )}
 
                   <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
-                    {heading}
+                    {resolvedHeading}
                   </h1>
                   <p className="text-sm sm:text-base opacity-85 leading-relaxed max-w-xl text-slate-300">
-                    {subheading}
+                    {resolvedSubheading}
                   </p>
                   <div>
                     <a
-                      href={ctaLink}
-                      onClick={(e) => navigateToTarget(e, ctaLink)}
+                      href={resolvedCtaLink}
+                      onClick={(e) => navigateToTarget(e, resolvedCtaLink)}
                       style={{
                         backgroundColor: "var(--starkora-primary)",
                         color: "var(--starkora-primary-text)",
@@ -728,7 +739,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                       }}
                       className="inline-block px-7 py-3.5 rounded-xl font-bold shadow-xl transition hover:brightness-110 text-sm cursor-pointer"
                     >
-                      {ctaText}
+                      {resolvedCtaText}
                     </a>
                   </div>
                 </div>
@@ -741,7 +752,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     >
                       <img
                         src={imageUrl}
-                        alt={heading}
+                        alt={resolvedHeading}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";
@@ -773,7 +784,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
         },
         defaultProps: {
           sectionBadge: "OUR MISSION",
-          heading: `Crafted with Purpose & Integrity`,
+          heading: "Crafted with Purpose & Integrity",
           storyText: `At ${name}, our journey started with a singular dedication: delivering uncompromised quality in ${type} for clients who value authenticity, transparency, and rapid delivery across${loc}.`,
           imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1000&auto=format&fit=crop&q=80",
           ctaText: "Read Full Story ➔",
@@ -784,8 +795,8 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="aspect-video lg:aspect-[4/3] w-full rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-xl relative">
                 <img
-                  src={imageUrl}
-                  alt={heading}
+                  src={imageUrl || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80"}
+                  alt={heading || "About Story"}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80";
@@ -808,11 +819,11 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                 )}
 
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-                  {heading}
+                  {heading || "Crafted with Purpose & Integrity"}
                 </h2>
 
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  {storyText}
+                  {storyText || `Dedicated to delivering high-impact ${type} solutions across${loc}.`}
                 </p>
 
                 <div className="space-y-3 pt-2 text-xs text-slate-400">
@@ -828,11 +839,11 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
 
                 <div className="pt-2">
                   <a
-                    href={ctaLink}
-                    onClick={(e) => navigateToTarget(e, ctaLink)}
+                    href={ctaLink || "/about"}
+                    onClick={(e) => navigateToTarget(e, ctaLink || "/about")}
                     className="inline-block text-xs font-bold tracking-wide uppercase text-sky-400 hover:text-sky-300 transition"
                   >
-                    {ctaText}
+                    {ctaText || "Read Full Story ➔"}
                   </a>
                 </div>
               </div>
@@ -859,7 +870,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
         defaultProps: {
           sectionBadge: "WHAT WE DELIVER",
           sectionTitle: "Specialized Service Offerings",
-          sectionSubtitle: `Explore our specialized solutions engineered for measurable client satisfaction.`,
+          sectionSubtitle: "Explore our specialized solutions engineered for measurable client satisfaction.",
           services: [
             {
               title: "Essential Package",
@@ -869,13 +880,13 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
             },
             {
               title: "Executive Masterclass",
-              description: `Priority engagement including full custom specifications.`,
+              description: "Priority engagement including full custom specifications.",
               price: "₦85,000",
               ctaText: "Book Service",
             },
             {
               title: "Full Bespoke Retainer",
-              description: `Comprehensive turnkey execution tailored to executive requirements.`,
+              description: "Comprehensive turnkey execution tailored to executive requirements.",
               price: "₦180,000",
               ctaText: "Request Quote",
             },
@@ -896,7 +907,9 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     {sectionBadge}
                   </span>
                 )}
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">{sectionTitle}</h2>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  {sectionTitle || "Specialized Service Offerings"}
+                </h2>
                 <p className="text-sm text-slate-400">{sectionSubtitle}</p>
               </div>
 
@@ -910,7 +923,11 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold uppercase tracking-wider text-slate-400">0{idx + 1}</span>
-                        <span className="text-sm font-black" style={{ color: "var(--starkora-accent)" }}>{svc.price}</span>
+                        {svc.price && (
+                          <span className="text-sm font-black" style={{ color: "var(--starkora-accent)" }}>
+                            {svc.price}
+                          </span>
+                        )}
                       </div>
                       <h3 className="text-xl font-bold text-white">{svc.title}</h3>
                       <p className="text-xs text-slate-300 leading-relaxed">{svc.description}</p>
@@ -973,7 +990,9 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
           <section className="py-24 px-6 bg-slate-900/40 text-white border-t border-slate-900">
             <div className="max-w-6xl mx-auto space-y-12">
               <div className="text-center space-y-3 max-w-2xl mx-auto">
-                <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{sectionTitle}</h2>
+                <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                  {sectionTitle || "Signature Gallery"}
+                </h2>
                 <p className="text-slate-400 text-sm">{sectionSubtitle}</p>
               </div>
 
@@ -1052,7 +1071,9 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     {sectionBadge}
                   </span>
                 )}
-                <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{sectionTitle}</h2>
+                <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                  {sectionTitle || `Why Clients Choose ${name}`}
+                </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
@@ -1128,7 +1149,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
         render: ({ sectionTitle, sectionSubtitle, plans }) => (
           <section className="py-24 px-6 bg-slate-900/60 text-white border-t border-slate-800">
             <div className="max-w-5xl mx-auto text-center space-y-4 mb-14">
-              <h2 className="text-3xl sm:text-4xl font-extrabold">{sectionTitle}</h2>
+              <h2 className="text-3xl sm:text-4xl font-extrabold">{sectionTitle || "Curated Packages"}</h2>
               <p className="text-slate-400 text-sm">{sectionSubtitle}</p>
             </div>
 
@@ -1232,14 +1253,14 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
               rating: 5,
             },
             {
-              quote: `The speed of execution and attention to detail transformed our operations completely. Outstanding professionalism.`,
+              quote: "The speed of execution and attention to detail transformed our operations completely. Outstanding professionalism.",
               author: "Chioma Adeleke",
               role: "Creative Director",
               company: "Adeleke Luxury Brand",
               rating: 5,
             },
             {
-              quote: `Their team delivers verified results with zero downtime. Highly recommended for any serious business.`,
+              quote: "Their team delivers verified results with zero downtime. Highly recommended for any serious business.",
               author: "Tunde Babalola",
               role: "Principal Broker",
               company: "Apex Capital Properties",
@@ -1247,52 +1268,72 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
             },
           ],
         },
-        render: ({ sectionBadge, sectionTitle, testimonials }) => (
-          <section className="py-24 px-6 bg-slate-950 text-white border-t border-slate-900 text-left">
-            <div className="max-w-6xl mx-auto space-y-12">
-              <div className="text-center space-y-3 max-w-2xl mx-auto">
-                {sectionBadge && (
-                  <span
-                    style={{
-                      backgroundColor: "var(--starkora-badge-bg)",
-                      color: "var(--starkora-badge-text)",
-                    }}
-                    className="px-3.5 py-1 rounded-full text-xs font-bold tracking-widest uppercase inline-block"
-                  >
-                    {sectionBadge}
-                  </span>
-                )}
-                <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{sectionTitle}</h2>
-              </div>
+        render: ({ sectionBadge, sectionTitle, testimonials, quote, author, role, company, rating }) => {
+          const list =
+            testimonials && testimonials.length > 0
+              ? testimonials
+              : quote
+              ? [{ quote, author: author || "Client", role: role || "Verified Buyer", company: company || "", rating: rating || 5 }]
+              : [
+                  {
+                    quote: `Working with ${name} was effortless. Their commitment to quality and punctuality exceeded all expectations.`,
+                    author: "Alhaji Ibrahim Danjuma",
+                    role: "Managing Director",
+                    company: "Danjuma Holdings",
+                    rating: 5,
+                  },
+                ];
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {testimonials?.map((t, idx) => (
-                  <div
-                    key={idx}
-                    style={{ borderColor: "var(--starkora-card-border)" }}
-                    className="p-8 rounded-2xl border bg-slate-900/60 flex flex-col justify-between space-y-6 shadow-xl hover:-translate-y-1 transition duration-200"
-                  >
-                    <div className="space-y-4">
-                      <div className="text-amber-400 text-sm tracking-widest">
-                        {"★".repeat(t.rating || 5)}
+          return (
+            <section className="py-24 px-6 bg-slate-950 text-white border-t border-slate-900 text-left">
+              <div className="max-w-6xl mx-auto space-y-12">
+                <div className="text-center space-y-3 max-w-2xl mx-auto">
+                  {sectionBadge && (
+                    <span
+                      style={{
+                        backgroundColor: "var(--starkora-badge-bg)",
+                        color: "var(--starkora-badge-text)",
+                      }}
+                      className="px-3.5 py-1 rounded-full text-xs font-bold tracking-widest uppercase inline-block"
+                    >
+                      {sectionBadge}
+                    </span>
+                  )}
+                  <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                    {sectionTitle || "Endorsed by Industry Leaders"}
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {list.map((t, idx) => (
+                    <div
+                      key={idx}
+                      style={{ borderColor: "var(--starkora-card-border)" }}
+                      className="p-8 rounded-2xl border bg-slate-900/60 flex flex-col justify-between space-y-6 shadow-xl hover:-translate-y-1 transition duration-200"
+                    >
+                      <div className="space-y-4">
+                        <div className="text-amber-400 text-sm tracking-widest">
+                          {"★".repeat(t.rating || 5)}
+                        </div>
+                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic">
+                          &quot;{t.quote}&quot;
+                        </p>
                       </div>
-                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic">
-                        &quot;{t.quote}&quot;
-                      </p>
-                    </div>
 
-                    <div className="pt-4 border-t border-slate-800">
-                      <h4 className="font-bold text-white text-sm">{t.author}</h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
-                        {t.role} • <span style={{ color: "var(--starkora-accent)" }}>{t.company}</span>
-                      </p>
+                      <div className="pt-4 border-t border-slate-800">
+                        <h4 className="font-bold text-white text-sm">{t.author}</h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {t.role} {t.company ? `• ` : ""}
+                          <span style={{ color: "var(--starkora-accent)" }}>{t.company}</span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
-        ),
+            </section>
+          );
+        },
       },
 
       ContactWhatsAppBlock: {
@@ -1306,7 +1347,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
         },
         defaultProps: {
           title: `Connect With ${name}`,
-          subtitle: `Send us a message below or contact us directly. We respond promptly during business hours.`,
+          subtitle: "Send us a message below or contact us directly. We respond promptly during business hours.",
           phoneNumber: "+2348012345678",
           whatsappMessage: `Hello ${name}, I would like to inquire about your services.`,
           email: `contact@${name.toLowerCase().replace(/[^a-z0-9]/g, "") || "business"}.com`,
@@ -1321,7 +1362,9 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
             <section id="contact" className="py-24 px-6 bg-slate-900/40 text-white border-t border-slate-800">
               <div className="max-w-4xl mx-auto space-y-12">
                 <div className="text-center space-y-3">
-                  <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{title}</h2>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                    {title || `Connect With ${name}`}
+                  </h2>
                   <p className="text-slate-400 max-w-xl mx-auto text-sm">{subtitle}</p>
                 </div>
 
@@ -1333,7 +1376,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                     </p>
                     <div className="space-y-3">
                       <a
-                        href={`mailto:${email}`}
+                        href={`mailto:${email || "contact@business.com"}`}
                         className="w-full py-3.5 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 text-sm text-white transition shadow-lg hover:brightness-110"
                         style={{ backgroundColor: "var(--starkora-primary)" }}
                       >
@@ -1351,9 +1394,9 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                       )}
                     </div>
                     <div className="pt-4 border-t border-slate-800 text-xs text-slate-500 space-y-1">
-                      <p>📍 Location: {location}</p>
+                      <p>📍 Location: {location || loc}</p>
                       {phoneNumber && <p>📞 Phone: {phoneNumber}</p>}
-                      <p>✉️ Email: {email}</p>
+                      <p>✉️ Email: {email || "contact@business.com"}</p>
                     </div>
                   </div>
 
@@ -1587,14 +1630,14 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
               <div className="md:col-span-2 space-y-4">
                 <div className="flex items-center gap-2.5">
                   {logoUrl ? (
-                    <img src={logoUrl} alt={brandName} className="h-7 max-w-[140px] object-contain" />
+                    <img src={logoUrl} alt={brandName || name} className="h-7 max-w-[140px] object-contain" />
                   ) : (
                     <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: "var(--starkora-primary)" }} />
                   )}
-                  <span className="text-base font-black tracking-tight text-white">{brandName}</span>
+                  <span className="text-base font-black tracking-tight text-white">{brandName || name}</span>
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-                  {tagline}
+                  {tagline || `Industry-leading solutions across ${loc}.`}
                 </p>
               </div>
 
@@ -1636,7 +1679,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
             </div>
 
             <div className="max-w-6xl mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-600">
-              <p>{copyrightText}</p>
+              <p>{copyrightText || `© ${new Date().getFullYear()}${name}. Powered by STARKORA.`}</p>
               <p className="text-[11px]">Deployed with sub-50ms Anycast Edge Acceleration.</p>
             </div>
           </footer>

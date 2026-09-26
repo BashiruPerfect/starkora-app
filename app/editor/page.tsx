@@ -13,38 +13,65 @@ interface MultiPageSiteData {
   pages: Record<PageSlug, Data<ComponentProps, RootProps>>;
 }
 
-function createDefaultMultiPage(bizName: string = "Your Business", bizType: string = "Services"): MultiPageSiteData {
+function createDefaultMultiPage(bizName: string = "STARKORA", bizType: string = "Enterprise"): MultiPageSiteData {
   return {
     pages: {
       home: {
         content: [
           {
             type: "NavbarBlock",
-            props: { id: "nav-home", brandName: bizName, ctaLabel: "Contact Us", ctaLink: "/contact" },
+            props: { id: "nav-home", brandName: bizName, ctaLabel: "Inquire Now", ctaLink: "/contact" },
           },
           {
             type: "HeroBlock",
             props: {
               id: "hero-home",
+              layout: "text-left",
               badgeText: "PREMIER SERVICE",
-              heading: `${bizName}`,
-              subheading: `Professional ${bizType} delivered with precision, reliability, and excellence across Nigeria.`,
-              ctaText: "Explore Services",
+              heading: bizName,
+              subheading: `Providing premier ${bizType} solutions across Nigeria with verified craftsmanship, prompt delivery, and complete customer satisfaction.`,
+              ctaText: "Explore Packages",
               ctaLink: "/services",
-              imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
+              imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80",
               theme: "gradient",
             },
           },
           {
-            type: "FeatureGridBlock",
+            type: "AboutTeaserBlock",
             props: {
-              id: "feat-home",
-              sectionBadge: "WHY CHOOSE US",
-              sectionTitle: `Why Clients Choose ${bizName}`,
-              features: [
-                { title: "Verified Reliability", description: "Committed to delivering outstanding performance on every project." },
-                { title: "Rapid Execution", description: "Fast delivery aligned with your schedule." },
-                { title: "Direct Contact", description: "Seamless WhatsApp availability for immediate support." },
+              id: "about-teaser-home",
+              sectionBadge: "OUR STORY",
+              heading: "Crafted with Purpose & Integrity",
+              storyText: `At ${bizName}, we believe excellence is in the details. Delivering exceptional ${bizType} solutions for clients who value dependability and precision.`,
+              imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1000&auto=format&fit=crop&q=80",
+              ctaText: "Read Full Story ➔",
+              ctaLink: "/about",
+            },
+          },
+          {
+            type: "ServicesGridBlock",
+            props: {
+              id: "services-home",
+              sectionBadge: "WHAT WE OFFER",
+              sectionTitle: "Specialized Service Offerings",
+              sectionSubtitle: "Explore our specialized solutions engineered for measurable client satisfaction.",
+              services: [
+                { title: "Standard Package", description: `Entry tier ${bizType} delivery with dedicated consultation.`, price: "₦35,000", ctaText: "Inquire Now" },
+                { title: "Executive Masterclass", description: "Priority engagement including full custom specifications.", price: "₦85,000", ctaText: "Book Service" },
+                { title: "Full Turnkey Suite", description: "Comprehensive execution tailored to executive requirements.", price: "₦180,000", ctaText: "Request Quote" },
+              ],
+            },
+          },
+          {
+            type: "GalleryGridBlock",
+            props: {
+              id: "gallery-home",
+              sectionTitle: "Signature Portfolio",
+              sectionSubtitle: `Explore recent deliverables and collection pieces from ${bizName}.`,
+              items: [
+                { title: "Executive Standard", description: "Bespoke execution with premier materials.", imageUrl: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&auto=format&fit=crop&q=80" },
+                { title: "Custom Solutions", description: "Tailored directly to unique customer requirements.", imageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80" },
+                { title: "Punctual Delivery", description: "Delivered promptly without compromising excellence.", imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80" },
               ],
             },
           },
@@ -52,10 +79,13 @@ function createDefaultMultiPage(bizName: string = "Your Business", bizType: stri
             type: "TestimonialBlock",
             props: {
               id: "test-home",
-              quote: `Working with ${bizName} transformed our business operations. Highly recommended!`,
-              author: "Alhaji Ibrahim Danjuma",
-              role: "Managing Director",
-              company: "Danjuma Holdings",
+              sectionBadge: "CLIENT REVIEWS",
+              sectionTitle: "Endorsed by Our Clientele",
+              testimonials: [
+                { quote: `Working with ${bizName} was effortless. Their attention to detail and punctuality exceeded all expectations.`, author: "Alhaji Ibrahim Danjuma", role: "Managing Director", company: "Danjuma Holdings", rating: 5 },
+                { quote: "The speed of execution and quality transformed our operations completely. Outstanding professionalism.", author: "Chioma Adeleke", role: "Creative Director", company: "Adeleke Brand Studio", rating: 5 },
+                { quote: "Their team delivers verified results with zero downtime. Highly recommended for any serious organization.", author: "Tunde Babalola", role: "Principal Broker", company: "Apex Capital Properties", rating: 5 },
+              ],
             },
           },
           {
@@ -63,19 +93,28 @@ function createDefaultMultiPage(bizName: string = "Your Business", bizType: stri
             props: {
               id: "contact-home",
               title: `Connect With ${bizName}`,
-              subtitle: "Reach out via WhatsApp or submit an inquiry below.",
+              subtitle: "Leave an inquiry below or contact our team directly.",
               phoneNumber: "+2348012345678",
-              whatsappMessage: "Hello!",
+              whatsappMessage: `Hello ${bizName}!`,
               email: "contact@business.com",
               location: "Lagos, Nigeria",
             },
           },
           {
             type: "FooterBlock",
-            props: { id: "footer-home", copyrightText: `© 2026 ${bizName}. Powered by STARKORA.` },
+            props: {
+              id: "footer-home",
+              brandName: bizName,
+              tagline: `Premier ${bizType} solutions across Nigeria. Engineered for excellence and verified dependability.`,
+              copyrightText: `© ${new Date().getFullYear()} ${bizName}. Powered by STARKORA.`,
+              instagram: "https://instagram.com",
+              whatsapp: "https://wa.me/2348012345678",
+              twitter: "https://x.com",
+              linkedin: "https://linkedin.com",
+            },
           },
         ],
-        root: { props: { title: `${bizName} | Home`, palette: "indigo", font: "inter" } },
+        root: { props: { title: `${bizName} | Home`, palette: "sapphire", font: "jakarta" } },
       },
       about: {
         content: [
@@ -87,21 +126,40 @@ function createDefaultMultiPage(bizName: string = "Your Business", bizType: stri
             type: "HeroBlock",
             props: {
               id: "hero-about",
+              layout: "image-left",
               badgeText: "OUR STORY",
               heading: `About ${bizName}`,
               subheading: `Dedicated to delivering exceptional ${bizType} solutions with integrity, precision, and customer-first focus.`,
-              ctaText: "Our Services",
+              ctaText: "View Our Services",
               ctaLink: "/services",
-              imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80",
+              imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80",
               theme: "dark",
             },
           },
           {
+            type: "FeatureGridBlock",
+            props: {
+              id: "feat-about",
+              sectionBadge: "OUR VALUES",
+              sectionTitle: "Principles That Guide Every Project",
+              features: [
+                { title: "Integrity First", description: "Transparent communication, honest pricing, and accountability." },
+                { title: "Client Success", description: "Our metrics are defined exclusively by client satisfaction." },
+                { title: "Continuous Innovation", description: "Adopting modern industry workflows to keep you ahead." },
+              ],
+            },
+          },
+          {
             type: "FooterBlock",
-            props: { id: "footer-about", copyrightText: `© 2026 ${bizName}. Powered by STARKORA.` },
+            props: {
+              id: "footer-about",
+              brandName: bizName,
+              tagline: `Premier ${bizType} solutions across Nigeria.`,
+              copyrightText: `© ${new Date().getFullYear()} ${bizName}. Powered by STARKORA.`,
+            },
           },
         ],
-        root: { props: { title: `About Us | ${bizName}`, palette: "indigo", font: "inter" } },
+        root: { props: { title: `About Us | ${bizName}`, palette: "sapphire", font: "jakarta" } },
       },
       services: {
         content: [
@@ -113,9 +171,9 @@ function createDefaultMultiPage(bizName: string = "Your Business", bizType: stri
             type: "HeroBlock",
             props: {
               id: "hero-services",
-              badgeText: "PACKAGES",
+              badgeText: "SOLUTIONS",
               heading: "Our Service Offerings",
-              subheading: `Comprehensive ${bizType} packages designed for scale and dependability.`,
+              subheading: `Comprehensive ${bizType} packages engineered to deliver immediate value and long-term durability.`,
               ctaText: "Book Service",
               ctaLink: "/contact",
               imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&auto=format&fit=crop&q=80",
@@ -126,32 +184,25 @@ function createDefaultMultiPage(bizName: string = "Your Business", bizType: stri
             type: "PricingBlock",
             props: {
               id: "pricing-services",
-              sectionTitle: "Transparent Pricing Tiers",
-              sectionSubtitle: "Simple, flexible plans designed for your growth.",
+              sectionTitle: "Curated Packages",
+              sectionSubtitle: "Simple, transparent pricing tailored to your needs.",
               plans: [
-                {
-                  name: "Standard Package",
-                  price: "₦35,000",
-                  features: `Complete ${bizType} Setup\nDirect WhatsApp Support`,
-                  isPopular: false,
-                  ctaText: "Select Standard",
-                },
-                {
-                  name: "Executive Tier",
-                  price: "₦95,000",
-                  features: `Priority Execution\nDedicated Support Line\nCustom Specifications`,
-                  isPopular: true,
-                  ctaText: "Select Executive",
-                },
+                { name: "Standard Package", price: "₦35,000", features: `Complete ${bizType} Delivery\nDirect Support & Consultation\nStandard Quality Assurance`, isPopular: false, ctaText: "Select Plan" },
+                { name: "Executive Tier", price: "₦95,000", features: `Priority Execution\nDedicated Support Line\nExtended Warranty\nCustom Specifications`, isPopular: true, ctaText: "Select Executive" },
               ],
             },
           },
           {
             type: "FooterBlock",
-            props: { id: "footer-services", copyrightText: `© 2026 ${bizName}. Powered by STARKORA.` },
+            props: {
+              id: "footer-services",
+              brandName: bizName,
+              tagline: `Premier ${bizType} solutions across Nigeria.`,
+              copyrightText: `© ${new Date().getFullYear()} ${bizName}. Powered by STARKORA.`,
+            },
           },
         ],
-        root: { props: { title: `Services | ${bizName}`, palette: "indigo", font: "inter" } },
+        root: { props: { title: `Services | ${bizName}`, palette: "sapphire", font: "jakarta" } },
       },
       contact: {
         content: [
@@ -165,7 +216,7 @@ function createDefaultMultiPage(bizName: string = "Your Business", bizType: stri
               id: "hero-contact",
               badgeText: "GET IN TOUCH",
               heading: `Contact ${bizName}`,
-              subheading: "Have questions or need a customized quote? Connect with us on WhatsApp.",
+              subheading: "Have questions or need a customized quote? Send us an inquiry or message us on WhatsApp.",
               ctaText: "Chat on WhatsApp",
               ctaLink: "#contact",
               imageUrl: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=800&auto=format&fit=crop&q=80",
@@ -179,17 +230,22 @@ function createDefaultMultiPage(bizName: string = "Your Business", bizType: stri
               title: "Direct Communication",
               subtitle: "We respond promptly to all incoming communications.",
               phoneNumber: "+2348012345678",
-              whatsappMessage: "Hello!",
+              whatsappMessage: `Hello ${bizName}!`,
               email: "contact@business.com",
               location: "Lagos, Nigeria",
             },
           },
           {
             type: "FooterBlock",
-            props: { id: "footer-contact", copyrightText: `© 2026 ${bizName}. Powered by STARKORA.` },
+            props: {
+              id: "footer-contact",
+              brandName: bizName,
+              tagline: `Premier ${bizType} solutions across Nigeria.`,
+              copyrightText: `© ${new Date().getFullYear()} ${bizName}. Powered by STARKORA.`,
+            },
           },
         ],
-        root: { props: { title: `Contact Us | ${bizName}`, palette: "indigo", font: "inter" } },
+        root: { props: { title: `Contact Us | ${bizName}`, palette: "sapphire", font: "jakarta" } },
       },
     },
   };
@@ -198,10 +254,14 @@ function createDefaultMultiPage(bizName: string = "Your Business", bizType: stri
 const VALID_COMPONENT_TYPES = new Set([
   "NavbarBlock",
   "HeroBlock",
+  "AboutTeaserBlock",
+  "ServicesGridBlock",
+  "GalleryGridBlock",
   "FeatureGridBlock",
   "PricingBlock",
   "TestimonialBlock",
   "ContactWhatsAppBlock",
+  "NewsletterBlock",
   "FooterBlock",
 ]);
 
@@ -211,10 +271,14 @@ function normalizeBlockType(rawType: string): string | null {
 
   if (clean.includes("navbar") || clean.includes("header") || clean.includes("nav")) return "NavbarBlock";
   if (clean.includes("hero") || clean.includes("banner")) return "HeroBlock";
+  if (clean.includes("about") || clean.includes("story") || clean.includes("teaser")) return "AboutTeaserBlock";
+  if (clean.includes("service") || clean.includes("offering")) return "ServicesGridBlock";
+  if (clean.includes("gallery") || clean.includes("portfolio")) return "GalleryGridBlock";
   if (clean.includes("feature") || clean.includes("grid")) return "FeatureGridBlock";
   if (clean.includes("price") || clean.includes("pricing") || clean.includes("plan")) return "PricingBlock";
   if (clean.includes("testimonial") || clean.includes("review")) return "TestimonialBlock";
   if (clean.includes("contact") || clean.includes("whatsapp") || clean.includes("form")) return "ContactWhatsAppBlock";
+  if (clean.includes("newsletter") || clean.includes("subscribe")) return "NewsletterBlock";
   if (clean.includes("footer")) return "FooterBlock";
 
   return null;
@@ -232,12 +296,11 @@ function sanitizePagePayload(
   const root = {
     props: {
       title: rawPage.root?.props?.title || `${bizName} | Page`,
-      palette: rawPage.root?.props?.palette || "indigo",
-      font: rawPage.root?.props?.font || "inter",
+      palette: rawPage.root?.props?.palette || "sapphire",
+      font: rawPage.root?.props?.font || "jakarta",
     },
   };
 
-  // Check for content, sections, or blocks arrays
   const rawList = Array.isArray(rawPage.content)
     ? rawPage.content
     : Array.isArray(rawPage.sections)
@@ -263,17 +326,22 @@ function sanitizePagePayload(
       props.id = `${detectedType}-${Math.random().toString(36).substring(2, 9)}`;
     }
 
-    if (detectedType === "FeatureGridBlock" && !Array.isArray(props.features)) {
-      props.features = [
-        { title: "Verified Quality", description: "Committed to delivering outstanding performance." },
-        { title: "Prompt Turnaround", description: "Fast delivery aligned with your schedule." },
+    if (detectedType === "TestimonialBlock" && !Array.isArray(props.testimonials)) {
+      props.testimonials = [
+        {
+          quote: props.quote || `Working with ${bizName} was effortless. Their commitment to quality and punctuality exceeded all expectations.`,
+          author: props.author || "Alhaji Ibrahim Danjuma",
+          role: props.role || "Managing Director",
+          company: props.company || "Danjuma Holdings",
+          rating: props.rating || 5,
+        },
       ];
     }
 
-    if (detectedType === "PricingBlock" && !Array.isArray(props.plans)) {
-      props.plans = [
-        { name: "Standard Package", price: "₦35,000", features: "Full Delivery\nDirect Support", isPopular: false, ctaText: "Select Plan" },
-      ];
+    if (detectedType === "FooterBlock") {
+      if (!props.brandName) props.brandName = bizName;
+      if (!props.tagline) props.tagline = `Premier solutions across Nigeria. Powered by STARKORA.`;
+      if (!props.copyrightText) props.copyrightText = `© ${new Date().getFullYear()} ${bizName}. Powered by STARKORA.`;
     }
 
     safeContent.push({ type: detectedType, props });
@@ -293,7 +361,6 @@ function normalizeToMultiPage(raw: any, bizName: string): MultiPageSiteData {
     return fallback;
   }
 
-  // Handle { pages: { ... } } or { siteData: { pages: { ... } } }
   const pagesObj = raw.pages || raw.siteData?.pages || raw;
 
   if (pagesObj && typeof pagesObj === "object") {
@@ -424,7 +491,7 @@ function EditorContent() {
   const handlePageChange = (newPage: PageSlug) => {
     if (!isProUser && newPage !== "home") {
       const proceed = confirm(
-        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts are restricted to editing the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock and edit dedicated About, Services, and Contact pages?"
+        "🔒 Multi-Page Customization is a Pro Feature!\n\nFree accounts can only edit the main landing page.\n\nWould you like to upgrade to the Pro Plan ($10/mo) now to unlock and edit dedicated About, Services, and Contact pages?"
       );
       if (proceed) {
         handleUpgradeToPro();
@@ -548,7 +615,7 @@ function EditorContent() {
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard"
-            className="font-extrabold text-indigo-400 tracking-wider text-base hover:text-indigo-300 transition"
+            className="font-extrabold text-sky-400 tracking-wider text-base hover:text-sky-300 transition"
           >
             STARKORA
           </Link>
@@ -559,7 +626,7 @@ function EditorContent() {
             <select
               value={activePage}
               onChange={(e) => handlePageChange(e.target.value as PageSlug)}
-              className="bg-slate-950 border border-slate-700 text-white rounded-lg px-3 py-1 text-xs font-semibold focus:outline-none focus:border-indigo-500 cursor-pointer"
+              className="bg-slate-950 border border-slate-700 text-white rounded-lg px-3 py-1 text-xs font-semibold focus:outline-none focus:border-[#005AAD] cursor-pointer"
             >
               <option value="home">Home Page (/)</option>
               <option value="about" disabled={!isProUser}>
@@ -587,7 +654,7 @@ function EditorContent() {
                 </span>
                 <button
                   onClick={handleUpgradeToPro}
-                  className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 underline cursor-pointer"
+                  className="text-[10px] font-bold text-sky-400 hover:text-sky-300 underline cursor-pointer"
                 >
                   Upgrade to Pro ↗
                 </button>
@@ -604,7 +671,8 @@ function EditorContent() {
           ) : (
             <Link
               href="/login"
-              className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-semibold transition"
+              style={{ backgroundColor: "#005AAD" }}
+              className="px-3 py-1 hover:brightness-110 text-white rounded text-xs font-semibold transition"
             >
               Log In to Save
             </Link>
@@ -632,9 +700,9 @@ function EditorContent() {
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl px-4 pointer-events-auto">
         <form
           onSubmit={handleAiRefine}
-          className="bg-slate-900/95 backdrop-blur-md border border-indigo-500/40 p-2 rounded-2xl shadow-2xl flex items-center gap-2 ring-1 ring-indigo-500/20"
+          className="bg-slate-900/95 backdrop-blur-md border border-[#005AAD]/40 p-2 rounded-2xl shadow-2xl flex items-center gap-2 ring-1 ring-[#005AAD]/20"
         >
-          <div className="pl-3 text-indigo-400 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 whitespace-nowrap">
+          <div className="pl-3 text-sky-400 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 whitespace-nowrap">
             <span>✨ AI</span>
           </div>
           <input
@@ -648,7 +716,8 @@ function EditorContent() {
           <button
             type="submit"
             disabled={isRefining || !aiPrompt.trim()}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition disabled:opacity-40 whitespace-nowrap"
+            style={{ backgroundColor: "#005AAD" }}
+            className="px-4 py-2 hover:brightness-110 text-white text-xs font-bold rounded-xl transition disabled:opacity-40 whitespace-nowrap cursor-pointer"
           >
             {isRefining ? "Refining..." : `Update ${activePage.toUpperCase()} ➔`}
           </button>
