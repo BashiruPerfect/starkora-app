@@ -118,6 +118,7 @@ function navigateToTarget(e: React.MouseEvent<HTMLAnchorElement>, targetSlug: st
   }
 }
 
+// In-Sidebar Image Manager with File Upload and On-Demand AI Generation
 function ImageFieldManager({
   value,
   onChange,
@@ -1630,7 +1631,7 @@ export function createConfig(context?: BusinessContext): Config<ComponentProps, 
                       LinkedIn
                     </a>
                   )}
-                </div> 
+                </div>
               </div>
             </div>
 
