@@ -105,13 +105,19 @@ function navigateToTarget(e: React.MouseEvent<HTMLAnchorElement>, targetSlug: st
   if (pathname.includes("/preview")) {
     e.preventDefault();
     const cleanSlug = targetSlug === "/" ? "home" : targetSlug.replace(/^\//, "");
-    window.location.href = `/preview?page=${cleanSlug}`;     return;   }    const parts = pathname.split("/").filter(Boolean);   if (parts[0] === "live" && parts[1]) {     e.preventDefault();     const cleanSlug = targetSlug === "/" ? "" : `/${targetSlug.replace(/^\//, "")}`;
+    window.location.href = `/preview?page=${cleanSlug}`;
+    return;
+  }
+
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts[0] === "live" && parts[1]) {
+    e.preventDefault();
+    const cleanSlug = targetSlug === "/" ? "" : `/${targetSlug.replace(/^\//, "")}`;
     window.location.href = `/live/${parts[1]}${cleanSlug}`;
     return;
   }
 }
 
-// In-Sidebar Image Manager supporting File Uploads & On-Demand AI Generation
 function ImageFieldManager({
   value,
   onChange,
@@ -181,7 +187,257 @@ function ImageFieldManager({
         alert(data.error || `AI image generation failed (Status ${res.status}).`);
       }
     } catch (err: any) {
-      alert(`AI Image Engine Error: ${err.message}`);     } finally {       setGeneratingAi(false);     }   };    return (     <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100\%", marginBottom: "14px" }}>       <span style={{ fontSize: "11px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>         {label}       </span>        {value && (         <div           style={{             width: "100\%",             height: "95px",             borderRadius: "8px",             overflow: "hidden",             border: "1px solid #334155",             background: "#020617",             display: "flex",             alignItems: "center",             justifyContent: "center",           }}         >           <img             src={value}             alt="Thumbnail"             onError={(e) => {               const target = e.target as HTMLImageElement;               target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";             }}             style={{ width: "100\%", height: "100\%", objectFit: "cover" }}           />         </div>       )}        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>         <label           style={{             display: "block",             textAlign: "center",             background: "#334155",             color: "#ffffff",             padding: "8px",             borderRadius: "8px",             fontSize: "11px",             fontWeight: 600,             cursor: uploading ? "not-allowed" : "pointer",             opacity: uploading ? 0.6 : 1,             transition: "all 0.2s ease",           }}         >           {uploading ? "Reading..." : "Upload File 📁"}           <input type="file" accept="image/*" onChange={handleUpload} disabled={uploading} style={{ display: "none" }} />         </label>          <button           type="button"           onClick={handleAiGenerate}           disabled={generatingAi}           style={{             background: "#005AAD",             color: "#ffffff",             padding: "8px",             borderRadius: "8px",             fontSize: "11px",             fontWeight: 600,             border: "none",             cursor: generatingAi ? "not-allowed" : "pointer",             opacity: generatingAi ? 0.6 : 1,           }}         >           {generatingAi ? "Generating..." : "Generate AI 🎨"}         </button>       </div>        <input         type="text"         value={value \vert{}\vert{} ""}         placeholder="or paste image link..."         onChange={(e) => onChange(e.target.value)}         style={{           width: "100\%",           padding: "7px 10px",           fontSize: "11px",           borderRadius: "6px",           background: "#0f172a",           border: "1px solid #334155",           color: "#f8fafc",           boxSizing: "border-box",         }}       />     </div>   ); }  export type RootProps = {   title: string;   palette: ThemePalette;   font: ThemeFont; };  export type ComponentProps = {   NavbarBlock: {     brandName: string;     logoUrl?: string;     ctaLabel: string;     ctaLink: string;   };   HeroBlock: {     layout?: "text-left" \vert{} "image-left" \vert{} "centered";     badgeText?: string;     heading: string;     subheading: string;     ctaText: string;     ctaLink: string;     imageUrl?: string;     theme: "light" \vert{} "dark" \vert{} "gradient";   };   AboutTeaserBlock: {     sectionBadge?: string;     heading: string;     storyText: string;     points: { title: string; desc: string }[];     imageUrl: string;     ctaText: string;     ctaLink: string;   };   ServicesGridBlock: {     sectionBadge?: string;     sectionTitle: string;     sectionSubtitle: string;     services: {       title: string;       description: string;       price: string;       ctaText: string;     }[];   };   FeatureGridBlock: {     sectionBadge?: string;     sectionTitle: string;     features: {       title: string;       description: string;     }[];   };   GalleryGridBlock: {     sectionTitle: string;     sectionSubtitle: string;     items: {       title: string;       description: string;       imageUrl: string;     }[];   };   PricingBlock: {     sectionTitle: string;     sectionSubtitle: string;     plans: {       name: string;       price: string;       features: string;       isPopular: boolean;       ctaText: string;     }[];   };   TestimonialBlock: {     sectionBadge?: string;     sectionTitle: string;     testimonials: {       quote: string;       author: string;       role: string;       company: string;       rating: number;     }[];   };   ContactWhatsAppBlock: {     title: string;     subtitle: string;     phoneNumber: string;     whatsappMessage: string;     email: string;     location: string;   };   NewsletterBlock: {     title: string;     subtitle: string;     buttonText: string;   };   FooterBlock: {     brandName: string;     logoUrl?: string;     tagline: string;     copyrightText: string;     instagram?: string;     whatsapp?: string;     twitter?: string;     linkedin?: string;   }; };  export interface BusinessContext {   businessName?: string;   businessType?: string;   location?: string; }  export function createConfig(context?: BusinessContext): Config<ComponentProps, RootProps> {   const fallbackStoredName = typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_name") : null;   const fallbackStoredType = typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_type") : null;   const fallbackStoredLoc = typeof window !== "undefined" ? localStorage.getItem("starkora_active_location") : null;    const rawName = context?.businessName \vert{}\vert{} fallbackStoredName \vert{}\vert{} "STARKORA";   const name = rawName.replace(/^welcome\s+to\s+/i, "").replace(/^the\s+/i, "").trim() \vert{}\vert{} "STARKORA";    const rawType = context?.businessType \vert{}\vert{} fallbackStoredType \vert{}\vert{} "Professional Enterprise";   const type = rawType.replace(/^welcome\s+to\s+/i, "").trim();   const loc = context?.location \vert{}\vert{} fallbackStoredLoc \vert{}\vert{} "Lagos, Nigeria";    return {     root: {       fields: {         title: { type: "text" },         palette: {           type: "select",           options: [             { label: "Sapphire Ocean (#005AAD - Primary)", value: "sapphire" },             { label: "Midnight Indigo (Tech & Modern)", value: "indigo" },             { label: "Emerald Growth (Fintech & Dining)", value: "emerald" },             { label: "Obsidian Gold (Luxury & Real Estate)", value: "gold" },             { label: "Crimson Bold (Creative & Fashion)", value: "crimson" },             { label: "Minimal Studio (Clean Monochrome)", value: "minimal" },           ],         },         font: {           type: "select",           options: [             { label: "Plus Jakarta Sans (Startup & Modern)", value: "jakarta" },             { label: "Inter (Clean & Minimal)", value: "inter" },             { label: "Playfair Display (Luxury Serif)", value: "playfair" },             { label: "Cinzel (Classic Prestige)", value: "cinzel" },             { label: "Space Grotesk (Creative Agency)", value: "space" },             { label: "JetBrains Mono (Technical)", value: "mono" },           ],         },       },       defaultProps: {         title: `${name} | Official Website`,
+      alert(`AI Image Engine Error: ${err.message}`);
+    } finally {
+      setGeneratingAi(false);
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100%", marginBottom: "14px" }}>
+      <span style={{ fontSize: "11px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        {label}
+      </span>
+
+      {value && (
+        <div
+          style={{
+            width: "100%",
+            height: "95px",
+            borderRadius: "8px",
+            overflow: "hidden",
+            border: "1px solid #334155",
+            background: "#020617",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src={value}
+            alt="Thumbnail"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80";
+            }}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </div>
+      )}
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+        <label
+          style={{
+            display: "block",
+            textAlign: "center",
+            background: "#334155",
+            color: "#ffffff",
+            padding: "8px",
+            borderRadius: "8px",
+            fontSize: "11px",
+            fontWeight: 600,
+            cursor: uploading ? "not-allowed" : "pointer",
+            opacity: uploading ? 0.6 : 1,
+            transition: "all 0.2s ease",
+          }}
+        >
+          {uploading ? "Reading..." : "Upload File 📁"}
+          <input type="file" accept="image/*" onChange={handleUpload} disabled={uploading} style={{ display: "none" }} />
+        </label>
+
+        <button
+          type="button"
+          onClick={handleAiGenerate}
+          disabled={generatingAi}
+          style={{
+            background: "#005AAD",
+            color: "#ffffff",
+            padding: "8px",
+            borderRadius: "8px",
+            fontSize: "11px",
+            fontWeight: 600,
+            border: "none",
+            cursor: generatingAi ? "not-allowed" : "pointer",
+            opacity: generatingAi ? 0.6 : 1,
+          }}
+        >
+          {generatingAi ? "Generating..." : "Generate AI 🎨"}
+        </button>
+      </div>
+
+      <input
+        type="text"
+        value={value || ""}
+        placeholder="or paste image link..."
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "7px 10px",
+          fontSize: "11px",
+          borderRadius: "6px",
+          background: "#0f172a",
+          border: "1px solid #334155",
+          color: "#f8fafc",
+          boxSizing: "border-box",
+        }}
+      />
+    </div>
+  );
+}
+
+export type RootProps = {
+  title: string;
+  palette: ThemePalette;
+  font: ThemeFont;
+};
+
+export type ComponentProps = {
+  NavbarBlock: {
+    brandName: string;
+    logoUrl?: string;
+    ctaLabel: string;
+    ctaLink: string;
+  };
+  HeroBlock: {
+    layout?: "text-left" | "image-left" | "centered";
+    badgeText?: string;
+    heading: string;
+    subheading: string;
+    ctaText: string;
+    ctaLink: string;
+    imageUrl?: string;
+    theme: "light" | "dark" | "gradient";
+  };
+  AboutTeaserBlock: {
+    sectionBadge?: string;
+    heading: string;
+    storyText: string;
+    imageUrl: string;
+    ctaText: string;
+    ctaLink: string;
+  };
+  ServicesGridBlock: {
+    sectionBadge?: string;
+    sectionTitle: string;
+    sectionSubtitle: string;
+    services: {
+      title: string;
+      description: string;
+      price: string;
+      ctaText: string;
+    }[];
+  };
+  FeatureGridBlock: {
+    sectionBadge?: string;
+    sectionTitle: string;
+    features: {
+      title: string;
+      description: string;
+    }[];
+  };
+  GalleryGridBlock: {
+    sectionTitle: string;
+    sectionSubtitle: string;
+    items: {
+      title: string;
+      description: string;
+      imageUrl: string;
+    }[];
+  };
+  PricingBlock: {
+    sectionTitle: string;
+    sectionSubtitle: string;
+    plans: {
+      name: string;
+      price: string;
+      features: string;
+      isPopular: boolean;
+      ctaText: string;
+    }[];
+  };
+  TestimonialBlock: {
+    sectionBadge?: string;
+    sectionTitle: string;
+    testimonials: {
+      quote: string;
+      author: string;
+      role: string;
+      company: string;
+      rating: number;
+    }[];
+  };
+  ContactWhatsAppBlock: {
+    title: string;
+    subtitle: string;
+    phoneNumber: string;
+    whatsappMessage: string;
+    email: string;
+    location: string;
+  };
+  NewsletterBlock: {
+    title: string;
+    subtitle: string;
+    buttonText: string;
+  };
+  FooterBlock: {
+    brandName: string;
+    logoUrl?: string;
+    tagline: string;
+    copyrightText: string;
+    instagram?: string;
+    whatsapp?: string;
+    twitter?: string;
+    linkedin?: string;
+  };
+};
+
+export interface BusinessContext {
+  businessName?: string;
+  businessType?: string;
+  location?: string;
+}
+
+export function createConfig(context?: BusinessContext): Config<ComponentProps, RootProps> {
+  const fallbackStoredName = typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_name") : null;
+  const fallbackStoredType = typeof window !== "undefined" ? localStorage.getItem("starkora_active_business_type") : null;
+  const fallbackStoredLoc = typeof window !== "undefined" ? localStorage.getItem("starkora_active_location") : null;
+
+  const rawName = context?.businessName || fallbackStoredName || "STARKORA";
+  const name = rawName.replace(/^welcome\s+to\s+/i, "").replace(/^the\s+/i, "").trim() || "STARKORA";
+
+  const rawType = context?.businessType || fallbackStoredType || "Professional Enterprise";
+  const type = rawType.replace(/^welcome\s+to\s+/i, "").trim();
+  const loc = context?.location || fallbackStoredLoc || "Lagos, Nigeria";
+
+  return {
+    root: {
+      fields: {
+        title: { type: "text" },
+        palette: {
+          type: "select",
+          options: [
+            { label: "Sapphire Ocean (#005AAD - Primary)", value: "sapphire" },
+            { label: "Midnight Indigo (Tech & Modern)", value: "indigo" },
+            { label: "Emerald Growth (Fintech & Dining)", value: "emerald" },
+            { label: "Obsidian Gold (Luxury & Real Estate)", value: "gold" },
+            { label: "Crimson Bold (Creative & Fashion)", value: "crimson" },
+            { label: "Minimal Studio (Clean Monochrome)", value: "minimal" },
+          ],
+        },
+        font: {
+          type: "select",
+          options: [
+            { label: "Plus Jakarta Sans (Startup & Modern)", value: "jakarta" },
+            { label: "Inter (Clean & Minimal)", value: "inter" },
+            { label: "Playfair Display (Luxury Serif)", value: "playfair" },
+            { label: "Cinzel (Classic Prestige)", value: "cinzel" },
+            { label: "Space Grotesk (Creative Agency)", value: "space" },
+            { label: "JetBrains Mono (Technical)", value: "mono" },
+          ],
+        },
+      },
+      defaultProps: {
+        title: `${name} | Official Website`,
         palette: "sapphire",
         font: "jakarta",
       },
@@ -244,7 +500,6 @@ function ImageFieldManager({
           return (
             <header className="w-full bg-slate-950/85 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-3.5 px-4 sm:px-8">
               <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-                {/* Brand Logo & Title with Strict Truncation to Prevent Clutter */}
                 <div className="flex items-center gap-2 min-w-0">
                   <a
                     href="/"
@@ -262,7 +517,6 @@ function ImageFieldManager({
                   </a>
                 </div>
 
-                {/* Desktop Navigation Links */}
                 <nav className="hidden md:flex items-center gap-6 text-xs uppercase tracking-wider font-semibold text-slate-300">
                   <a href="/" onClick={(e) => navigateToTarget(e, "/")} className="hover:text-white transition">Home</a>
                   <a href="/about" onClick={(e) => navigateToTarget(e, "/about")} className="hover:text-white transition">About</a>
@@ -270,7 +524,6 @@ function ImageFieldManager({
                   <a href="/contact" onClick={(e) => navigateToTarget(e, "/contact")} className="hover:text-white transition">Contact</a>
                 </nav>
 
-                {/* Action Items: CTA Button + Mobile Hamburger Toggle */}
                 <div className="flex items-center gap-2.5 shrink-0">
                   <a
                     href={ctaLink}
@@ -284,7 +537,6 @@ function ImageFieldManager({
                     {ctaLabel}
                   </a>
 
-                  {/* Mobile Hamburger Button */}
                   <button
                     type="button"
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -300,7 +552,6 @@ function ImageFieldManager({
                 </div>
               </div>
 
-              {/* Mobile Slide-Down Drawer */}
               {mobileMenuOpen && (
                 <div className="md:hidden mt-3 pt-3 border-t border-slate-800/80 space-y-3 pb-2 text-left">
                   <nav className="flex flex-col space-y-2 text-sm font-semibold text-slate-300">
@@ -530,7 +781,7 @@ function ImageFieldManager({
         render: ({ sectionBadge, heading, storyText, imageUrl, ctaText, ctaLink }) => (
           <section className="py-24 px-6 bg-slate-900/30 border-t border-slate-900 text-left">
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="aspect-video lg:aspect-4/3 w-full rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-xl relative">
+              <div className="aspect-video lg:aspect-[4/3] w-full rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-xl relative">
                 <img
                   src={imageUrl}
                   alt={heading}
@@ -578,7 +829,7 @@ function ImageFieldManager({
                   <a
                     href={ctaLink}
                     onClick={(e) => navigateToTarget(e, ctaLink)}
-                    className="inline-block text-xs font-bold tracking-wide uppercase text-indigo-400 hover:text-indigo-300 transition"
+                    className="inline-block text-xs font-bold tracking-wide uppercase text-sky-400 hover:text-sky-300 transition"
                   >
                     {ctaText}
                   </a>
@@ -795,7 +1046,7 @@ function ImageFieldManager({
                       backgroundColor: "var(--starkora-badge-bg)",
                       color: "var(--starkora-badge-text)",
                     }}
-                    className="px-3.5 py-1 rounded-full text-xs font-bold tracking-widest uppercase"
+                    className="px-3.5 py-1 rounded-full text-xs font-bold tracking-widest uppercase inline-block"
                   >
                     {sectionBadge}
                   </span>
@@ -1332,7 +1583,6 @@ function ImageFieldManager({
         render: ({ brandName, logoUrl, tagline, copyrightText, instagram, whatsapp, twitter, linkedin }) => (
           <footer className="py-14 px-6 sm:px-12 bg-slate-950 text-slate-400 text-xs border-t border-slate-900 text-left">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-900">
-              {/* Col 1: Logo & Bio */}
               <div className="md:col-span-2 space-y-4">
                 <div className="flex items-center gap-2.5">
                   {logoUrl ? (
@@ -1347,7 +1597,6 @@ function ImageFieldManager({
                 </p>
               </div>
 
-              {/* Col 2: Navigation Links */}
               <div className="space-y-3">
                 <span className="font-bold text-white text-xs uppercase tracking-wider">Quick Navigation</span>
                 <ul className="space-y-2 text-xs">
@@ -1358,7 +1607,6 @@ function ImageFieldManager({
                 </ul>
               </div>
 
-              {/* Col 3: Social Channels */}
               <div className="space-y-3">
                 <span className="font-bold text-white text-xs uppercase tracking-wider">Connect Channels</span>
                 <div className="flex flex-wrap gap-2 pt-1">
@@ -1382,7 +1630,7 @@ function ImageFieldManager({
                       LinkedIn
                     </a>
                   )}
-                </div>
+                </div> 
               </div>
             </div>
 
